@@ -14,7 +14,7 @@ export function UploadModal() {
   const [fileType, setFileType] = useState<FileType>('pdf');
   const [fileSizeStr, setFileSizeStr] = useState('2.5'); // in MB
   const [folderName, setFolderName] = useState('');
-  
+
   const [error, setError] = useState('');
 
   const isFileOpen = activeModal === 'upload-file';
@@ -54,10 +54,8 @@ export function UploadModal() {
     }
 
     // Creating folder
-    const newFolderId = `folder-${Date.now()}`;
-    // Directly add folder with a mock structure inside by invoking state changes
-    createFolder(folderName.trim());
-    
+    const newFolderId = createFolder(folderName.trim());
+
     // We can simulate adding files inside this folder after creation
     // To do this, we can search for the folder we just created and add files to it.
     // However, our provider handles `createFolder` with `activeFolderId`.

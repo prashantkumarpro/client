@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const {
     currentSection,
+    setCurrentSection,
     activeFolderId,
     setActiveFolderId,
     currentFolderBreadcrumbs,
@@ -44,7 +45,7 @@ export default function DashboardPage() {
 
   const getActivityIcon = (type: string) => {
     const baseClass = "w-8 h-8 rounded-full flex items-center justify-center border transition-colors";
-    
+
     switch (type) {
       case 'upload':
         // Emerald/Green circle for uploads matching screenshot
@@ -117,23 +118,27 @@ export default function DashboardPage() {
 
         {/* Dashboard Inner Scrollable Body */}
         <main className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 md:gap-8">
-          
+
           {/* VIEW: Dashboard */}
           {currentSection === 'Dashboard' && (
             <>
               {/* Welcome Greeting Banner */}
               <div className="bg-card-bg border border-card-border rounded-2xl p-6 md:p-8 flex flex-row items-center justify-between relative overflow-hidden shrink-0 select-none shadow-sm">
+                {/* Decorative background shapes */}
+                <div className="absolute right-0 bottom-0 w-64 h-28 bg-gradient-to-tr from-blue-500/5 to-indigo-500/10 rounded-tl-full blur-2xl pointer-events-none" />
+                <div className="absolute right-48 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#2563eb]/40 pointer-events-none hidden md:block" />
+
                 <div className="flex flex-col gap-1.5 relative z-10 max-w-xl">
                   <h2 className="text-xl md:text-2xl font-bold text-foreground">
                     Good morning, Prashant! 👋
                   </h2>
                   <p className="text-sm font-light text-text-secondary leading-normal">
-                    Here's what's happening with your storage today.
+                     Here's what's happening with your storage today.
                   </p>
                 </div>
 
                 {/* Stylized SaaS cloud illustration */}
-                <div className="hidden md:flex items-center gap-2 select-none relative shrink-0 w-24 h-20 border border-card-border bg-background rounded-2xl shadow-inner justify-center">
+                <div className="hidden md:flex items-center gap-2 select-none relative shrink-0 z-10 w-24 h-20 border border-card-border bg-background rounded-2xl shadow-inner justify-center">
                   <svg className="w-10 h-10 text-[#2563eb]" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
                   </svg>
@@ -149,8 +154,11 @@ export default function DashboardPage() {
 
                   {/* Quick Actions Panel */}
                   <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 shadow-sm">
-                    <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
-                      Quick Actions
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2 select-none">
+                      <svg className="w-4 h-4 text-[#2563eb]" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>Quick Actions</span>
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       {/* Upload Files */}
@@ -198,18 +206,18 @@ export default function DashboardPage() {
                         </span>
                       </button>
 
-                      {/* Get Link */}
+                      {/* Trash */}
                       <button
-                        onClick={() => handleQuickAction('get-link')}
-                        className="bg-background border border-card-border hover:border-amber-500 rounded-2xl p-4 flex flex-col items-center gap-3.5 justify-center text-center transition-all cursor-pointer group shadow-sm"
+                        onClick={() => setCurrentSection('Trash')}
+                        className="bg-background border border-card-border hover:border-red-500 rounded-2xl p-4 flex flex-col items-center gap-3.5 justify-center text-center transition-all cursor-pointer group shadow-sm"
                       >
-                        <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/30 group-hover:bg-amber-500 group-hover:text-black transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center justify-center border border-red-100 dark:border-red-900/30 group-hover:bg-red-600 group-hover:text-white transition-colors">
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-[0.5px] text-text-secondary group-hover:text-foreground transition-colors">
-                          Get Link
+                          Trash
                         </span>
                       </button>
                     </div>
@@ -219,11 +227,14 @@ export default function DashboardPage() {
                 {/* Right Side (Recent Activity Panel) */}
                 <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 max-h-[500px] shadow-sm">
                   <div className="flex items-center justify-between border-b border-divider pb-4 shrink-0 select-none">
-                    <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
-                      Recent Activity
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <svg className="w-4 h-4 text-[#2563eb]" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>Recent Activity</span>
                     </h3>
                   </div>
-                  
+
                   <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4">
                     {activities.slice(0, 7).map((act) => (
                       <div key={act.id} className="flex gap-4 items-start select-none">
@@ -248,6 +259,17 @@ export default function DashboardPage() {
                       </div>
                     ))}
                   </div>
+
+                  {/* View All Activity link button */}
+                  <button
+                    onClick={() => alert('Viewing full activity log')}
+                    className="w-full text-center text-xs font-semibold text-[#2563eb] hover:text-[#1d4ed8] transition-colors py-3 border-t border-divider mt-2 flex items-center justify-center gap-1 cursor-pointer focus:outline-none"
+                  >
+                    <span>View all activity</span>
+                    <svg className="w-3 h-3 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
               </div>
 
@@ -272,8 +294,8 @@ export default function DashboardPage() {
                           onClick={() => setActiveFolderId(crumb.id)}
                           className={cn(
                             "text-xs font-bold uppercase tracking-[0.5px] transition-colors focus:outline-none",
-                            isLast 
-                              ? "text-[#2563eb] cursor-default" 
+                            isLast
+                              ? "text-[#2563eb] cursor-default"
                               : "text-text-secondary hover:text-foreground cursor-pointer"
                           )}
                         >
@@ -283,7 +305,7 @@ export default function DashboardPage() {
                     );
                   })}
                 </div>
-                
+
                 <span className="text-[10px] font-bold uppercase tracking-[1px] text-text-muted">
                   Active Folder Workspace
                 </span>

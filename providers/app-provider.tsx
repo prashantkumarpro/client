@@ -14,28 +14,28 @@ interface AppContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   storageStats: StorageStats;
-  
+
   // Actions
   uploadFile: (name: string, size: number, type: FileType, folderId?: string | null) => void;
-  createFolder: (name: string, parentId?: string | null) => void;
+  createFolder: (name: string, parentId?: string | null) => string;
   toggleStar: (id: string) => void;
   deleteFile: (id: string) => void;
   restoreFile: (id: string) => void;
   deletePermanently: (id: string) => void;
   shareFile: (id: string, emails: string[]) => void;
-  
+
   // Modal State Management
   activeModal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null;
   setActiveModal: (modal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null) => void;
   selectedFileId: string | null;
   setSelectedFileId: (id: string | null) => void;
-  
+
   // Theme & Sidebar States
   theme: 'light' | 'dark';
   toggleTheme: () => void;
   isSidebarCollapsed: boolean;
   toggleSidebar: () => void;
-  
+
   // Helpers
   currentFolderBreadcrumbs: { id: string | null; name: string }[];
 }
@@ -48,11 +48,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [files, setFiles] = useState<FileItem[]>(INITIAL_FILES);
   const [activities, setActivities] = useState<ActivityItem[]>(INITIAL_ACTIVITIES);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Theme & Sidebar states
   const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Light theme by default
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  
+
   // Modal disclosures
   const [activeModal, setActiveModal] = useState<'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null>(null);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
@@ -87,7 +87,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Recalculate storage stats based on active files (only non-deleted and non-folder items count toward storage usage)
   const storageStats = useMemo(() => {
     const activeFiles = files.filter(f => !f.deleted && f.type !== 'folder');
-    
+
     let docs = 0;
     let imgs = 0;
     let vids = 0;
@@ -148,14 +148,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updatedAt: new Date().toISOString(),
       owner: 'Prashant',
     };
-    
+
     setFiles(prev => [newFile, ...prev]);
     addActivity('upload', name, `You uploaded a file: ${name}`);
   }, [activeFolderId, addActivity]);
 
   const createFolder = useCallback((name: string, parentId: string | null = activeFolderId) => {
+    const folderId = `folder-${Date.now()}`;
     const newFolder: FileItem = {
-      id: `folder-${Date.now()}`,
+      id: folderId,
       name,
       type: 'folder',
       size: -1,
@@ -169,6 +170,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     setFiles(prev => [newFolder, ...prev]);
     addActivity('create_folder', name, `You created folder: ${name}`);
+    return folderId;
   }, [activeFolderId, addActivity]);
 
   const toggleStar = useCallback((id: string) => {

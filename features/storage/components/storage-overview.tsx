@@ -57,9 +57,13 @@ export function StorageOverview() {
     <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col justify-between shadow-sm transition-colors duration-200">
       <div className="flex flex-col gap-4">
         {/* Title & Stats */}
-        <div className="flex flex-col gap-1.5 select-none">
-          <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
-            Storage Overview
+        <div className="flex flex-col gap-2.5 select-none">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <svg className="w-4.5 h-4.5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+            </svg>
+            <span>Storage Overview</span>
           </h3>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-extrabold tracking-tight text-foreground">
@@ -77,7 +81,7 @@ export function StorageOverview() {
         {/* Large Progress Bar */}
         <div className="w-full bg-divider h-2.5 rounded-full overflow-hidden relative">
           <div
-            className="h-full bg-[#2563eb] rounded-full transition-all duration-300"
+            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
             style={{ width: `${percentageUsed}%` }}
           />
         </div>
@@ -100,7 +104,7 @@ export function StorageOverview() {
               {cat.icon}
             </div>
             <div className="flex flex-col select-none min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-[0.5px] text-text-muted truncate">
+              <span className="text-[10px] font-bold text-text-muted truncate">
                 {cat.name}
               </span>
               <span className="text-xs font-extrabold text-foreground mt-0.5">

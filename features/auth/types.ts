@@ -11,3 +11,13 @@ export interface User {
   name: string,
   email: string
 }
+
+export interface RegisterCrendentials {
+  name: string,
+  email: string,
+  password: string
+}
+
+export interface RegisterResponse {
+  message: string
+}

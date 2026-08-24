@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
 import type { LoginCredentials } from '../types'
-import { login } from '../api'
+
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
+
+import { useAuth } from '../hooks/use-auth'
 
 export default function LoginForm () {
   const [showPassword, setShowPassword] = useState(false)
@@ -22,15 +23,18 @@ export default function LoginForm () {
     formState: { errors, isSubmitting }
   } = useForm<LoginCredentials>()
 
-  const onSubmit = async (data: LoginCredentials) => {
-    try {
-      const response = await login(data)
+  const { login } = useAuth()
 
-      console.log('Login successful:', response)
-      router.push('/')
+  const onSubmit = async (data: LoginCredentials) => {
+    setLoginError('')
+
+    try {
+      await login(data)
+
+      router.replace('/dashboard')
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setLoginError(error.response?.data?.error || 'Unable to sign in')
+      if (error instanceof Error) {
+        setLoginError(error.message)
       } else {
         setLoginError('Something went wrong. Please try again.')
       }

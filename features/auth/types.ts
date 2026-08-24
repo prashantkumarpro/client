@@ -1,9 +1,13 @@
 export interface LoginResponse {
-  name: string,
-  email: string
+  message: string
 }
 
 export interface LoginCredentials {
-  emial: string,
+  email: string,
   password: string
+}
+
+export interface User {
+  name: string,
+  email: string
 }

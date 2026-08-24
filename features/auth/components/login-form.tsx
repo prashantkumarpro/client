@@ -1,167 +1,167 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  ArrowRight,
-  Cloud,
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  Mail,
-} from 'lucide-react'
+import { ArrowRight, Cloud, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
+import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+import type { LoginCredentials } from '../types'
+import { login } from '../api'
+import { useRouter } from 'next/navigation'
+import axios from 'axios'
 
-export default function LoginForm() {
+export default function LoginForm () {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
+  const [loginError, setLoginError] = useState('')
+  const router = useRouter()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<LoginCredentials>()
+
+  const onSubmit = async (data: LoginCredentials) => {
+    try {
+      const response = await login(data)
+
+      console.log('Login successful:', response)
+      router.push('/')
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setLoginError(error.response?.data?.error || 'Unable to sign in')
+      } else {
+        setLoginError('Something went wrong. Please try again.')
+      }
+    }
+  }
 
   return (
-    <div className="w-full max-w-[500px]">
-
+    <div className='w-full'>
       {/* Logo */}
-      <div className="mb-6 flex items-center gap-2 sm:mb-8">
+      <div className='mb-6 flex items-center gap-2'>
         <Cloud
-          size={30}
-          strokeWidth={2.5}
-          fill="currentColor"
-          className="text-blue-600 sm:size-[32px]"
+          size={26}
+          fill='currentColor'
+          className='text-[#1c69d4] shrink-0'
         />
 
-        <span className="text-[22px] font-bold tracking-[-0.7px] text-[#142044] sm:text-[24px]">
-          Cloud<span className="text-blue-600">E</span>
+        <span className='text-[21px] font-bold tracking-[-0.6px] text-foreground'>
+          Cloud<span className='text-[#1c69d4]'>E</span>
         </span>
       </div>
-
       {/* Heading */}
-      <div className="mb-6 sm:mb-7">
-        <h1 className="text-[30px] font-bold leading-[1.15] tracking-[-0.8px] text-[#142044] sm:text-[36px]">
-          Welcome back{' '}
-          <span className="text-[25px] sm:text-[29px]">👋</span>
+      <div className='mb-6'>
+        <h1 className='text-[24px] font-bold leading-tight uppercase tracking-tight text-foreground sm:text-[26px]'>
+          Welcome back 👋
         </h1>
 
-        <p className="mt-2 max-w-[390px] text-[14px] leading-5 text-[#697797] sm:mt-2.5 sm:text-[15px] sm:leading-6">
-          Sign in to access your files and continue
-          <br  className="hidden sm:block"/>
-         
-          where you left off.
+        <p className='mt-1.5 text-[13px] font-light leading-relaxed text-text-secondary'>
+          Sign in to access your files and continue where you left off.
         </p>
       </div>
 
-      <form className="w-full">
-
+      <form className='w-full' onSubmit={handleSubmit(onSubmit)}>
         {/* Email */}
         <Input
-          label="Email address"
-          type="email"
-          placeholder="Enter your email"
-          startIcon={<Mail size={20} />}
-          className="h-11 sm:h-12"
+          label='Email address'
+          type='email'
+          placeholder='Enter your email'
+          startIcon={<Mail size={17} />}
+          error={errors.email?.message}
+          {...register('email', {
+            required: 'Email is required'
+          })}
         />
 
         {/* Password */}
-        <div className="mt-4 sm:mt-5">
-          <div className="relative">
-            <Input
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              startIcon={<LockKeyhole size={20} />}
-              className="h-11 pr-11 sm:h-12"
-            />
+        <div className='relative mt-4'>
+          <Input
+            label='Password'
+            type={showPassword ? 'text' : 'password'}
+            placeholder='Enter your password'
+            startIcon={<LockKeyhole size={17} />}
+            className='pr-12'
+            error={errors.password?.message}
+            {...register('password', {
+              required: 'Password is required'
+            })}
+          />
 
-            <button
-              type="button"
-              onClick={() => setShowPassword((value) => !value)}
-              className="absolute right-3.5 bottom-[12px] text-[#7a87a4] transition-colors hover:text-blue-600"
-              aria-label={
-                showPassword ? 'Hide password' : 'Show password'
-              }
-            >
-              {showPassword ? (
-                <EyeOff size={19} />
-              ) : (
-                <Eye size={19} />
-              )}
-            </button>
-          </div>
+          <button
+            type='button'
+            onClick={() => setShowPassword(value => !value)}
+            className='absolute right-4 bottom-[12px] text-text-muted transition-colors hover:text-foreground cursor-pointer'
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+          </button>
         </div>
 
         {/* Remember / Forgot */}
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-[12px] text-[#596985] sm:text-[13px]">
+        <div className='mt-4 flex items-center justify-between gap-3'>
+          <label className='flex shrink-0 cursor-pointer items-center gap-2 text-[11px] font-bold tracking-[1.5px] uppercase text-text-secondary select-none hover:text-foreground transition-colors'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={rememberMe}
-              onChange={(event) =>
-                setRememberMe(event.target.checked)
-              }
-              className="h-[17px] w-[17px] cursor-pointer accent-blue-600"
+              onChange={event => setRememberMe(event.target.checked)}
+              className='h-4 w-4 cursor-pointer accent-[#1c69d4] bg-input-bg rounded-none'
             />
-
             Remember me
           </label>
 
           <button
-            type="button"
-            className="text-right text-[12px] font-medium text-blue-600 transition-colors hover:text-blue-700 sm:text-[13px]"
+            type='button'
+            className='text-right text-[11px] font-bold tracking-[1.5px] uppercase text-text-secondary hover:text-foreground transition-colors cursor-pointer'
           >
             Forgot password?
           </button>
         </div>
 
-        {/* Sign In */}
-        <Button
-          type="submit"
-          variant="primary"
-          size="md"
-          className="mt-5 h-11 w-full rounded-[10px] text-[14px] font-semibold sm:h-12 sm:text-[15px]"
-        >
-          Sign in
+        {loginError && (
+          <p className='text-[12px] text-center mt-1 pt-1 text-red-500'>
+            {loginError}
+          </p>
+        )}
 
-          <ArrowRight
-            size={18}
-            className="ml-2"
-          />
+        {/* Sign In Button */}
+        <Button
+          type='submit'
+          variant='primary'
+          className='mt-5 w-full h-11'
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Signing in...' : 'Sign in'}
+
+          {!isSubmitting && <ArrowRight size={18} className='ml-2' />}
         </Button>
 
         {/* Divider */}
-        <div className="my-5 flex items-center gap-3 sm:gap-4">
-          <div className="h-px flex-1 bg-[#dce3ef]" />
+        <div className='my-5 flex items-center gap-3'>
+          <div className='h-px flex-1 bg-divider' />
 
-          <span className="text-[12px] text-[#8290ad] sm:text-[13px]">
+          <span className='text-[11px] font-bold tracking-[1.5px] uppercase text-text-muted'>
             or
           </span>
 
-          <div className="h-px flex-1 bg-[#dce3ef]" />
+          <div className='h-px flex-1 bg-divider' />
         </div>
 
-        {/* Google */}
-        <Button
-          type="button"
-          variant="soft"
-          size="md"
-          className="h-11 w-full rounded-[10px] border border-[#dce3ef] bg-white text-[14px] font-semibold text-[#142044] shadow-none hover:bg-[#f8faff] sm:h-12 sm:text-[15px]"
-        >
-          <img
-            src="/icons/google.svg"
-            alt=""
-            className="mr-2 h-5 w-5"
-          />
-
+        {/* Google Login */}
+        <Button type='button' variant='outline' className='w-full h-11'>
+          <img src='/icons/google.svg' alt='' className='mr-2 h-5 w-5' />
           Continue with Google
         </Button>
       </form>
 
       {/* Register */}
-      <div className="mt-5 text-center">
-        <p className="text-[12px] text-[#74819f] sm:text-[13px]">
+      <div className='mt-5 text-center'>
+        <p className='text-[12px] text-text-secondary font-light'>
           Don't have an account?{' '}
-
           <Link
-            href="/register"
-            className="font-semibold text-blue-600 transition-colors hover:text-blue-700"
+            href='/register'
+            className='font-bold tracking-[1px] text-[11px] uppercase text-foreground hover:underline ml-1'
           >
             Sign up
           </Link>

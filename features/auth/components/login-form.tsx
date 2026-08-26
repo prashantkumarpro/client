@@ -11,6 +11,7 @@ import type { LoginCredentials } from '../types'
 import { useRouter } from 'next/navigation'
 
 import { useAuth } from '../hooks/use-auth'
+import { AuthError } from '../auth-error'
 
 export default function LoginForm () {
   const [showPassword, setShowPassword] = useState(false)
@@ -20,6 +21,7 @@ export default function LoginForm () {
   const {
     register,
     handleSubmit,
+    clearErrors,
     formState: { errors, isSubmitting }
   } = useForm<LoginCredentials>()
 
@@ -27,17 +29,18 @@ export default function LoginForm () {
 
   const onSubmit = async (data: LoginCredentials) => {
     setLoginError('')
+    clearErrors()
 
     try {
       await login(data)
-
       router.replace('/dashboard')
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof AuthError) {
         setLoginError(error.message)
-      } else {
-        setLoginError('Something went wrong. Please try again.')
+        return
       }
+
+      setLoginError('Something went wrong. Please try again.')
     }
   }
 
@@ -75,32 +78,36 @@ export default function LoginForm () {
           startIcon={<Mail size={17} />}
           error={errors.email?.message}
           {...register('email', {
-            required: 'Email is required'
+            required: 'Email is required',
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: 'Invalid email format'
+            }
           })}
         />
 
         {/* Password */}
-        <div className='relative mt-4'>
+        <div className='mt-4'>
           <Input
             label='Password'
             type={showPassword ? 'text' : 'password'}
             placeholder='Enter your password'
             startIcon={<LockKeyhole size={17} />}
-            className='pr-12'
             error={errors.password?.message}
+            endAction={
+              <button
+                type='button'
+                onClick={() => setShowPassword(value => !value)}
+                className='cursor-pointer text-text-muted transition-colors hover:text-foreground'
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
+            }
             {...register('password', {
               required: 'Password is required'
             })}
           />
-
-          <button
-            type='button'
-            onClick={() => setShowPassword(value => !value)}
-            className='absolute right-4 bottom-[12px] text-text-muted transition-colors hover:text-foreground cursor-pointer'
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
-          >
-            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-          </button>
         </div>
 
         {/* Remember / Forgot */}
@@ -152,11 +159,11 @@ export default function LoginForm () {
           <div className='h-px flex-1 bg-divider' />
         </div>
 
-        {/* Google Login */}
+        {/* Google Login
         <Button type='button' variant='outline' className='w-full h-11'>
           <img src='/icons/google.svg' alt='' className='mr-2 h-5 w-5' />
           Continue with Google
-        </Button>
+        </Button> */}
       </form>
 
       {/* Register */}

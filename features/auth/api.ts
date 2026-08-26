@@ -1,36 +1,58 @@
-import { apiClient } from "@/lib/api/client";
-import type { LoginCredentials, LoginResponse, RegisterCrendentials, RegisterResponse, User } from "./types";
-
+import { apiClient } from '@/lib/api/client'
+import type {
+  LoginCredentials,
+  LoginResponse,
+  RegisterCredentials,
+  RegisterResponse,
+  User,
+} from './types'
+import { getAuthError } from './auth-error'
 
 
 export const register = async (
-  data: RegisterCrendentials
+  data: RegisterCredentials
 ): Promise<RegisterResponse> => {
-  const response = await apiClient.post<RegisterResponse>(
-    '/user/register',
-    data
-  )
+  try {
+    const response = await apiClient.post<RegisterResponse>(
+      '/user/register',
+      data
+    )
 
-  return response.data
+    return response.data
+  } catch (error) {
+    throw getAuthError(error)
+  }
 }
+
 export const login = async (
   data: LoginCredentials
 ): Promise<LoginResponse> => {
-  const response = await apiClient.post<LoginResponse>(
-    "/user/login",
-    data
-  );
+  try {
+    const response = await apiClient.post<LoginResponse>(
+      '/user/login',
+      data
+    )
 
-  return response.data;
-};
-
+    return response.data
+  } catch (error) {
+    throw getAuthError(error)
+  }
+}
 
 export const getUser = async (): Promise<User> => {
-  const response = await apiClient.get<User>('/user')
+  try {
+    const response = await apiClient.get<User>('/user')
 
-  return response.data
+    return response.data
+  } catch (error) {
+    throw getAuthError(error)
+  }
 }
 
 export const logout = async (): Promise<void> => {
-  await apiClient.post('/user/logout')
+  try {
+    await apiClient.post('/user/logout')
+  } catch (error) {
+    throw getAuthError(error)
+  }
 }

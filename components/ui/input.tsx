@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { cn } from '../../lib/utils/cn'
 
 export interface InputProps
@@ -6,10 +7,14 @@ export interface InputProps
   label?: string
   error?: string
   startIcon?: React.ReactNode
+  endAction?: React.ReactNode
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', label, error, startIcon, ...props }, ref) => {
+  (
+    { className, type = 'text', label, error, startIcon, endAction, ...props },
+    ref
+  ) => {
     return (
       <div className='w-full flex flex-col gap-1.5'>
         {label && (
@@ -31,12 +36,20 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               'w-full h-11 bg-input-bg text-foreground rounded-none px-4 py-2.5 text-[14px] font-light placeholder:text-text-muted transition-all duration-150 focus:bg-divider focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed',
               startIcon ? 'pl-12' : '',
-              error &&
-                'border-red-500 focus:border-red-500 focus:ring-red-500/10',
+              endAction ? 'pr-12' : '',
+              error
+                ? 'shadow-[inset_0_0_0_1px_#ef4444] focus:shadow-[inset_0_0_0_2px_#ef4444]'
+                : 'shadow-[inset_0_0_0_1px_var(--color-card-border)] focus:shadow-[inset_0_0_0_2px_var(--foreground)]',
               className
             )}
             {...props}
           />
+
+          {endAction && (
+            <span className='absolute right-4 top-1/2 -translate-y-1/2'>
+              {endAction}
+            </span>
+          )}
         </div>
 
         {error && (

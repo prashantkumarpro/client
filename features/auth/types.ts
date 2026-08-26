@@ -12,7 +12,7 @@ export interface User {
   email: string
 }
 
-export interface RegisterCrendentials {
+export interface RegisterCredentials  {
   name: string,
   email: string,
   password: string

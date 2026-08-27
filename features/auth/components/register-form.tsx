@@ -20,13 +20,21 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 import type { RegisterCredentials } from '../types'
-import { register as registerApi } from '../api'
-import { AuthError } from '../auth-error'
+import { register as registerApi, sendOtp, verifyOtp } from '../api'
+import { AuthError, getAuthError } from '../auth-error'
 
 export default function RegisterForm () {
   const [showPassword, setShowPassword] = useState(false)
+
   const [registerError, setRegisterError] = useState('')
   const [registerSuccess, setRegisterSuccess] = useState('')
+
+  // OTP state
+  const [otp, setOtp] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpVerified, setOtpVerified] = useState(false)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpError, setOtpError] = useState('')
 
   const router = useRouter()
 
@@ -35,16 +43,26 @@ export default function RegisterForm () {
     handleSubmit,
     setError,
     clearErrors,
+    getValues,
     formState: { errors, isSubmitting }
   } = useForm<RegisterCredentials>({
     mode: 'onBlur',
     reValidateMode: 'onChange'
   })
 
+  // -----------------------------
+  // Registration
+  // -----------------------------
+
   const onSubmit = async (data: RegisterCredentials) => {
     setRegisterError('')
     setRegisterSuccess('')
     clearErrors()
+
+    if (!otpVerified) {
+      setOtpError('Please verify your email before creating your account')
+      return
+    }
 
     try {
       await registerApi(data)
@@ -74,6 +92,75 @@ export default function RegisterForm () {
       }
 
       setRegisterError('Something went wrong. Please try again.')
+    }
+  }
+
+  // -----------------------------
+  // Send OTP
+  // -----------------------------
+  const handleSendOtp = async () => {
+    const email = getValues('email')?.trim()
+
+    if (!email) {
+      setError('email', {
+        type: 'manual',
+        message: 'Email is required'
+      })
+
+      return
+    }
+
+    setOtpError('')
+    setOtpLoading(true)
+
+    try {
+      await sendOtp({ email })
+
+      setOtpSent(true)
+      setOtpVerified(false)
+      setOtp('')
+    } catch (error) {
+      const authError = getAuthError(error)
+
+      setOtpError(authError.message)
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  // -----------------------------
+  // Verify OTP
+  // -----------------------------
+
+  const handleVerifyOtp = async () => {
+    const email = getValues('email')?.trim()
+
+    if (!email) {
+      setOtpError('Please enter your email first')
+      return
+    }
+
+    if (!otp.trim()) {
+      setOtpError('Please enter the OTP')
+      return
+    }
+
+    setOtpError('')
+    setOtpLoading(true)
+
+    try {
+      await verifyOtp({
+        email,
+        otp: otp.trim()
+      })
+
+      setOtpVerified(true)
+    } catch (error) {
+      const authError = getAuthError(error)
+
+      setOtpError(authError.message)
+    } finally {
+      setOtpLoading(false)
     }
   }
 
@@ -135,7 +222,7 @@ export default function RegisterForm () {
             }
           })}
         />
-
+        
         {/* Email */}
         <div className='mt-4'>
           <Input
@@ -144,20 +231,60 @@ export default function RegisterForm () {
             placeholder='Enter your email'
             startIcon={<Mail size={17} />}
             error={errors.email?.message}
+            className='pr-24'
+            endAction={
+              !otpVerified && (
+                <button
+                  type='button'
+                  onClick={handleSendOtp}
+                  disabled={otpLoading}
+                  className='cursor-pointer text-[10px] font-bold uppercase tracking-[0.5px] text-[#1c69d4] transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50'
+                >
+                  {otpLoading ? 'Sending...' : 'Send OTP'}
+                </button>
+              )
+            }
             {...register('email', {
-              required: 'Email is required',
-
-              validate: value => {
-                const email = value.trim()
-
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                  return 'Please enter a valid email address'
-                }
-
-                return true
-              }
+              required: 'Email is required'
             })}
           />
+
+          {/* OTP Verification */}
+          {otpSent && !otpVerified && (
+            <div className='mt-3'>
+              <div className='flex gap-2'>
+                <Input
+                  label='OTP'
+                  type='text'
+                  placeholder='Enter OTP'
+                  value={otp}
+                  onChange={event => setOtp(event.target.value)}
+                />
+
+                <Button
+                  type='button'
+                  variant='primary'
+                  onClick={handleVerifyOtp}
+                  disabled={otpLoading}
+                  className='mt-auto h-11'
+                >
+                  {otpLoading ? 'Verifying...' : 'Verify'}
+                </Button>
+              </div>
+
+              {otpError && (
+                <p className='mt-1.5 text-[10px] font-bold uppercase tracking-[0.5px] text-red-500'>
+                  {otpError}
+                </p>
+              )}
+            </div>
+          )}
+
+          {otpVerified && (
+            <p className='mt-1.5 text-[10px] font-bold uppercase tracking-[0.5px] text-green-500'>
+              Email verified
+            </p>
+          )}
         </div>
 
         {/* Password */}
@@ -180,6 +307,7 @@ export default function RegisterForm () {
             }
             {...register('password', {
               required: 'Password is required',
+
               validate: value => {
                 if (value.length < 6) {
                   return 'Password must be at least 6 characters long'

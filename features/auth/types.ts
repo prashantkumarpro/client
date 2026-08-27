@@ -7,17 +7,35 @@ export interface LoginCredentials {
   password: string
 }
 
-export interface User {
-  name: string,
-  email: string
-}
-
-export interface RegisterCredentials  {
+export interface RegisterCredentials {
   name: string,
   email: string,
   password: string
 }
 
 export interface RegisterResponse {
+  message: string
+}
+
+export interface User {
+  name: string,
+  email: string
+}
+
+
+export type SendOtpCredentials = {
+  email: string
+}
+
+export type SendOtpResponse = {
+  message: string
+}
+
+export type VerifyOtpCredentials = {
+  email: string
+  otp: string
+}
+
+export type VerifyOtpResponse = {
   message: string
 }

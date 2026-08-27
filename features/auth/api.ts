@@ -4,7 +4,11 @@ import type {
   LoginResponse,
   RegisterCredentials,
   RegisterResponse,
+  SendOtpCredentials,
+  SendOtpResponse,
   User,
+  VerifyOtpCredentials,
+  VerifyOtpResponse,
 } from './types'
 import { getAuthError } from './auth-error'
 
@@ -23,6 +27,40 @@ export const register = async (
     throw getAuthError(error)
   }
 }
+
+export const sendOtp = async (
+  data: SendOtpCredentials
+): Promise<SendOtpResponse> => {
+  try {
+    const response = await apiClient.post<SendOtpResponse>(
+      'auth/send-otp',
+      data
+    )
+
+    return response.data
+  } catch (error) {
+    throw getAuthError(error)
+  }
+}
+
+export const verifyOtp = async (
+  data: VerifyOtpCredentials
+): Promise<VerifyOtpResponse> => {
+  try {
+    const response = await apiClient.post<VerifyOtpResponse>(
+      'auth/verify-otp',
+      data
+    )
+
+    return response.data
+  } catch (error) {
+    throw getAuthError(error)
+  }
+}
+
+
+
+
 
 export const login = async (
   data: LoginCredentials

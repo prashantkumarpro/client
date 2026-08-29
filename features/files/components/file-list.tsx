@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useApp } from '../../../providers/app-provider';
-import { Dropdown } from '../../../components/ui/dropdown';
+import { ActionMenu } from '../../../components/ui/action-menu';
 import { formatBytes, formatDate } from '../../../lib/utils/format';
 import { FileItem, FileType } from '../../../types';
 import { cn } from '../../../lib/utils/cn';
@@ -262,16 +262,14 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
 
                     {/* Actions Menu */}
                     <td className="py-3.5 text-center">
-                      <Dropdown
+                      <ActionMenu
                         align="right"
-                        items={dropdownItems}
-                        trigger={
-                          <button className="w-8 h-8 rounded-full inline-flex items-center justify-center text-text-muted hover:text-foreground hover:bg-divider border border-transparent hover:border-card-border transition-all focus:outline-none cursor-pointer">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z" />
-                            </svg>
-                          </button>
-                        }
+                        items={dropdownItems.map(item => ({
+                          label: item.label,
+                          onClick: item.onClick,
+                          icon: item.icon,
+                          danger: item.label === 'Delete'
+                        }))}
                       />
                     </td>
                   </tr>

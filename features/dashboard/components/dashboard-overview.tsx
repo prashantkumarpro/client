@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { cn } from '@/lib/utils/cn'
+import { ActionMenu } from '@/components/ui/action-menu'
 import WelcomeBanner from './welcome-banner'
 import QuickActions from './quick-actions'
 
@@ -58,7 +59,7 @@ export default function DashboardOverview () {
   const { setCurrentSection, setActiveModal, setSelectedFileId } = useApp()
   const [activeTab, setActiveTab] = useState<'Recent' | 'Starred' | 'Shared'>('Recent')
   const [folderCards, setFolderCards] = useState<FolderCardData[]>(INITIAL_FOLDER_CARDS)
-  const [openMenuCardId, setOpenMenuCardId] = useState<string | null>(null)
+  const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
 
   // Filter folder cards based on active tab
   const filteredCards = folderCards.filter(card => {
@@ -292,7 +293,7 @@ export default function DashboardOverview () {
                   key={card.id}
                   className={cn(
                     'bg-card-bg border border-card-border rounded-2xl flex flex-col relative group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 shadow-sm',
-                    openMenuCardId === card.id ? 'z-35' : 'z-10 hover:z-20'
+                    activeCardMenuId === card.id ? 'z-35' : 'z-10 hover:z-20'
                   )}
                 >
                   {/* Top Preview Frame */}
@@ -318,49 +319,12 @@ export default function DashboardOverview () {
                     )}
                   </div>
 
-                  {/* Three-dots menu toggle button container */}
+                  {/* Reusable Three-dots Action Menu */}
                   <div className='absolute top-3 right-3 z-25'>
-                    <button
-                      onClick={() => setOpenMenuCardId(openMenuCardId === card.id ? null : card.id)}
-                      className='bg-white/90 dark:bg-zinc-850/90 hover:bg-white dark:hover:bg-zinc-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border border-slate-100 dark:border-zinc-750 cursor-pointer focus:outline-none transition-colors'
-                      title='Folder menu'
-                    >
-                      <svg className='w-4 h-4 text-slate-500 dark:text-slate-300' fill='currentColor' viewBox='0 0 24 24'>
-                        <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
-                      </svg>
-                    </button>
-
-                    {/* Context menu dropdown overlay */}
-                    {openMenuCardId === card.id && (
-                      <>
-                        <div
-                          className='fixed inset-0 z-30 cursor-default'
-                          onClick={() => setOpenMenuCardId(null)}
-                        />
-                        <div className='absolute right-0 top-9 w-48 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700/80 py-1 z-40 animate-in fade-in slide-in-from-top-2 duration-150'>
-                          {dropdownItems.map((item, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => {
-                                item.onClick();
-                                setOpenMenuCardId(null);
-                              }}
-                              className={cn(
-                                'w-full px-4 py-2 text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none',
-                                item.danger
-                                  ? 'text-red-500 hover:bg-red-500/10'
-                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-700/50'
-                              )}
-                            >
-                              <span className={item.danger ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}>
-                                {item.icon}
-                              </span>
-                              <span>{item.label}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
+                    <ActionMenu
+                      items={dropdownItems}
+                      onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
+                    />
                   </div>
 
                   {/* Bottom Text and details */}

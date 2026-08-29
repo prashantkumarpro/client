@@ -316,50 +316,52 @@ export default function DashboardOverview () {
                         </svg>
                       </div>
                     )}
+                  </div>
 
-                    {/* Three-dots menu toggle button */}
+                  {/* Three-dots menu toggle button container */}
+                  <div className='absolute top-3 right-3 z-25'>
                     <button
                       onClick={() => setOpenMenuCardId(openMenuCardId === card.id ? null : card.id)}
-                      className='absolute top-3 right-3 bg-white/90 dark:bg-zinc-850/90 hover:bg-white dark:hover:bg-zinc-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border border-slate-100 dark:border-zinc-750 z-20 cursor-pointer focus:outline-none transition-colors'
+                      className='bg-white/90 dark:bg-zinc-850/90 hover:bg-white dark:hover:bg-zinc-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border border-slate-100 dark:border-zinc-750 cursor-pointer focus:outline-none transition-colors'
                       title='Folder menu'
                     >
                       <svg className='w-4 h-4 text-slate-500 dark:text-slate-300' fill='currentColor' viewBox='0 0 24 24'>
                         <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
                       </svg>
                     </button>
-                  </div>
 
-                  {/* Context menu dropdown overlay */}
-                  {openMenuCardId === card.id && (
-                    <>
-                      <div
-                        className='fixed inset-0 z-30 cursor-default'
-                        onClick={() => setOpenMenuCardId(null)}
-                      />
-                      <div className='absolute right-3 top-[108px] w-48 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700/80 py-1 z-40 animate-in fade-in slide-in-from-top-2 duration-150'>
-                        {dropdownItems.map((item, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => {
-                              item.onClick();
-                              setOpenMenuCardId(null);
-                            }}
-                            className={cn(
-                              'w-full px-4 py-2 text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none',
-                              item.danger
-                                ? 'text-red-500 hover:bg-red-500/10'
-                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-700/50'
-                            )}
-                          >
-                            <span className={item.danger ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}>
-                              {item.icon}
-                            </span>
-                            <span>{item.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
+                    {/* Context menu dropdown overlay */}
+                    {openMenuCardId === card.id && (
+                      <>
+                        <div
+                          className='fixed inset-0 z-30 cursor-default'
+                          onClick={() => setOpenMenuCardId(null)}
+                        />
+                        <div className='absolute right-0 top-9 w-48 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700/80 py-1 z-40 animate-in fade-in slide-in-from-top-2 duration-150'>
+                          {dropdownItems.map((item, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                item.onClick();
+                                setOpenMenuCardId(null);
+                              }}
+                              className={cn(
+                                'w-full px-4 py-2 text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none',
+                                item.danger
+                                  ? 'text-red-500 hover:bg-red-500/10'
+                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-700/50'
+                              )}
+                            >
+                              <span className={item.danger ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}>
+                                {item.icon}
+                              </span>
+                              <span>{item.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
 
                   {/* Bottom Text and details */}
                   <div className='p-4.5 flex items-center justify-between gap-2 min-w-0 bg-card-bg rounded-b-2xl'>

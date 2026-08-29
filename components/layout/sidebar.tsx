@@ -227,7 +227,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
       <aside
         className={cn(
-          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-7 pb-6 md:pt-8 md:pb-8 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-5 pb-4 md:pt-6 md:pb-5 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
           className
         )}
       >
@@ -272,7 +272,7 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* Collapsed + New dropdown button trigger */}
-        <div className='w-full px-2 mt-6 flex justify-center'>
+        <div className='w-full px-2 mt-4 flex justify-center'>
           <Tooltip content='New' side='right'>
             <Dropdown
               align='left'
@@ -301,15 +301,15 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* Main Nav Icons */}
-        <nav className='w-full flex-1 mt-6 px-2 flex flex-col gap-3 items-center'>
+        <nav className='w-full flex-1 mt-4 px-2 flex flex-col gap-1 items-center'>
           {mainNavItems.map(item => {
             const isActive = currentSection === item.name
             const isTrash = item.name === 'Trash'
             return (
               <Tooltip key={item.name} content={item.name} side='right'>
-                <div className='w-full flex flex-col items-center gap-3'>
+                <div className='w-full flex flex-col items-center gap-1'>
                   {isTrash && (
-                    <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1' />
+                    <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5' />
                   )}
                   <button
                     onClick={() => {
@@ -331,10 +331,10 @@ export function Sidebar({ className }: SidebarProps) {
         </nav>
 
         {/* Divider before Storage */}
-        <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-2 shrink-0' />
+        <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 shrink-0' />
 
         {/* Collapsed Storage details */}
-        <div className='w-full px-2 flex justify-center py-2 shrink-0'>
+        <div className='w-full px-2 flex justify-center py-1 shrink-0'>
           <Tooltip
             content={`Storage: ${percentageUsed}% used (${formatBytes(
               storageStats.totalUsed,
@@ -344,7 +344,7 @@ export function Sidebar({ className }: SidebarProps) {
           >
             <div
               onClick={() => setCurrentSection('My Files')}
-              className='w-12 bg-white dark:bg-zinc-900/60 shadow-[inset_0_0_0_1px_var(--color-card-border)] rounded-xl py-3 px-1.5 flex flex-col items-center gap-2 select-none shadow-sm cursor-pointer hover:shadow-md transition-all duration-200'
+              className='w-12 bg-white dark:bg-zinc-900/60 shadow-[inset_0_0_0_1px_var(--color-card-border)] rounded-xl py-2 px-1 flex flex-col items-center gap-1.5 select-none shadow-sm cursor-pointer hover:shadow-md transition-all duration-200'
             >
               <svg
                 className='w-5 h-5 text-[#0056f7]'
@@ -362,7 +362,7 @@ export function Sidebar({ className }: SidebarProps) {
               <span className='text-[10px] font-bold text-[#0056f7] dark:text-blue-400'>
                 {percentageUsed}%
               </span>
-              <div className='w-8 bg-slate-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden relative'>
+              <div className='w-8 bg-slate-100 dark:bg-zinc-800 h-1 rounded-full overflow-hidden relative'>
                 <div
                   className='h-full bg-[#0056f7] rounded-full'
                   style={{ width: `${percentageUsed}%` }}
@@ -373,14 +373,14 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* Divider before switcher */}
-        <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-2 shrink-0' />
+        <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 shrink-0' />
 
         {/* Collapsed Theme Switcher */}
-        <div className="w-full px-2 flex justify-center py-2 shrink-0">
-          <div className="w-12 p-1 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-center select-none shadow-[inset_0_0_0_1px_var(--color-card-border)]">
+        <div className="w-full px-2 flex justify-center py-1 shrink-0">
+          <div className="w-12 p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-center select-none shadow-[inset_0_0_0_1px_var(--color-card-border)]">
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 flex items-center justify-center rounded-lg transition-all cursor-pointer focus:outline-none bg-white dark:bg-zinc-800 shadow-sm border border-slate-100 dark:border-zinc-700/50"
+              className="w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer focus:outline-none bg-white dark:bg-zinc-800 shadow-sm border border-slate-100 dark:border-zinc-700/50"
               title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             >
               {theme === 'light' ? (
@@ -425,7 +425,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-7 pb-6 md:pt-8 md:pb-8 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-5 pb-4 md:pt-6 md:pb-5 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
         className
       )}
     >
@@ -470,7 +470,7 @@ export function Sidebar({ className }: SidebarProps) {
     </div>
 
       {/* "+ New" Dropdown Button */}
-      <div className='px-4 mt-6'>
+      <div className='px-4 mt-4'>
         <Dropdown
           align='left'
           className='w-full'
@@ -512,20 +512,20 @@ export function Sidebar({ className }: SidebarProps) {
       </div>
 
       {/* Navigation List */}
-      <nav className='flex-1 px-3 mt-6 flex flex-col gap-1.5 overflow-y-auto select-none'>
+      <nav className='flex-1 px-3 mt-4 flex flex-col gap-1 select-none'>
         {mainNavItems.map(item => {
           const isActive = currentSection === item.name
           const isTrash = item.name === 'Trash'
 
           return (
-            <div key={item.name} className='w-full flex flex-col gap-1.5'>
+            <div key={item.name} className='w-full flex flex-col gap-1'>
               {isTrash && (
                 <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-3' />
               )}
               <button
                 onClick={() => setCurrentSection(item.name as SidebarSection)}
                 className={cn(
-                  'w-full flex items-center justify-between px-3.5 py-3 rounded-xl transition-all duration-150 cursor-pointer border border-transparent font-sans',
+                  'w-full flex items-center justify-between px-3.5 py-2 rounded-xl transition-all duration-150 cursor-pointer border border-transparent font-sans',
                   isActive
                     ? 'bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 font-bold'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white font-semibold'
@@ -551,16 +551,16 @@ export function Sidebar({ className }: SidebarProps) {
       </nav>
 
       {/* Separator above Storage */}
-      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-6 shrink-0' />
+      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5 mx-6 shrink-0' />
 
       {/* Storage details panel */}
-      <div className='px-4 py-3 shrink-0'>
-        <div className='w-full bg-white dark:bg-zinc-900/60 rounded-2xl p-4 shadow-[inset_0_0_0_1px_var(--color-card-border)] flex flex-col gap-3.5 select-none'>
+      <div className='px-4 py-1.5 shrink-0'>
+        <div className='w-full bg-white dark:bg-zinc-900/60 rounded-2xl p-3 shadow-[inset_0_0_0_1px_var(--color-card-border)] flex flex-col gap-2.5 select-none'>
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2.5'>
-              <div className='w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-[#0056f7] dark:text-blue-400 shrink-0 shadow-sm'>
+            <div className='flex items-center gap-2'>
+              <div className='w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-[#0056f7] dark:text-blue-400 shrink-0 shadow-sm'>
                 <svg
-                  className='w-4.5 h-4.5'
+                  className='w-4 h-4'
                   fill='none'
                   viewBox='0 0 24 24'
                   stroke='currentColor'
@@ -573,17 +573,17 @@ export function Sidebar({ className }: SidebarProps) {
                   />
                 </svg>
               </div>
-              <span className='text-xs font-bold text-slate-800 dark:text-slate-200'>
+              <span className='text-[11px] font-bold text-slate-800 dark:text-slate-200'>
                 Storage
               </span>
             </div>
-            <span className='text-[10px] font-bold text-[#0056f7] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full shadow-sm'>
+            <span className='text-[9px] font-bold text-[#0056f7] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full shadow-sm'>
               {percentageUsed}%
             </span>
           </div>
 
-          <div className='flex flex-col gap-1.5'>
-            <span className='text-[11px] font-bold text-slate-800 dark:text-slate-350'>
+          <div className='flex flex-col gap-1'>
+            <span className='text-[10px] font-bold text-slate-800 dark:text-slate-350'>
               {formatBytes(storageStats.totalUsed, 1)} of{' '}
               {formatBytes(storageStats.totalCapacity, 0)} used
             </span>
@@ -597,11 +597,11 @@ export function Sidebar({ className }: SidebarProps) {
 
           <button
             onClick={() => alert('Storage upgrade options coming soon!')}
-            className='w-full flex items-center justify-between text-[11px] font-bold text-[#0056f7] dark:text-blue-400 hover:text-[#004bd6] transition-colors pt-1 cursor-pointer group'
+            className='w-full flex items-center justify-between text-[10px] font-bold text-[#0056f7] dark:text-blue-400 hover:text-[#004bd6] transition-colors pt-0.5 cursor-pointer group'
           >
             <span>Upgrade Storage</span>
             <svg
-              className='w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform'
+              className='w-3 h-3 transform group-hover:translate-x-0.5 transition-transform'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -618,15 +618,15 @@ export function Sidebar({ className }: SidebarProps) {
       </div>
 
       {/* Separator above Switcher */}
-      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-6 shrink-0' />
+      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5 mx-6 shrink-0' />
 
       {/* Theme Toggle switcher (horizontal capsule tab) */}
-      <div className='px-4 py-2 shrink-0'>
-        <div className='w-full p-1 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-between select-none shadow-[inset_0_0_0_1px_var(--color-card-border)] relative'>
+      <div className='px-4 py-1.5 shrink-0'>
+        <div className='w-full p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-between select-none shadow-[inset_0_0_0_1px_var(--color-card-border)] relative'>
           <button
             onClick={() => theme === 'dark' && toggleTheme()}
             className={cn(
-              'w-1/2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
+              'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
               theme === 'light'
                 ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -653,7 +653,7 @@ export function Sidebar({ className }: SidebarProps) {
           <button
             onClick={() => theme === 'light' && toggleTheme()}
             className={cn(
-              'w-1/2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
+              'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
               theme === 'dark'
                 ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

@@ -16,39 +16,33 @@ export default function DashboardPage () {
   const { currentSection } = useApp()
 
   return (
-    <div className='flex h-screen w-screen overflow-hidden bg-background text-foreground font-sans antialiased transition-colors duration-200'>
-      {/* Main content viewport */}
-      <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden'>
-        {/* Dashboard Inner Scrollable Body */}
-        <main className='flex-1 overflow-auto p-6 md:p-8 flex flex-col gap-6 md:gap-8'>
-          {/* VIEW: Dashboard */}
-          {currentSection === 'Dashboard' && <DashboardOverview />}
+    <>
+      {/* VIEW: Dashboard */}
+      {currentSection === 'Dashboard' && <DashboardOverview />}
 
-          {/* VIEW: My Files */}
-          {currentSection === 'My Files' && <MyFilesView />}
+      {/* VIEW: My Files */}
+      {currentSection === 'My Files' && <MyFilesView />}
 
-          {/* VIEW: Shared */}
-          {currentSection === 'Shared' && <FileList title='Shared Assets' />}
+      {/* VIEW: Shared */}
+      {currentSection === 'Shared' && <FileList title='Shared Assets' />}
 
-          {/* VIEW: Recent */}
-          {currentSection === 'Recent' && <FileList title='Recent Assets' />}
+      {/* VIEW: Recent */}
+      {currentSection === 'Recent' && <FileList title='Recent Assets' />}
 
-          {/* VIEW: Starred */}
-          {currentSection === 'Starred' && <FileList title='Starred Assets' />}
+      {/* VIEW: Starred */}
+      {currentSection === 'Starred' && <FileList title='Starred Assets' />}
 
-          {/* VIEW: Trash */}
-          {currentSection === 'Trash' && <TrashView />}
+      {/* VIEW: Trash */}
+      {currentSection === 'Trash' && <TrashView />}
 
-          {/* VIEW: Settings */}
-          {currentSection === 'Settings' && <SettingsView />}
-        </main>
-      </div>
+      {/* VIEW: Settings */}
+      {currentSection === 'Settings' && <SettingsView />}
 
       {/* Global Dialog Overlays */}
       <UploadModal />
       <CreateFolderModal />
       <ShareModal />
       <GetLinkModal />
-    </div>
+    </>
   )
 }

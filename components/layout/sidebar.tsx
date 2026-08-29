@@ -227,11 +227,11 @@ export function Sidebar({ className }: SidebarProps) {
     return (
       <aside
         className={cn(
-          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full py-6 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-8 pb-6 md:pt-10 md:pb-8 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
           className
         )}
       >
-        {/* Brand Logo - Centered Icon & Chevron */}
+        {/* Brand Logo - Centered Icon & Desktop Expand Chevron */}
         <div className='flex flex-col items-center shrink-0 w-full'>
           <div className='flex items-center justify-between px-2.5 w-full shrink-0'>
             <div className='w-7 h-7 text-[#0056f7] flex items-center justify-center shrink-0'>
@@ -378,7 +378,6 @@ export function Sidebar({ className }: SidebarProps) {
               title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             >
               {theme === 'light' ? (
-                // Show Moon → clicking switches to Dark
                 <svg
                   className="w-5 h-5 text-slate-700 dark:text-slate-300"
                   fill="none"
@@ -387,13 +386,12 @@ export function Sidebar({ className }: SidebarProps) {
                   strokeWidth={2}
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                   />
                 </svg>
               ) : (
-                // Show Sun → clicking switches to Light
                 <svg
                   className="w-5 h-5 text-amber-500"
                   fill="none"
@@ -402,8 +400,8 @@ export function Sidebar({ className }: SidebarProps) {
                   strokeWidth={2}
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z"
                   />
                 </svg>
@@ -421,12 +419,12 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'w-60 bg-sidebar-bg flex flex-col justify-between h-full py-6 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-8 pb-6 md:pt-10 md:pb-8 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
         className
       )}
     >
       {/* Brand Header with Integrated Collapse Button */}
-      <div className='px-6 flex items-center justify-between shrink-0'>
+      <div className='px-6 flex items-center justify-between shrink-0 w-full'>
         <div className='flex items-center gap-3'>
           {logoIcon}
           <span className='text-lg font-bold text-slate-900 dark:text-white tracking-tight font-sans select-none'>
@@ -479,11 +477,11 @@ export function Sidebar({ className }: SidebarProps) {
                 <span>New</span>
               </span>
               <svg
-                className='w-3.5 h-3.5 text-white/95'
+                className='w-4 h-4 text-white opacity-80'
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
-                strokeWidth={2.5}
+                strokeWidth={2}
               >
                 <path
                   strokeLinecap='round'
@@ -496,89 +494,97 @@ export function Sidebar({ className }: SidebarProps) {
         />
       </div>
 
-      {/* Main Navigation List */}
-      <nav className='flex-1 mt-6 px-4 flex flex-col gap-2 overflow-y-auto'>
+      {/* Navigation List */}
+      <nav className='flex-1 px-3 mt-6 flex flex-col gap-1.5 overflow-y-auto select-none'>
         {mainNavItems.map(item => {
           const isActive = currentSection === item.name
           const isTrash = item.name === 'Trash'
 
           return (
-            <React.Fragment key={item.name}>
+            <div key={item.name} className='w-full flex flex-col gap-1.5'>
               {isTrash && (
-                <div className='my-2 mx-4 h-[1px] bg-slate-100 dark:bg-zinc-800/80 shrink-0' />
+                <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-3' />
               )}
               <button
-                onClick={() => {
-                  setCurrentSection(item.name as SidebarSection)
-                }}
+                onClick={() => setCurrentSection(item.name as SidebarSection)}
                 className={cn(
-                  'w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold transition-all duration-200 cursor-pointer rounded-xl border border-transparent relative',
+                  'w-full flex items-center justify-between px-3.5 py-3 rounded-xl transition-all duration-150 cursor-pointer border border-transparent font-sans',
                   isActive
-                    ? 'bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50/80 dark:hover:bg-zinc-800/40'
+                    ? 'bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white font-semibold'
                 )}
               >
-                <span
-                  className={
-                    isActive ? 'text-[#0056f7] dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'
-                  }
-                >
-                  {item.icon}
+                <span className='flex items-center gap-3 text-[13px]'>
+                  <span
+                    className={cn(
+                      'transition-colors shrink-0',
+                      isActive
+                        ? 'text-[#0056f7] dark:text-blue-400'
+                        : 'text-slate-400 dark:text-slate-500'
+                    )}
+                  >
+                    {item.icon}
+                  </span>
+                  <span>{item.name}</span>
                 </span>
-                <span className='flex-1 text-left'>{item.name}</span>
               </button>
-            </React.Fragment>
+            </div>
           )
         })}
       </nav>
 
-      {/* Visual Separator Divider */}
-      <div className='mx-4 h-[1px] bg-slate-100 dark:bg-zinc-800/80 shrink-0 my-2' />
+      {/* Separator above Storage */}
+      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-6 shrink-0' />
 
-      {/* Floating Storage Card */}
-      <div className='px-4 shrink-0 flex flex-col pt-1 pb-3'>
-        <div className='bg-white dark:bg-card-bg shadow-[inset_0_0_0_1px_var(--color-card-border)] rounded-2xl p-4 flex flex-col gap-3 relative select-none shadow-sm'>
-          {/* Header Row */}
-          <div className='flex items-center justify-between text-xs font-semibold text-foreground'>
-            <span className='flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-white'>
-              <div className='w-8 h-8 rounded-full bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 flex items-center justify-center shrink-0'>
-                <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 24 24'>
-                  <path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z' />
+      {/* Storage details panel */}
+      <div className='px-4 py-3 shrink-0'>
+        <div className='w-full bg-white dark:bg-zinc-900/60 rounded-2xl p-4 shadow-[inset_0_0_0_1px_var(--color-card-border)] flex flex-col gap-3.5 select-none'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-2.5'>
+              <div className='w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-[#0056f7] dark:text-blue-400 shrink-0 shadow-sm'>
+                <svg
+                  className='w-4.5 h-4.5'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z'
+                  />
                 </svg>
               </div>
-              <span>Storage</span>
-            </span>
-            <span className='font-bold text-[#0056f7] bg-[#eef4ff] px-2.5 py-0.5 rounded-full text-[10px]'>
+              <span className='text-xs font-bold text-slate-800 dark:text-slate-200'>
+                Storage
+              </span>
+            </div>
+            <span className='text-[10px] font-bold text-[#0056f7] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full shadow-sm'>
               {percentageUsed}%
             </span>
           </div>
 
-          {/* Usage Label */}
-          <div className='text-sm text-slate-500 dark:text-slate-400 font-semibold mt-1'>
-            <span className='font-bold text-slate-800 dark:text-white'>
-              {formatBytes(storageStats.totalUsed, 0)}
-            </span>{' '}
-            / {formatBytes(storageStats.totalCapacity, 0)}
+          <div className='flex flex-col gap-1.5'>
+            <span className='text-[11px] font-bold text-slate-800 dark:text-slate-350'>
+              {formatBytes(storageStats.totalUsed, 1)} of{' '}
+              {formatBytes(storageStats.totalCapacity, 0)} used
+            </span>
+            <div className='w-full bg-slate-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden relative'>
+              <div
+                className='h-full bg-[#0056f7] rounded-full'
+                style={{ width: `${percentageUsed}%` }}
+              />
+            </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className='w-full bg-slate-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden relative'>
-            <div
-              className='h-full bg-[#0056f7] rounded-full transition-all duration-300'
-              style={{ width: `${percentageUsed}%` }}
-            />
-          </div>
-
-          {/* Upgrade Storage Text Link */}
           <button
-            onClick={() =>
-              alert('Storage Upgrade Plan initiated: Upgrading to 1 TB')
-            }
-            className='flex items-center gap-1.5 text-sm font-bold text-[#0056f7] dark:text-blue-400 hover:text-[#004bd6] hover:underline cursor-pointer focus:outline-none mt-2 transition-all w-fit'
+            onClick={() => alert('Storage upgrade options coming soon!')}
+            className='w-full flex items-center justify-between text-[11px] font-bold text-[#0056f7] dark:text-blue-400 hover:text-[#004bd6] transition-colors pt-1 cursor-pointer group'
           >
             <span>Upgrade Storage</span>
             <svg
-              className='w-3.5 h-3.5 mt-0.5'
+              className='w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -594,59 +600,64 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
       </div>
 
-      {/* Horizontal Light/Dark switcher bar at bottom */}
-      <div className='mx-4 my-2 p-1 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center select-none shrink-0 shadow-[inset_0_0_0_1px_var(--color-card-border)] relative'>
-        <button
-          onClick={() => theme === 'dark' && toggleTheme()}
-          className={cn(
-            'w-1/2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
-            theme === 'light'
-              ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-          )}
-        >
-          <svg
-            className='w-4 h-4 text-amber-500'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z'
-            />
-          </svg>
-          <span>Light</span>
-        </button>
+      {/* Separator above Switcher */}
+      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-6 shrink-0' />
 
-        <div className='h-4 w-[1px] bg-slate-200 dark:bg-zinc-800 shrink-0 self-center' />
-
-        <button
-          onClick={() => theme === 'light' && toggleTheme()}
-          className={cn(
-            'w-1/2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
-            theme === 'dark'
-              ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-          )}
-        >
-          <svg
-            className='w-4 h-4 text-slate-700 dark:text-slate-300'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-            strokeWidth={2}
+      {/* Theme Toggle switcher (horizontal capsule tab) */}
+      <div className='px-4 py-2 shrink-0'>
+        <div className='w-full p-1 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-between select-none shadow-[inset_0_0_0_1px_var(--color-card-border)] relative'>
+          <button
+            onClick={() => theme === 'dark' && toggleTheme()}
+            className={cn(
+              'w-1/2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
+              theme === 'light'
+                ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            )}
           >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'
-            />
-          </svg>
-          <span>Dark</span>
-        </button>
+            <svg
+              className='w-4 h-4 text-amber-500'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z'
+              />
+            </svg>
+            <span>Light</span>
+          </button>
+
+          <div className='h-4 w-[1px] bg-slate-200 dark:bg-zinc-800 shrink-0 self-center' />
+
+          <button
+            onClick={() => theme === 'light' && toggleTheme()}
+            className={cn(
+              'w-1/2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
+              theme === 'dark'
+                ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            )}
+          >
+            <svg
+              className='w-4 h-4 text-slate-700 dark:text-slate-300'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'
+              />
+            </svg>
+            <span>Dark</span>
+          </button>
+        </div>
       </div>
     </aside>
   )

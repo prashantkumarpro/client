@@ -53,6 +53,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Light theme by default
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Set initial collapse state based on viewport size on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsSidebarCollapsed(window.innerWidth < 1024);
+    }
+  }, []);
+
   // Modal disclosures
   const [activeModal, setActiveModal] = useState<'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null>(null);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);

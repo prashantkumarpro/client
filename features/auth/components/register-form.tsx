@@ -65,7 +65,7 @@ export default function RegisterForm () {
     }
 
     try {
-      await registerApi(data)
+      await registerApi({ ...data, otp })
 
       setRegisterSuccess('Registration successful! Redirecting to login...')
 
@@ -222,7 +222,7 @@ export default function RegisterForm () {
             }
           })}
         />
-        
+
         {/* Email */}
         <div className='mt-4'>
           <Input

@@ -1,140 +1,179 @@
 'use client'
 
+import React from 'react'
 import { useApp } from '@/providers/app-provider'
 
 export default function QuickActions () {
-  const { setCurrentSection, setActiveModal, setSelectedFileId, files } =
-    useApp()
-
-  const handleQuickAction = (
-    action: 'upload-file' | 'create-folder' | 'share' | 'get-link'
-  ) => {
-    if (action === 'share' || action === 'get-link') {
-      const defaultFile = files.find(f => !f.deleted && f.type !== 'folder')
-
-      if (defaultFile) {
-        setSelectedFileId(defaultFile.id)
-      } else {
-        alert('Please upload a file first to perform this action.')
-        return
-      }
-    }
-
-    setActiveModal(action)
-  }
+  const { setCurrentSection, setActiveModal } = useApp()
 
   return (
-    <div className='bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 shadow-sm'>
-      <h3 className='text-sm font-bold text-foreground flex items-center gap-2 select-none'>
-        <svg
-          className='w-4 h-4 text-[#2563eb]'
-          fill='currentColor'
-          viewBox='0 0 24 24'
-        >
-          <path d='M13 10V3L4 14h7v7l9-11h-7z' />
-        </svg>
-        <span>Quick Actions</span>
-      </h3>
-      <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
-        {/* Upload Files */}
-        <button
-          onClick={() => handleQuickAction('upload-file')}
-          className='bg-background border border-card-border hover:border-[#2563eb] rounded-2xl p-4 flex flex-col items-center gap-3.5 justify-center text-center transition-all cursor-pointer group shadow-sm'
-        >
-          <div className='w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/20 text-[#2563eb] dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/30 group-hover:bg-[#2563eb] group-hover:text-white transition-colors'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 select-none w-full'>
+      {/* Card 1: Upload files */}
+      <div
+        onClick={() => setActiveModal('upload-file')}
+        className='bg-card-bg border border-card-border hover:border-[#0056f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+      >
+        <div className='flex items-center gap-4 min-w-0'>
+          {/* Light blue icon box */}
+          <div className='w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/30 group-hover:bg-[#0056f7] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-5 h-5'
+              className='w-6 h-6'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
+              strokeWidth={1.8}
             >
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                strokeWidth={1.5}
-                d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12'
+                d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'
               />
             </svg>
           </div>
-          <span className='text-[10px] font-bold uppercase tracking-[0.5px] text-text-secondary group-hover:text-foreground transition-colors'>
-            Upload Files
-          </span>
-        </button>
-
-        {/* New Folder */}
-        <button
-          onClick={() => handleQuickAction('create-folder')}
-          className='bg-background border border-card-border hover:border-[#0fa336] rounded-2xl p-4 flex flex-col items-center gap-3.5 justify-center text-center transition-all cursor-pointer group shadow-sm'
+          <div className='flex flex-col min-w-0'>
+            <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#0056f7] dark:group-hover:text-blue-400 transition-colors truncate'>
+              Upload files
+            </span>
+            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+              Upload files from device
+            </span>
+          </div>
+        </div>
+        <svg
+          className='w-5 h-5 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors shrink-0 ml-2'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          strokeWidth={2}
         >
-          <div className='w-10 h-10 rounded-xl bg-green-50 dark:bg-green-950/20 text-[#0fa336] dark:text-green-400 flex items-center justify-center border border-green-100 dark:border-green-900/30 group-hover:bg-[#0fa336] group-hover:text-white transition-colors'>
+          <path strokeLinecap='round' strokeLinejoin='round' d='M14 5l7 7m0 0l-7 7m7-7H3' />
+        </svg>
+      </div>
+
+      {/* Card 2: Upload folder */}
+      <div
+        onClick={() => setActiveModal('upload-file')}
+        className='bg-card-bg border border-card-border hover:border-[#10a336] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+      >
+        <div className='flex items-center gap-4 min-w-0'>
+          {/* Light green icon box */}
+          <div className='w-12 h-12 rounded-xl bg-green-50 dark:bg-green-950/20 text-[#10a336] dark:text-green-400 flex items-center justify-center border border-green-100 dark:border-green-900/30 group-hover:bg-[#10a336] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-5 h-5'
+              className='w-6 h-6'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
+              strokeWidth={1.8}
             >
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                strokeWidth={1.5}
                 d='M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z'
               />
             </svg>
           </div>
-          <span className='text-[10px] font-bold uppercase tracking-[0.5px] text-text-secondary group-hover:text-foreground transition-colors'>
-            New Folder
-          </span>
-        </button>
-
-        {/* Share File */}
-        <button
-          onClick={() => handleQuickAction('share')}
-          className='bg-background border border-card-border hover:border-purple-500 rounded-2xl p-4 flex flex-col items-center gap-3.5 justify-center text-center transition-all cursor-pointer group shadow-sm'
+          <div className='flex flex-col min-w-0'>
+            <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#10a336] dark:group-hover:text-green-400 transition-colors truncate'>
+              Upload folder
+            </span>
+            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+              Upload a folder from device
+            </span>
+          </div>
+        </div>
+        <svg
+          className='w-5 h-5 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors shrink-0 ml-2'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          strokeWidth={2}
         >
-          <div className='w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/20 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/30 group-hover:bg-purple-600 group-hover:text-white transition-colors'>
+          <path strokeLinecap='round' strokeLinejoin='round' d='M14 5l7 7m0 0l-7 7m7-7H3' />
+        </svg>
+      </div>
+
+      {/* Card 3: New folder */}
+      <div
+        onClick={() => setActiveModal('create-folder')}
+        className='bg-card-bg border border-card-border hover:border-[#a855f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+      >
+        <div className='flex items-center gap-4 min-w-0'>
+          {/* Light purple icon box */}
+          <div className='w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/20 text-[#a855f7] dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/30 group-hover:bg-[#a855f7] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-5 h-5'
+              className='w-6 h-6'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
+              strokeWidth={1.8}
             >
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                strokeWidth={1.5}
-                d='M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'
+                d='M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z'
               />
             </svg>
           </div>
-          <span className='text-[10px] font-bold uppercase tracking-[0.5px] text-text-secondary group-hover:text-foreground transition-colors'>
-            Share File
-          </span>
-        </button>
-
-        {/* Trash */}
-        <button
-          onClick={() => setCurrentSection('Trash')}
-          className='bg-background border border-card-border hover:border-red-500 rounded-2xl p-4 flex flex-col items-center gap-3.5 justify-center text-center transition-all cursor-pointer group shadow-sm'
+          <div className='flex flex-col min-w-0'>
+            <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#a855f7] dark:group-hover:text-purple-400 transition-colors truncate'>
+              New folder
+            </span>
+            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+              Create a new folder
+            </span>
+          </div>
+        </div>
+        <svg
+          className='w-5 h-5 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors shrink-0 ml-2'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          strokeWidth={2}
         >
-          <div className='w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center justify-center border border-red-100 dark:border-red-900/30 group-hover:bg-red-600 group-hover:text-white transition-colors'>
+          <path strokeLinecap='round' strokeLinejoin='round' d='M14 5l7 7m0 0l-7 7m7-7H3' />
+        </svg>
+      </div>
+
+      {/* Card 4: Shared with me */}
+      <div
+        onClick={() => setCurrentSection('Shared')}
+        className='bg-card-bg border border-card-border hover:border-[#f97316] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+      >
+        <div className='flex items-center gap-4 min-w-0'>
+          {/* Light orange icon box */}
+          <div className='w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/20 text-[#f97316] dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/30 group-hover:bg-[#f97316] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-5 h-5'
+              className='w-6 h-6'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
+              strokeWidth={1.8}
             >
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                strokeWidth={1.5}
-                d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+                d='M18 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z'
               />
             </svg>
           </div>
-          <span className='text-[10px] font-bold uppercase tracking-[0.5px] text-text-secondary group-hover:text-foreground transition-colors'>
-            Trash
-          </span>
-        </button>
+          <div className='flex flex-col min-w-0'>
+            <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#f97316] dark:group-hover:text-orange-400 transition-colors truncate'>
+              Shared with me
+            </span>
+            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+              View files shared with you
+            </span>
+          </div>
+        </div>
+        <svg
+          className='w-5 h-5 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors shrink-0 ml-2'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          strokeWidth={2}
+        >
+          <path strokeLinecap='round' strokeLinejoin='round' d='M14 5l7 7m0 0l-7 7m7-7H3' />
+        </svg>
       </div>
     </div>
   )

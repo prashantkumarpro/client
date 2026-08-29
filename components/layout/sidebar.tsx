@@ -212,7 +212,7 @@ export function Sidebar({ className }: SidebarProps) {
   // Cloud Logo Icon
   const logoIcon = (
     <svg
-      className='w-8 h-8 text-[#0056f7] shrink-0'
+      className='w-10 h-10 text-[#0056f7] shrink-0'
       fill='currentColor'
       viewBox='0 0 24 24'
     >
@@ -232,11 +232,15 @@ export function Sidebar({ className }: SidebarProps) {
         )}
       >
         {/* Brand Logo - Centered Icon & Desktop Expand Chevron */}
-        <div className='flex flex-col items-center shrink-0 w-full'>
-          <div className='flex items-center justify-between px-2.5 w-full shrink-0'>
-            <div className='w-7 h-7 text-[#0056f7] flex items-center justify-center shrink-0'>
+        <div className='flex flex-col items-center shrink-0 w-full px-2'>
+          <div
+            onClick={toggleSidebar}
+            className='flex w-full shrink-0 flex-col gap-3.5 items-center justify-center cursor-pointer hover:opacity-85 select-none'
+            title='Expand sidebar'
+          >
+            <div className='w-10 h-10 text-[#0056f7] flex items-center justify-center shrink-0'>
               <svg
-                className='w-7 h-7'
+                className='w-10 h-10'
                 fill='currentColor'
                 viewBox='0 0 24 24'
               >
@@ -244,16 +248,18 @@ export function Sidebar({ className }: SidebarProps) {
               </svg>
             </div>
             <button
-              onClick={toggleSidebar}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSidebar();
+              }}
               className='text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors'
-              title='Expand sidebar'
             >
               <svg
-                className='w-5 h-5'
+                className='w-7 h-7'
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
-                strokeWidth={2}
+                strokeWidth={2.8}
               >
                 <path
                   strokeLinecap='round'
@@ -424,25 +430,35 @@ export function Sidebar({ className }: SidebarProps) {
       )}
     >
       {/* Brand Header with Integrated Collapse Button */}
-      <div className='px-6 flex items-center justify-between shrink-0 w-full'>
-        <div className='flex items-center gap-3'>
-          {logoIcon}
-          <span className='text-lg font-bold text-slate-900 dark:text-white tracking-tight font-sans select-none'>
-            Cloud<span className='font-extrabold'>SpaceGo</span>
-          </span>
-        </div>
-        <button
-          onClick={toggleSidebar}
-          className='text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors'
-          title='Collapse sidebar'
+      <div className='px-4 flex shrink-0 w-full'>
+        <div
+          className='flex w-full flex-col lg:flex-row lg:items-center lg:justify-between items-center justify-center gap-2 select-none'
         >
-          <svg
-            className='w-5 h-5'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-            strokeWidth={2}
+          {/* Logo and text - clicking this toggles sidebar */}
+          <div
+            onClick={toggleSidebar}
+            className='flex items-center gap-2 cursor-pointer hover:opacity-85 min-w-0'
+            title='Collapse sidebar'
           >
+            {logoIcon}
+            <span className='text-base font-bold text-slate-900 dark:text-white tracking-tight font-sans truncate'>
+              Cloud<span className='font-extrabold'>SpaceGo</span>
+            </span>
+          </div>
+
+          {/* Collapse chevron button */}
+          <button
+            onClick={toggleSidebar}
+            className='text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors shrink-0'
+            title='Collapse sidebar'
+          >
+            <svg
+              className='w-7 h-7'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+              strokeWidth={2.8}
+            >
             <path
               strokeLinecap='round'
               strokeLinejoin='round'
@@ -451,6 +467,7 @@ export function Sidebar({ className }: SidebarProps) {
           </svg>
         </button>
       </div>
+    </div>
 
       {/* "+ New" Dropdown Button */}
       <div className='px-4 mt-6'>

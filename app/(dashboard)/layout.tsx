@@ -21,7 +21,7 @@ export default function DashboardLayout ({
           <Header />
 
           {/* Dashboard Inner Scrollable Body */}
-          <main className='flex-1 overflow-y-auto p-6 md:p-8 pt-4 md:pt-4 flex flex-col gap-6 md:gap-8'>
+          <main className='flex-1 overflow-y-auto mx-4 min-[800px]:mx-8 mt-2 mb-4 md:mb-5 py-3 flex flex-col gap-4 md:gap-5'>
             {children}
           </main>
         </div>

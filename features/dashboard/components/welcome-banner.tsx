@@ -6,31 +6,31 @@ export default function WelcomeBanner () {
   return (
     <>
       {/* Welcome Greeting Banner */}
-      <div className='bg-card-bg border border-card-border rounded-2xl p-6 md:p-8 flex flex-row items-center justify-between relative overflow-hidden shrink-0 select-none shadow-sm'>
+      <div className='bg-card-bg border border-card-border rounded-2xl p-4 md:p-5 flex flex-row items-center justify-between relative overflow-hidden shrink-0 select-none shadow-sm'>
         {/* Decorative background shapes */}
         <div className='absolute right-0 bottom-0 w-80 h-36 bg-gradient-to-tr from-blue-500/5 to-indigo-500/10 rounded-tl-full blur-3xl pointer-events-none' />
 
-        <div className='flex flex-col gap-2 relative z-10 max-w-xl'>
-          <h2 className='text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight'>
+        <div className='flex flex-col gap-1.5 relative z-10 max-w-xl'>
+          <h2 className='text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight'>
             Welcome back, Prashant! 👋
           </h2>
-          <p className='text-sm md:text-base font-light text-slate-500 dark:text-slate-400 leading-normal'>
+          <p className='text-xs md:text-sm font-light text-slate-500 dark:text-slate-400 leading-normal'>
             Here&apos;s what&apos;s happening with your files today.
           </p>
         </div>
 
         {/* Floating 3D folder in clouds illustration */}
-        <div className='hidden lg:flex items-center justify-center relative w-56 h-32 select-none shrink-0 z-10 mr-4'>
+        <div className='hidden lg:flex items-center justify-center relative w-44 h-24 select-none shrink-0 z-10 mr-4'>
           {/* Radial light glow */}
           <div className='absolute w-36 h-36 rounded-full bg-blue-500/10 dark:bg-blue-400/5 blur-2xl pointer-events-none' />
 
           {/* Soft background overlapping clouds */}
-          <div className='absolute right-2 bottom-4 w-32 h-14 bg-gradient-to-tr from-white/95 to-blue-50/80 dark:from-zinc-900/90 dark:to-zinc-800/80 rounded-full blur-[1px] shadow-sm z-0 border border-slate-100 dark:border-zinc-800' />
-          <div className='absolute left-2 bottom-6 w-36 h-16 bg-gradient-to-tr from-white to-blue-100/50 dark:from-zinc-900 dark:to-zinc-800/60 rounded-full blur-[1px] shadow-sm z-20 border border-slate-100 dark:border-zinc-800' />
-          <div className='absolute right-10 top-2 w-28 h-12 bg-white/70 dark:bg-zinc-800/30 rounded-full blur-[3px]' />
+          <div className='absolute right-2 bottom-2 w-24 h-10 bg-gradient-to-tr from-white/95 to-blue-50/80 dark:from-zinc-900/90 dark:to-zinc-800/80 rounded-full blur-[1px] shadow-sm z-0 border border-slate-100 dark:border-zinc-800' />
+          <div className='absolute left-2 bottom-3 w-28 h-12 bg-gradient-to-tr from-white to-blue-100/50 dark:from-zinc-900 dark:to-zinc-800/60 rounded-full blur-[1px] shadow-sm z-20 border border-slate-100 dark:border-zinc-800' />
+          <div className='absolute right-10 top-2 w-20 h-10 bg-white/70 dark:bg-zinc-800/30 rounded-full blur-[3px]' />
 
           {/* Floating 3D folder */}
-          <div className='absolute z-10 -rotate-12 translate-y-[-8px] drop-shadow-2xl hover:scale-105 hover:-rotate-6 transition-all duration-300 w-24 h-18'>
+          <div className='absolute z-10 -rotate-12 translate-y-[-6px] drop-shadow-2xl hover:scale-105 hover:-rotate-6 transition-all duration-300 w-20 h-15'>
             <svg viewBox='0 0 100 80' className='w-full h-full' fill='none'>
               <defs>
                 <linearGradient id='bannerFolderGrad' x1='0%' y1='0%' x2='100%' y2='100%'>

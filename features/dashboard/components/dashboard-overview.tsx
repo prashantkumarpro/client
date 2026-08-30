@@ -86,7 +86,7 @@ export default function DashboardOverview () {
       <div className="absolute bottom-6 right-6 w-20 h-10 bg-white/60 dark:bg-zinc-700/10 rounded-full blur-md" />
       
       {/* 3D Tilted Folder */}
-      <div className="relative transform hover:scale-105 transition-transform duration-300 drop-shadow-xl z-10 w-28 h-20">
+      <div className="relative transform hover:scale-105 transition-transform duration-300 drop-shadow-xl z-10 w-20 h-14">
         <svg viewBox="0 0 100 80" className="w-full h-full" fill="none">
           <defs>
             <linearGradient id="folderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -117,7 +117,7 @@ export default function DashboardOverview () {
   );
 
   return (
-    <div className='flex flex-col gap-6 md:gap-8 w-full pb-8'>
+    <div className='flex flex-col gap-4 md:gap-5 w-full'>
       {/* Welcome Banner Banner */}
       <WelcomeBanner />
 
@@ -125,7 +125,7 @@ export default function DashboardOverview () {
       <QuickActions />
 
       {/* "Your Files" Section */}
-      <div className='flex flex-col gap-5 mt-2'>
+      <div className='flex flex-col gap-3.5 mt-0'>
         <div className='flex items-center justify-between select-none'>
           <h3 className='text-xl font-bold text-slate-800 dark:text-white tracking-tight'>
             Your Files
@@ -195,7 +195,7 @@ export default function DashboardOverview () {
             No folders found in this section.
           </div>
         ) : (
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-2'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-0'>
             {filteredCards.map(card => {
               const dropdownItems = [
                 {
@@ -297,7 +297,7 @@ export default function DashboardOverview () {
                   )}
                 >
                   {/* Top Preview Frame */}
-                  <div className='h-36 w-full relative overflow-hidden rounded-t-2xl bg-slate-50 dark:bg-zinc-900 border-b border-card-border flex items-center justify-center shrink-0'>
+                  <div className='h-24 w-full relative overflow-hidden rounded-t-2xl bg-slate-50 dark:bg-zinc-900 border-b border-card-border flex items-center justify-center shrink-0'>
                     {card.previewType === '3d-folder' ? (
                       <Folder3DPreview />
                     ) : (
@@ -328,16 +328,16 @@ export default function DashboardOverview () {
                   </div>
 
                   {/* Bottom Text and details */}
-                  <div className='p-4.5 flex items-center justify-between gap-2 min-w-0 bg-card-bg rounded-b-2xl'>
-                    <div className='flex items-center gap-3 min-w-0'>
-                      <svg className='w-5 h-5 text-blue-500 shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+                  <div className='p-3 flex items-center justify-between gap-2 min-w-0 bg-card-bg rounded-b-2xl'>
+                    <div className='flex items-center gap-2.5 min-w-0'>
+                      <svg className='w-4.5 h-4.5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
                         <path strokeLinecap='round' strokeLinejoin='round' d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' />
                       </svg>
                       <div className='flex flex-col min-w-0'>
-                        <span className='text-sm font-bold text-slate-800 dark:text-slate-200 truncate select-all'>
+                        <span className='text-xs font-bold text-slate-800 dark:text-slate-200 truncate select-all'>
                           {card.title}
                         </span>
-                        <span className='text-[11px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 select-none'>
+                        <span className='text-[10px] font-semibold text-slate-400 dark:text-slate-500 mt-0.5 select-none'>
                           {card.itemsCountText}
                         </span>
                       </div>

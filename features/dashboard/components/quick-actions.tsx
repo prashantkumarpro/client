@@ -11,13 +11,13 @@ export default function QuickActions () {
       {/* Card 1: Upload files */}
       <div
         onClick={() => setActiveModal('upload-file')}
-        className='bg-card-bg border border-card-border hover:border-[#0056f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg border border-card-border hover:border-[#0056f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
-        <div className='flex items-center gap-4 min-w-0'>
+        <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light blue icon box */}
-          <div className='w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/30 group-hover:bg-[#0056f7] group-hover:text-white transition-colors shrink-0'>
+          <div className='w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/30 group-hover:bg-[#0056f7] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-6 h-6'
+              className='w-5 h-5'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -53,13 +53,13 @@ export default function QuickActions () {
       {/* Card 2: Upload folder */}
       <div
         onClick={() => setActiveModal('upload-file')}
-        className='bg-card-bg border border-card-border hover:border-[#10a336] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg border border-card-border hover:border-[#10a336] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
-        <div className='flex items-center gap-4 min-w-0'>
+        <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light green icon box */}
-          <div className='w-12 h-12 rounded-xl bg-green-50 dark:bg-green-950/20 text-[#10a336] dark:text-green-400 flex items-center justify-center border border-green-100 dark:border-green-900/30 group-hover:bg-[#10a336] group-hover:text-white transition-colors shrink-0'>
+          <div className='w-10 h-10 rounded-xl bg-green-50 dark:bg-green-950/20 text-[#10a336] dark:text-green-400 flex items-center justify-center border border-green-100 dark:border-green-900/30 group-hover:bg-[#10a336] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-6 h-6'
+              className='w-5 h-5'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -95,13 +95,13 @@ export default function QuickActions () {
       {/* Card 3: New folder */}
       <div
         onClick={() => setActiveModal('create-folder')}
-        className='bg-card-bg border border-card-border hover:border-[#a855f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg border border-card-border hover:border-[#a855f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
-        <div className='flex items-center gap-4 min-w-0'>
+        <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light purple icon box */}
-          <div className='w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/20 text-[#a855f7] dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/30 group-hover:bg-[#a855f7] group-hover:text-white transition-colors shrink-0'>
+          <div className='w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/20 text-[#a855f7] dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/30 group-hover:bg-[#a855f7] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-6 h-6'
+              className='w-5 h-5'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -137,13 +137,13 @@ export default function QuickActions () {
       {/* Card 4: Shared with me */}
       <div
         onClick={() => setCurrentSection('Shared')}
-        className='bg-card-bg border border-card-border hover:border-[#f97316] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-5 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg border border-card-border hover:border-[#f97316] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
-        <div className='flex items-center gap-4 min-w-0'>
+        <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light orange icon box */}
-          <div className='w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/20 text-[#f97316] dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/30 group-hover:bg-[#f97316] group-hover:text-white transition-colors shrink-0'>
+          <div className='w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/20 text-[#f97316] dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/30 group-hover:bg-[#f97316] group-hover:text-white transition-colors shrink-0'>
             <svg
-              className='w-6 h-6'
+              className='w-5 h-5'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'

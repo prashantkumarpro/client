@@ -142,7 +142,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
   const defaultTitle = currentSection === 'Dashboard' ? 'Recent Files' : currentSection;
 
   return (
-    <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 shadow-sm transition-colors duration-200">
+    <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 shadow-sm transition-colors duration-200 flex-1 min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-divider pb-4 shrink-0 select-none">
         <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
@@ -164,7 +164,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
           No files or folders found here.
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-y-auto overflow-x-auto flex-1 min-h-0 pr-1">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-divider text-[10px] font-bold uppercase tracking-[1px] text-text-muted">

@@ -30,7 +30,9 @@ export function Tooltip({ content, children, side = 'top', className }: TooltipP
       {isVisible && (
         <div
           className={cn(
-            'absolute z-50 px-2.5 py-1.5 text-[10px] font-bold text-white bg-slate-900 dark:bg-zinc-800 rounded-lg shadow-md whitespace-nowrap pointer-events-none select-none animate-in fade-in zoom-in-95 duration-100',
+            'absolute z-50 px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.5px] whitespace-nowrap pointer-events-none select-none animate-in fade-in zoom-in-95 duration-100 rounded-lg shadow-md border',
+            'bg-white text-slate-800 border-slate-200/80',
+            'dark:bg-zinc-950 dark:text-zinc-200 dark:border-zinc-800/80',
             sideClasses[side],
             className
           )}

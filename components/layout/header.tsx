@@ -8,6 +8,7 @@ import { cn } from '../../lib/utils/cn'
 import { useAuth } from '@/features/auth/hooks/use-auth'
 import { useState } from 'react'
 import AccountDetails from '@/features/auth/components/account-details'
+import { Tooltip } from '../ui/tooltip'
 
 interface HeaderProps {
   onMenuToggle?: () => void
@@ -84,15 +85,26 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
         {/* Left Side: Search Bar & Actions */}
         <div className='flex items-center gap-3.5 flex-1 z-10 min-w-0'>
           {/* Hamburger Menu Toggle Button (visible on mobile only) */}
-          <button
-            onClick={onMenuToggle}
-            className='flex md:hidden w-10 h-10 bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-xl items-center justify-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 transition-colors shrink-0'
-            aria-label='Open navigation menu'
-          >
-            <svg className='w-5.5 h-5.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
-              <path strokeLinecap='round' strokeLinejoin='round' d='M4 6h16M4 12h16M4 18h16' />
-            </svg>
-          </button>
+          <Tooltip content="open sidebar" side="bottom">
+            <button
+              onClick={onMenuToggle}
+              className='flex md:hidden w-10 h-10 bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-xl items-center justify-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 transition-colors shrink-0'
+              aria-label='Open navigation menu'
+            >
+              <svg
+                className='w-5.5 h-5.5'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+                strokeWidth={2}
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              >
+                <rect width='18' height='18' x='3' y='3' rx='2' />
+                <path d='M9 3v18' />
+              </svg>
+            </button>
+          </Tooltip>
 
           {/* Mobile Viewport Section Title */}
           <span className="flex md:hidden text-xs font-bold text-slate-850 dark:text-white uppercase tracking-[1px] select-none shrink-0 border-r border-slate-200 dark:border-zinc-800 pr-3.5 mr-0.5">
@@ -100,41 +112,25 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
           </span>
 
           {/* Collapse/Expand Toggle Button (hidden on mobile) */}
-          <button
-            onClick={toggleSidebar}
-            className='hidden md:flex w-11 h-11 bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md hover:shadow-lg rounded-xl items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shrink-0'
-            title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isSidebarCollapsed ? (
+          <Tooltip content={isSidebarCollapsed ? 'open sidebar' : 'close sidebar'} side='bottom'>
+            <button
+              onClick={toggleSidebar}
+              className='hidden md:flex w-11 h-11 bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md hover:shadow-lg rounded-xl items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shrink-0'
+            >
               <svg
                 className='w-5.5 h-5.5'
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
                 strokeWidth={2}
+                strokeLinecap='round'
+                strokeLinejoin='round'
               >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M13 5l7 7-7 7M5 5l7 7-7 7'
-                />
+                <rect width='18' height='18' x='3' y='3' rx='2' />
+                <path d='M9 3v18' />
               </svg>
-            ) : (
-              <svg
-                className='w-5.5 h-5.5'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M11 19l-7-7 7-7m8 14l-7-7 7-7'
-                />
-              </svg>
-            )}
-          </button>
+            </button>
+          </Tooltip>
 
           {/* Search Bar - responsive, fluid */}
           <div className='flex-1 max-w-lg min-w-0'>

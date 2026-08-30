@@ -122,20 +122,21 @@ export function Sidebar({ className }: SidebarProps) {
       >
         {/* Brand Logo - Centered Icon */}
         <div className='flex flex-col items-center shrink-0 w-full px-2'>
-          <div
-            onClick={toggleSidebar}
-            className='w-12 h-12 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
-            title='Expand sidebar'
-          >
-            <Image
-              src="/images/logo.png"
-              width={48}
-              height={48}
-              alt="Logo"
-              className="object-contain"
-              priority
-            />
-          </div>
+          <Tooltip content="open sidebar" side="right">
+            <div
+              onClick={toggleSidebar}
+              className='w-12 h-12 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
+            >
+              <Image
+                src="/images/logo.png"
+                width={48}
+                height={48}
+                alt="Logo"
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Tooltip>
         </div>
 
         {/* Collapsed + New dropdown button trigger */}
@@ -244,43 +245,47 @@ export function Sidebar({ className }: SidebarProps) {
 
         {/* Collapsed Theme Switcher */}
         <div className="w-full px-2 flex justify-center py-1 shrink-0">
-          <div className="w-12 p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-center select-none shadow-[inset_0_0_0_1px_var(--color-card-border)]">
-            <button
-              onClick={toggleTheme}
-              className="w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer focus:outline-none bg-white dark:bg-zinc-800 shadow-sm border border-slate-100 dark:border-zinc-700/50"
-              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-            >
-              {theme === 'light' ? (
-                <svg
-                  className="w-5 h-5 text-slate-700 dark:text-slate-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5 text-amber-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z"
-                  />
-                </svg>
-              )}
-            </button>
-          </div>
+          <Tooltip
+            content={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            side='right'
+          >
+            <div className="w-12 p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-center select-none shadow-[inset_0_0_0_1px_var(--color-card-border)]">
+              <button
+                onClick={toggleTheme}
+                className="w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer focus:outline-none bg-white dark:bg-zinc-800 shadow-sm border border-slate-100 dark:border-zinc-700/50"
+              >
+                {theme === 'light' ? (
+                  <svg
+                    className="w-5 h-5 text-slate-700 dark:text-slate-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-5 h-5 text-amber-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </Tooltip>
         </div>
 
 
@@ -304,23 +309,24 @@ export function Sidebar({ className }: SidebarProps) {
           className='flex w-full items-center justify-start select-none'
         >
           {/* Logo and text - clicking this toggles sidebar */}
-          <div
-            onClick={toggleSidebar}
-            className='flex items-center gap-3 cursor-pointer hover:opacity-85 min-w-0'
-            title='Collapse sidebar'
-          >
-            <Image
-              src="/images/logo.png"
-              width={48}
-              height={48}
-              alt="Logo"
-              className="object-contain"
-              priority
-            />
-            <span className='text-xl font-semibold text-[#0056f7] tracking-tight font-sans truncate'>
-              cloud<span className='font-black'>spacego</span>
-            </span>
-          </div>
+          <Tooltip content="close sidebar" side="bottom">
+            <div
+              onClick={toggleSidebar}
+              className='flex items-center gap-3 cursor-pointer hover:opacity-85 min-w-0'
+            >
+              <Image
+                src="/images/logo.png"
+                width={48}
+                height={48}
+                alt="Logo"
+                className="object-contain"
+                priority
+              />
+              <span className='text-xl font-semibold text-[#0056f7] tracking-tight font-sans truncate'>
+                cloud<span className='font-black'>spacego</span>
+              </span>
+            </div>
+          </Tooltip>
         </div>
       </div>
 

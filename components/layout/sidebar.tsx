@@ -209,16 +209,7 @@ export function Sidebar({ className }: SidebarProps) {
     }
   ]
 
-  // Cloud Logo Icon
-  const logoIcon = (
-    <svg
-      className='w-10 h-10 text-[#0056f7] shrink-0'
-      fill='currentColor'
-      viewBox='0 0 24 24'
-    >
-      <path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z' />
-    </svg>
-  )
+
 
   if (isSidebarCollapsed) {
     // ----------------------------------------------------
@@ -235,10 +226,17 @@ export function Sidebar({ className }: SidebarProps) {
         <div className='flex flex-col items-center shrink-0 w-full px-2'>
           <div
             onClick={toggleSidebar}
-            className='w-10 h-10 text-[#0056f7] flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
+            className='w-12 h-12 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
             title='Expand sidebar'
           >
-            {logoIcon}
+            <Image
+              src="/images/logo.png"
+              width={48}
+              height={48}
+              alt="Logo"
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
 
@@ -408,11 +406,20 @@ export function Sidebar({ className }: SidebarProps) {
           {/* Logo and text - clicking this toggles sidebar */}
           <div
             onClick={toggleSidebar}
-            className='flex items-center gap-2 cursor-pointer hover:opacity-85 min-w-0'
+            className='flex items-center gap-3 cursor-pointer hover:opacity-85 min-w-0'
             title='Collapse sidebar'
           >
-            <Image src="/logo.png" width={400} height={400} alt="Logo" />
-
+            <Image
+              src="/images/logo.png"
+              width={48}
+              height={48}
+              alt="Logo"
+              className="object-contain"
+              priority
+            />
+            <span className='text-xl font-semibold text-[#0056f7] tracking-tight font-sans truncate'>
+              cloud<span className='font-black'>spacego</span>
+            </span>
           </div>
         </div>
       </div>

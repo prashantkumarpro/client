@@ -56,7 +56,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Set initial collapse state based on viewport size on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsSidebarCollapsed(window.innerWidth < 1024);
+      const isSmall = window.innerWidth < 1024;
+      requestAnimationFrame(() => {
+        setIsSidebarCollapsed(isSmall);
+      });
     }
   }, []);
 

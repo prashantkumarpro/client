@@ -3,7 +3,6 @@
 import React from 'react'
 import { useApp } from '../../providers/app-provider'
 import { SidebarSection } from '../../types'
-import { Button } from '../ui/button'
 import { cn } from '../../lib/utils/cn'
 import { formatBytes } from '../../lib/utils/format'
 import { Tooltip } from '../ui/tooltip'
@@ -252,7 +251,7 @@ export function Sidebar({ className }: SidebarProps) {
                 e.stopPropagation();
                 toggleSidebar();
               }}
-              className='text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors'
+              className='hidden min-[650px]:block text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors'
             >
               <svg
                 className='w-7 h-7'
@@ -432,7 +431,7 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Brand Header with Integrated Collapse Button */}
       <div className='px-4 flex shrink-0 w-full'>
         <div
-          className='flex w-full flex-col lg:flex-row lg:items-center lg:justify-between items-center justify-center gap-2 select-none'
+          className='flex w-full flex-col min-[650px]:flex-row min-[650px]:items-center min-[650px]:justify-between items-center justify-center gap-2 select-none'
         >
           {/* Logo and text - clicking this toggles sidebar */}
           <div
@@ -449,7 +448,7 @@ export function Sidebar({ className }: SidebarProps) {
           {/* Collapse chevron button */}
           <button
             onClick={toggleSidebar}
-            className='text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors shrink-0'
+            className='hidden min-[650px]:block text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none transition-colors shrink-0'
             title='Collapse sidebar'
           >
             <svg

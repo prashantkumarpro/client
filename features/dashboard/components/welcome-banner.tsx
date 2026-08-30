@@ -15,7 +15,7 @@ export default function WelcomeBanner () {
             Welcome back, Prashant! 👋
           </h2>
           <p className='text-sm md:text-base font-light text-slate-500 dark:text-slate-400 leading-normal'>
-            Here's what's happening with your files today.
+            Here&apos;s what&apos;s happening with your files today.
           </p>
         </div>
 

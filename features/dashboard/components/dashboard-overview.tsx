@@ -52,6 +52,23 @@ const INITIAL_FOLDER_CARDS: FolderCardData[] = [
     shared: true,
     previewType: 'image',
     previewImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80'
+  },
+  {
+    id: 'folder-marketing',
+    title: 'Marketing Campaigns',
+    itemsCountText: '42 files  •  1.8 GB',
+    starred: true,
+    shared: true,
+    previewType: 'image',
+    previewImage: 'https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=400&q=80'
+  },
+  {
+    id: 'folder-legal',
+    title: 'Contracts & Legal',
+    itemsCountText: '18 files  •  120 MB',
+    starred: false,
+    shared: true,
+    previewType: '3d-folder'
   }
 ];
 
@@ -185,14 +202,18 @@ export default function DashboardOverview () {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <span>Shared</span>
+            <span>Shared with me</span>
           </button>
         </div>
 
         {/* Folders Cards Grid */}
         {filteredCards.length === 0 ? (
-          <div className="py-16 text-center text-sm font-light text-slate-400 select-none">
-            No folders found in this section.
+          <div className="w-full py-12 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
+            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18" />
+            </svg>
+            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No folders found</h4>
+            <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">This category does not have any items yet.</p>
           </div>
         ) : (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-0'>

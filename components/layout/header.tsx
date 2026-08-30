@@ -39,7 +39,7 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'h-16 mx-4 mt-2 min-[800px]:mx-8 min-[800px]:mt-3 bg-card-bg shadow-[inset_0_0_0_1px_var(--color-card-border),0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex items-center justify-between px-4 min-[800px]:px-6 text-foreground select-none relative transition-all duration-200 shrink-0',
+          'h-16 mx-4 mt-1 min-[800px]:mx-8 min-[800px]:mt-1.5 bg-card-bg shadow-[inset_0_0_0_1px_var(--color-card-border),0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex items-center justify-between px-4 min-[800px]:px-6 text-foreground select-none relative transition-all duration-200 shrink-0',
           className
         )}
       >

@@ -160,8 +160,12 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
 
       {/* Files List Table */}
       {filteredFiles.length === 0 ? (
-        <div className="py-12 text-center text-xs font-light text-text-muted select-none">
-          No files or folders found here.
+        <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
+          <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18" />
+          </svg>
+          <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No files or folders</h4>
+          <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">There are no items currently stored in this category.</p>
         </div>
       ) : (
         <div className="overflow-y-auto overflow-x-auto flex-1 min-h-0 pr-1">

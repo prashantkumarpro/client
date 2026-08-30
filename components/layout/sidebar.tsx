@@ -218,7 +218,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
       <aside
         className={cn(
-          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-3 pb-3 md:pt-4 md:pb-4 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
           className
         )}
       >
@@ -242,7 +242,7 @@ export function Sidebar({ className }: SidebarProps) {
 
         {/* Collapsed + New dropdown button trigger */}
         <div className='w-full px-2 mt-4 flex justify-center'>
-          <Tooltip content='New' side='right'>
+          <Tooltip content='New File/Folder' side='right'>
             <Dropdown
               align='left'
               items={uploadDropdownItems}
@@ -394,7 +394,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-3 pb-3 md:pt-4 md:pb-4 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
         className
       )}
     >
@@ -446,7 +446,7 @@ export function Sidebar({ className }: SidebarProps) {
                     d='M12 4v16m8-8H4'
                   />
                 </svg>
-                <span>New</span>
+                <span>New File/Folder</span>
               </span>
               <svg
                 className='w-4 h-4 text-white opacity-80'
@@ -491,8 +491,8 @@ export function Sidebar({ className }: SidebarProps) {
                     className={cn(
                       'transition-colors shrink-0',
                       isActive
-                        ? 'text-[#0056f7] dark:text-blue-400'
-                        : 'text-slate-400 dark:text-slate-500'
+                        ? 'text-[#0056f7] dark:text-blue-400 font-extrabold'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
                     )}
                   >
                     {item.icon}
@@ -539,7 +539,7 @@ export function Sidebar({ className }: SidebarProps) {
 
           <div className='flex flex-col gap-1'>
             <span className='text-[10px] font-bold text-slate-800 dark:text-slate-350'>
-              {formatBytes(storageStats.totalUsed, 1)} of{' '}
+              {formatBytes(storageStats.totalUsed, 0)} of{' '}
               {formatBytes(storageStats.totalCapacity, 0)} used
             </span>
             <div className='w-full bg-slate-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden relative'>

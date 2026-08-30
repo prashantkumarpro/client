@@ -19,8 +19,12 @@ export function TrashView() {
 
   if (deletedFiles.length === 0) {
     return (
-      <div className="bg-card-bg border border-card-border rounded-2xl p-12 text-center text-xs font-light text-text-muted select-none shadow-sm">
-        Trash is empty.
+      <div className="bg-card-bg border border-card-border rounded-none p-16 flex flex-col items-center justify-center text-center select-none shadow-sm">
+        <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">Trash is empty</h4>
+        <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">Deleted files and folders will appear here until they are permanently removed.</p>
       </div>
     );
   }

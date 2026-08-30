@@ -39,7 +39,7 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'h-16 mx-6 mt-4 md:mx-8 md:mt-5 bg-card-bg shadow-[inset_0_0_0_1px_var(--color-card-border),0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex items-center justify-between px-6 text-foreground select-none relative transition-all duration-200 shrink-0',
+          'h-16 mx-4 mt-4 min-[800px]:mx-8 min-[800px]:mt-5 bg-card-bg shadow-[inset_0_0_0_1px_var(--color-card-border),0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex items-center justify-between px-4 min-[800px]:px-6 text-foreground select-none relative transition-all duration-200 shrink-0',
           className
         )}
       >
@@ -86,7 +86,7 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
           {/* Collapse/Expand Toggle Button (hidden on mobile under 650px) */}
           <button
             onClick={toggleSidebar}
-            className='hidden min-[650px]:flex w-10 h-10 bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl items-center justify-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 transition-all duration-200 shrink-0'
+            className='hidden min-[650px]:flex w-11 h-11 bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md hover:shadow-lg rounded-xl items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shrink-0'
             title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isSidebarCollapsed ? (
@@ -125,31 +125,7 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
             <SearchBar />
           </div>
 
-          {/* AI Sparkles Button - visible on desktop/tablet */}
-          <button
-            onClick={() => alert('Smart AI search assistant coming soon!')}
-            className='hidden sm:flex w-11 h-11 bg-white dark:bg-zinc-900 shadow-[inset_0_0_0_1px_var(--color-card-border),0_1px_3px_rgba(0,0,0,0.05)] rounded-xl items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-800 text-[#0056f7] transition-all duration-200 shrink-0'
-            title='AI Smart Assistant'
-          >
-            <svg
-              className='w-5.5 h-5.5 text-[#0056f7]'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M9.813 15.904L9 21l-.813-5.096L3 15l5.096-.813L9 9l.813 5.096L15 15l-5.187.904z'
-              />
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M19.071 4.929a10 10 0 00-14.142 0M12 3v3'
-              />
-            </svg>
-          </button>
+
         </div>
 
         {/* Header Actions cluster */}

@@ -7,6 +7,7 @@ import { cn } from '../../lib/utils/cn'
 import { formatBytes } from '../../lib/utils/format'
 import { Tooltip } from '../ui/tooltip'
 import { Dropdown } from '../ui/dropdown'
+import Image from 'next/image'
 
 interface SidebarProps {
   className?: string
@@ -410,10 +411,8 @@ export function Sidebar({ className }: SidebarProps) {
             className='flex items-center gap-2 cursor-pointer hover:opacity-85 min-w-0'
             title='Collapse sidebar'
           >
-            {logoIcon}
-            <span className='text-base font-bold text-slate-900 dark:text-white tracking-tight font-sans truncate'>
-              Cloud<span className='font-extrabold'>SpaceGo</span>
-            </span>
+            <Image src="/logo.png" width={400} height={400} alt="Logo" />
+
           </div>
         </div>
       </div>

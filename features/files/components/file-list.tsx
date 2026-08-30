@@ -88,7 +88,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         );
       case 'folder':
         return (
-          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-950/20 text-[#2563eb] dark:text-blue-400")}>
+          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400")}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
@@ -97,7 +97,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         );
       case 'document':
         return (
-          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-950/20 text-[#2563eb] dark:text-blue-400")}>
+          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400")}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v12m0 0l-4-4m4 4l4-4" />
             </svg>
@@ -151,7 +151,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         {showViewAll && currentSection === 'Dashboard' && (
           <button
             onClick={() => setCurrentSection('My Files')}
-            className="text-[11px] font-bold text-[#2563eb] hover:text-blue-700 transition-colors cursor-pointer"
+            className="text-[11px] font-bold text-[#0056f7] hover:text-[#004bd6] transition-colors cursor-pointer"
           >
             View all
           </button>

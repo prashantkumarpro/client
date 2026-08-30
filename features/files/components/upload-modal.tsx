@@ -93,7 +93,7 @@ export function UploadModal() {
             <select
               value={fileType}
               onChange={(e) => setFileType(e.target.value as FileType)}
-              className="w-full bg-input-bg text-foreground border border-card-border rounded-xl px-4 py-3 text-xs font-bold uppercase tracking-[1px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 cursor-pointer"
+              className="w-full bg-input-bg text-foreground border border-card-border rounded-xl px-4 py-3 text-xs font-bold uppercase tracking-[1px] focus:outline-none focus:border-[#0056f7] focus:ring-2 focus:ring-[#0056f7]/10 cursor-pointer"
             >
               <option value="pdf">PDF Document</option>
               <option value="document">Word Document (.docx/.pptx)</option>

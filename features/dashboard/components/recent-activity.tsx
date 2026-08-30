@@ -66,7 +66,7 @@ export default function RecentActivity () {
           <div
             className={cn(
               baseClass,
-              'bg-blue-50 dark:bg-blue-950/20 text-[#2563eb] dark:text-blue-400 border-blue-100 dark:border-blue-900/30'
+              'bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400 border-blue-100 dark:border-blue-900/30'
             )}
           >
             <svg
@@ -165,7 +165,7 @@ export default function RecentActivity () {
         <div className='flex items-center justify-between border-b border-divider pb-4 shrink-0 select-none'>
           <h3 className='text-sm font-bold text-foreground flex items-center gap-2'>
             <svg
-              className='w-4 h-4 text-[#2563eb]'
+              className='w-4 h-4 text-[#0056f7]'
               fill='currentColor'
               viewBox='0 0 24 24'
             >
@@ -203,11 +203,11 @@ export default function RecentActivity () {
         {/* View All Activity link button */}
         <button
           onClick={() => alert('Viewing full activity log')}
-          className='w-full text-center text-xs font-semibold text-[#2563eb] hover:text-[#1d4ed8] transition-colors py-3 border-t border-divider mt-2 flex items-center justify-center gap-1 cursor-pointer focus:outline-none'
+          className='w-full text-center text-xs font-semibold text-[#0056f7] hover:text-[#004bd6] transition-colors py-3 border-t border-divider mt-2 flex items-center justify-center gap-1 cursor-pointer focus:outline-none'
         >
           <span>View all activity</span>
           <svg
-            className='w-3 h-3 text-[#2563eb]'
+            className='w-3 h-3 text-[#0056f7]'
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'

@@ -80,7 +80,7 @@ export function FolderGrid() {
                 onClick={() => setActiveFolderId(folder.id)}
               >
                 {/* Folder Icon Box */}
-                <div className="w-9 h-9 shrink-0 bg-background border border-card-border flex items-center justify-center text-text-secondary rounded-lg group-hover:text-[#2563eb] dark:group-hover:text-blue-400 transition-colors relative">
+                <div className="w-9 h-9 shrink-0 bg-background border border-card-border flex items-center justify-center text-text-secondary rounded-lg group-hover:text-[#0056f7] dark:group-hover:text-blue-400 transition-colors relative">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                   </svg>

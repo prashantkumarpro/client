@@ -25,7 +25,7 @@ export default function MyFilesView () {
                   className={cn(
                     'text-xs font-bold uppercase tracking-[0.5px] transition-colors focus:outline-none',
                     isLast
-                      ? 'text-[#2563eb] cursor-default'
+                      ? 'text-[#0056f7] cursor-default'
                       : 'text-text-secondary hover:text-foreground cursor-pointer'
                   )}
                 >

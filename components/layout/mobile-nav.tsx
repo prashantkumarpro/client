@@ -6,6 +6,7 @@ import { SidebarSection } from '../../types';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils/cn';
 import { formatBytes } from '../../lib/utils/format';
+import Image from 'next/image';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -95,12 +96,17 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         
         {/* Header Section */}
         <div className="flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-7 h-7 font-extrabold text-sm tracking-tighter bg-transparent text-foreground border border-card-border rounded-lg">
-              C
-            </div>
-            <span className="text-base font-bold tracking-[2px] uppercase text-foreground">
-              Cloud<span className="text-[#2563eb] font-extrabold">E</span>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/images/logo.png"
+              width={28}
+              height={28}
+              alt="Logo"
+              className="object-contain"
+              priority
+            />
+            <span className="text-base font-semibold tracking-tight text-[#0056f7] font-sans">
+              cloud<span className="font-black">spacego</span>
             </span>
           </div>
           <Button
@@ -147,7 +153,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[1px] text-text-muted">
               Storage
-              <span className="ml-auto text-[#2563eb]">{percentageUsed}%</span>
+              <span className="ml-auto text-[#0056f7]">{percentageUsed}%</span>
             </div>
             <div className="text-xs font-light text-text-secondary">
               <span className="font-extrabold text-foreground">{formatBytes(storageStats.totalUsed, 0)}</span> of{' '}
@@ -155,7 +161,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             </div>
             <div className="w-full bg-divider h-1.5 rounded-full overflow-hidden relative border border-card-border">
               <div
-                className="h-full bg-[#2563eb] rounded-full"
+                className="h-full bg-[#0056f7] rounded-full"
                 style={{ width: `${percentageUsed}%` }}
               />
             </div>

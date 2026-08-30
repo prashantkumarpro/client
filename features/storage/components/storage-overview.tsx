@@ -14,7 +14,7 @@ export function StorageOverview() {
     {
       name: 'Documents',
       size: storageStats.documents,
-      color: 'bg-blue-500 dark:bg-blue-600',
+      color: 'bg-[#0056f7] dark:bg-blue-600',
       icon: (
         <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -72,7 +72,7 @@ export function StorageOverview() {
             <span className="text-sm font-light text-text-secondary">
               of {formatBytes(storageStats.totalCapacity, 0)} used
             </span>
-            <span className="ml-auto text-sm font-extrabold tracking-wide text-[#2563eb]">
+            <span className="ml-auto text-sm font-extrabold tracking-wide text-[#0056f7]">
               {percentageUsed}%
             </span>
           </div>
@@ -81,7 +81,7 @@ export function StorageOverview() {
         {/* Large Progress Bar */}
         <div className="w-full bg-divider h-2.5 rounded-full overflow-hidden relative">
           <div
-            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300"
+            className="h-full bg-gradient-to-r from-[#0056f7] to-indigo-500 rounded-full transition-all duration-300"
             style={{ width: `${percentageUsed}%` }}
           />
         </div>

@@ -18,6 +18,17 @@ export function TrashView() {
   }, [files, searchQuery]);
 
   if (deletedFiles.length === 0) {
+    if (searchQuery) {
+      return (
+        <div className="bg-card-bg border border-card-border rounded-none p-16 flex flex-col items-center justify-center text-center select-none shadow-sm">
+          <svg className="w-10 h-10 text-slate-350 dark:text-zinc-655 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No results found</h4>
+          <p className="text-[11px] text-text-muted mt-1 max-w-[220px] leading-normal font-light">We couldn&apos;t find any matches in trash for &ldquo;{searchQuery}&rdquo;.</p>
+        </div>
+      );
+    }
     return (
       <div className="bg-card-bg border border-card-border rounded-none p-16 flex flex-col items-center justify-center text-center select-none shadow-sm">
         <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

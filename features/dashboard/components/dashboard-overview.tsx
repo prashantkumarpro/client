@@ -21,7 +21,7 @@ const INITIAL_FOLDER_CARDS: FolderCardData[] = [
   {
     id: 'folder-projects',
     title: 'Projects',
-    itemsCountText: '24 items',
+    itemsCountText: '24 files  •  120 MB',
     starred: false,
     shared: false,
     previewType: '3d-folder'
@@ -73,7 +73,7 @@ const INITIAL_FOLDER_CARDS: FolderCardData[] = [
 ];
 
 export default function DashboardOverview () {
-  const { setCurrentSection, setActiveModal, setSelectedFileId } = useApp()
+  const { setCurrentSection, setActiveModal, setSelectedFileId, setActiveFolderId } = useApp()
   const [activeTab, setActiveTab] = useState<'Recent' | 'Starred' | 'Shared'>('Recent')
   const [folderCards, setFolderCards] = useState<FolderCardData[]>(INITIAL_FOLDER_CARDS)
   const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
@@ -81,7 +81,6 @@ export default function DashboardOverview () {
   // Filter folder cards based on active tab
   const filteredCards = folderCards.filter(card => {
     if (activeTab === 'Starred') return card.starred;
-    if (activeTab === 'Shared') return card.shared;
     return true; // 'Recent' shows all
   });
 
@@ -189,21 +188,6 @@ export default function DashboardOverview () {
             </svg>
             <span>Starred</span>
           </button>
-
-          <button
-            onClick={() => setActiveTab('Shared')}
-            className={cn(
-              'flex items-center gap-2 text-sm font-semibold pb-3 -mb-[14px] transition-colors relative cursor-pointer focus:outline-none border-b-2',
-              activeTab === 'Shared'
-                ? 'text-[#0056f7] border-[#0056f7] dark:text-blue-400 dark:border-blue-400'
-                : 'text-slate-500 hover:text-slate-850 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
-            )}
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span>Shared with me</span>
-          </button>
         </div>
 
         {/* Folders Cards Grid */}
@@ -216,7 +200,7 @@ export default function DashboardOverview () {
             <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">This category does not have any items yet.</p>
           </div>
         ) : (
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-0'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-0'>
             {filteredCards.map(card => {
               const dropdownItems = [
                 {
@@ -312,8 +296,16 @@ export default function DashboardOverview () {
               return (
                 <div
                   key={card.id}
+                  onClick={() => {
+                    setCurrentSection('My Files');
+                    if (card.id === 'folder-design-assets') {
+                      setActiveFolderId('folder-1');
+                    } else {
+                      setActiveFolderId(card.id);
+                    }
+                  }}
                   className={cn(
-                    'bg-card-bg border border-card-border rounded-2xl flex flex-col relative group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 shadow-sm',
+                    'bg-card-bg border border-card-border rounded-2xl flex flex-col relative group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 shadow-sm cursor-pointer z-10',
                     activeCardMenuId === card.id ? 'z-35' : 'z-10 hover:z-20'
                   )}
                 >
@@ -329,6 +321,16 @@ export default function DashboardOverview () {
                         loading='lazy'
                       />
                     )}
+
+                    {/* Hover Open Action Overlay */}
+                    <div className='absolute inset-0 bg-[#0056f7]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none z-10'>
+                      <span className='bg-[#0056f7] text-white text-[9px] font-bold uppercase tracking-[1px] px-2.5 py-1.5 shadow-md flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
+                        <span>Open Folder</span>
+                        <svg className='w-3 h-3 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M14 5l7 7m0 0l-7 7m7-7H3' />
+                        </svg>
+                      </span>
+                    </div>
 
                     {/* Star badge overlay */}
                     <div
@@ -366,20 +368,20 @@ export default function DashboardOverview () {
                   <div className='p-3 flex items-center justify-between gap-2 min-w-0 bg-card-bg rounded-b-2xl'>
                     <div className='flex items-center gap-2.5 min-w-0 flex-1'>
                       {card.previewType === 'image' ? (
-                        <svg className='w-4.5 h-4.5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+                        <svg className='w-5 h-5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
                           <path strokeLinecap='round' strokeLinejoin='round' d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' />
                         </svg>
                       ) : (
-                        <svg className='w-4.5 h-4.5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+                        <svg className='w-5 h-5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
                           <path strokeLinecap='round' strokeLinejoin='round' d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' />
                         </svg>
                       )}
                       <div className='flex flex-col min-w-0 flex-1'>
-                        <span className='text-xs font-bold text-slate-800 dark:text-slate-200 truncate select-all'>
+                        <span className='text-sm font-extrabold text-slate-850 dark:text-white line-clamp-2 break-words leading-snug select-all'>
                           {card.title}
                         </span>
                         <div className='flex items-center gap-2 mt-0.5 select-none'>
-                          <span className='text-[10px] font-semibold text-slate-400 dark:text-slate-500 truncate'>
+                          <span className='text-[10px] font-semibold text-slate-550 dark:text-slate-400 truncate'>
                             {card.itemsCountText}
                           </span>
                         </div>
@@ -387,11 +389,11 @@ export default function DashboardOverview () {
                     </div>
 
                     {card.shared && (
-                      <span className="flex items-center gap-0.5 text-[9px] font-bold text-[#0056f7] bg-blue-50 dark:bg-blue-950/30 px-1.5 py-0.5 shrink-0 select-none">
-                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <span className="flex items-center gap-1 text-[9px] font-bold text-slate-550 dark:text-slate-400 bg-slate-100 dark:bg-zinc-800 px-1.5 py-0.5 shrink-0 select-none" title="Shared access folder">
+                        <svg className="w-3 h-3 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap='round' strokeLinejoin='round' d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
-                        <span>Shared</span>
+                        <span>Shared Access</span>
                       </span>
                     )}
                   </div>

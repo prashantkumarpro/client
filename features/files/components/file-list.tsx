@@ -160,13 +160,23 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
 
       {/* Files List Table */}
       {filteredFiles.length === 0 ? (
-        <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
-          <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18" />
-          </svg>
-          <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No files or folders</h4>
-          <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">There are no items currently stored in this category.</p>
-        </div>
+        searchQuery ? (
+          <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
+            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-650 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No results found</h4>
+            <p className="text-[11px] text-text-muted mt-1 max-w-[220px] leading-normal font-light">We couldn&apos;t find any matches for &ldquo;{searchQuery}&rdquo;. Try checking your spelling.</p>
+          </div>
+        ) : (
+          <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
+            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18" />
+            </svg>
+            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No files or folders</h4>
+            <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">There are no items currently stored in this category.</p>
+          </div>
+        )
       ) : (
         <div className="overflow-y-auto overflow-x-auto flex-1 min-h-0 pr-1">
           <table className="w-full text-left border-collapse">
@@ -244,7 +254,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
                           onClick={() => {
                             if (isFolder) setActiveFolderId(file.id);
                           }}
-                          className="text-xs font-semibold text-text-secondary group-hover:text-foreground truncate uppercase tracking-[0.5px]"
+                          className="text-xs font-semibold text-text-secondary group-hover:text-foreground line-clamp-2 break-words leading-snug uppercase tracking-[0.5px]"
                         >
                           {file.name}
                         </span>

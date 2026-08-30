@@ -15,7 +15,7 @@ interface HeaderProps {
 }
 
 export function Header ({ onMenuToggle, className }: HeaderProps) {
-  const { setCurrentSection, isSidebarCollapsed, toggleSidebar } = useApp()
+  const { currentSection, setCurrentSection, isSidebarCollapsed, toggleSidebar } = useApp()
   const { user, logout } = useAuth()
   const [isAccountDetailsOpen, setIsAccountDetailsOpen] = useState(false)
 
@@ -81,12 +81,28 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
           </svg>
         </div>
 
-        {/* Left Side: Search Bar & AI Action */}
-        <div className='flex items-center gap-4 flex-1 z-10 min-w-0'>
-          {/* Collapse/Expand Toggle Button (hidden on mobile under 650px) */}
+        {/* Left Side: Search Bar & Actions */}
+        <div className='flex items-center gap-3.5 flex-1 z-10 min-w-0'>
+          {/* Hamburger Menu Toggle Button (visible on mobile only) */}
+          <button
+            onClick={onMenuToggle}
+            className='flex md:hidden w-10 h-10 bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-xl items-center justify-center cursor-pointer hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 transition-colors shrink-0'
+            aria-label='Open navigation menu'
+          >
+            <svg className='w-5.5 h-5.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+              <path strokeLinecap='round' strokeLinejoin='round' d='M4 6h16M4 12h16M4 18h16' />
+            </svg>
+          </button>
+
+          {/* Mobile Viewport Section Title */}
+          <span className="flex md:hidden text-xs font-bold text-slate-850 dark:text-white uppercase tracking-[1px] select-none shrink-0 border-r border-slate-200 dark:border-zinc-800 pr-3.5 mr-0.5">
+            {currentSection === 'Shared' ? 'Shared with me' : currentSection}
+          </span>
+
+          {/* Collapse/Expand Toggle Button (hidden on mobile) */}
           <button
             onClick={toggleSidebar}
-            className='hidden min-[650px]:flex w-11 h-11 bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md hover:shadow-lg rounded-xl items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shrink-0'
+            className='hidden md:flex w-11 h-11 bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md hover:shadow-lg rounded-xl items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shrink-0'
             title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isSidebarCollapsed ? (

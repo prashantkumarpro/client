@@ -7,11 +7,10 @@ export default function QuickActions () {
   const { setCurrentSection, setActiveModal } = useApp()
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 select-none w-full'>
-      {/* Card 1: Upload files */}
+    <div className='grid grid-cols-2 md:grid-cols-4 gap-4 select-none w-full'>
       <div
         onClick={() => setActiveModal('upload-file')}
-        className='bg-card-bg border border-card-border hover:border-[#0056f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 border border-card-border hover:border-[#0056f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
         <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light blue icon box */}
@@ -34,7 +33,7 @@ export default function QuickActions () {
             <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#0056f7] dark:group-hover:text-blue-400 transition-colors truncate'>
               Upload files
             </span>
-            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+            <span className='text-xs text-slate-550 dark:text-slate-400 font-medium truncate mt-0.5'>
               Upload files from device
             </span>
           </div>
@@ -50,10 +49,9 @@ export default function QuickActions () {
         </svg>
       </div>
 
-      {/* Card 2: Upload folder */}
       <div
         onClick={() => setActiveModal('upload-file')}
-        className='bg-card-bg border border-card-border hover:border-[#10a336] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 border border-card-border hover:border-[#10a336] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
         <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light green icon box */}
@@ -76,7 +74,7 @@ export default function QuickActions () {
             <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#10a336] dark:group-hover:text-green-400 transition-colors truncate'>
               Upload folder
             </span>
-            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+            <span className='text-xs text-slate-550 dark:text-slate-400 font-medium truncate mt-0.5'>
               Upload a folder from device
             </span>
           </div>
@@ -95,7 +93,7 @@ export default function QuickActions () {
       {/* Card 3: New folder */}
       <div
         onClick={() => setActiveModal('create-folder')}
-        className='bg-card-bg border border-card-border hover:border-[#a855f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 border border-card-border hover:border-[#a855f7] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
         <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light purple icon box */}
@@ -118,7 +116,7 @@ export default function QuickActions () {
             <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#a855f7] dark:group-hover:text-purple-400 transition-colors truncate'>
               New folder
             </span>
-            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+            <span className='text-xs text-slate-550 dark:text-slate-400 font-medium truncate mt-0.5'>
               Create a new folder
             </span>
           </div>
@@ -137,7 +135,7 @@ export default function QuickActions () {
       {/* Card 4: Shared with me */}
       <div
         onClick={() => setCurrentSection('Shared')}
-        className='bg-card-bg border border-card-border hover:border-[#f97316] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
+        className='bg-card-bg hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 border border-card-border hover:border-[#f97316] hover:shadow-md hover:-translate-y-0.5 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200 group shadow-sm'
       >
         <div className='flex items-center gap-3.5 min-w-0'>
           {/* Light orange icon box */}
@@ -160,7 +158,7 @@ export default function QuickActions () {
             <span className='text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#f97316] dark:group-hover:text-orange-400 transition-colors truncate'>
               Shared with me
             </span>
-            <span className='text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5'>
+            <span className='text-xs text-slate-555 dark:text-slate-400 font-medium truncate mt-0.5'>
               View files shared with you
             </span>
           </div>

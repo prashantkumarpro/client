@@ -106,8 +106,8 @@ export default function DashboardOverview () {
           <path d="M5 10 A 5 5 0 0 1 10 5 H 35 L 43 15 H 90 A 5 5 0 0 1 95 20 V 70 A 5 5 0 0 1 90 75 H 10 A 5 5 0 0 1 5 70 Z" fill="url(#folderBackGrad)" />
           
           {/* Peaking papers */}
-          <rect x="15" y="10" width="70" height="45" rx="3" fill="#ffffff" opacity="0.9" />
-          <rect x="20" y="15" width="60" height="40" rx="3" fill="#e2ebff" />
+          <rect x="15" y="10" width="70" height="45" rx="0" fill="#ffffff" opacity="0.9" />
+          <rect x="20" y="15" width="60" height="40" rx="0" fill="#e2ebff" />
           
           {/* Folder Front Cover */}
           <path d="M5 25 L 40 25 L 45 28 L 95 28 V 70 A 5 5 0 0 1 90 75 H 10 A 5 5 0 0 1 5 70 Z" fill="url(#folderGrad)" filter="url(#shadow)" />
@@ -310,13 +310,27 @@ export default function DashboardOverview () {
                     )}
 
                     {/* Star badge overlay */}
-                    {card.starred && (
-                      <div className='absolute top-3 left-3 bg-white/95 dark:bg-zinc-800/90 w-7 h-7 rounded-full flex items-center justify-center shadow-sm select-none border border-slate-100 dark:border-zinc-700/40 z-10'>
-                        <svg className='w-4 h-4 text-amber-400' fill='currentColor' viewBox='0 0 24 24'>
-                          <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                        </svg>
-                      </div>
-                    )}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCardStar(card.id);
+                      }}
+                      className={cn(
+                        'absolute top-3 left-3 bg-white/95 dark:bg-zinc-800/90 w-7 h-7 flex items-center justify-center shadow-sm select-none border border-slate-100 dark:border-zinc-700/40 z-15 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200',
+                        card.starred ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      )}
+                      title={card.starred ? 'Unstar' : 'Star'}
+                    >
+                      <svg
+                        className={cn('w-4 h-4 transition-colors', card.starred ? 'text-amber-400 fill-current' : 'text-slate-400 hover:text-amber-400')}
+                        fill={card.starred ? 'currentColor' : 'none'}
+                        viewBox='0 0 24 24'
+                        stroke='currentColor'
+                        strokeWidth={1.5}
+                      >
+                        <path strokeLinecap='round' strokeLinejoin='round' d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
+                      </svg>
+                    </div>
                   </div>
 
                   {/* Reusable Three-dots Action Menu */}
@@ -329,19 +343,36 @@ export default function DashboardOverview () {
 
                   {/* Bottom Text and details */}
                   <div className='p-3 flex items-center justify-between gap-2 min-w-0 bg-card-bg rounded-b-2xl'>
-                    <div className='flex items-center gap-2.5 min-w-0'>
-                      <svg className='w-4.5 h-4.5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
-                        <path strokeLinecap='round' strokeLinejoin='round' d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' />
-                      </svg>
-                      <div className='flex flex-col min-w-0'>
+                    <div className='flex items-center gap-2.5 min-w-0 flex-1'>
+                      {card.previewType === 'image' ? (
+                        <svg className='w-4.5 h-4.5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                        </svg>
+                      ) : (
+                        <svg className='w-4.5 h-4.5 text-[#0056f7] shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' />
+                        </svg>
+                      )}
+                      <div className='flex flex-col min-w-0 flex-1'>
                         <span className='text-xs font-bold text-slate-800 dark:text-slate-200 truncate select-all'>
                           {card.title}
                         </span>
-                        <span className='text-[10px] font-semibold text-slate-400 dark:text-slate-500 mt-0.5 select-none'>
-                          {card.itemsCountText}
-                        </span>
+                        <div className='flex items-center gap-2 mt-0.5 select-none'>
+                          <span className='text-[10px] font-semibold text-slate-400 dark:text-slate-500 truncate'>
+                            {card.itemsCountText}
+                          </span>
+                        </div>
                       </div>
                     </div>
+
+                    {card.shared && (
+                      <span className="flex items-center gap-0.5 text-[9px] font-bold text-[#0056f7] bg-blue-50 dark:bg-blue-950/30 px-1.5 py-0.5 shrink-0 select-none">
+                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap='round' strokeLinejoin='round' d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>Shared</span>
+                      </span>
+                    )}
                   </div>
                 </div>
               );

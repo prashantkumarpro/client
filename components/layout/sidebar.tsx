@@ -218,7 +218,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
       <aside
         className={cn(
-          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-5 pb-4 md:pt-6 md:pb-5 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-3 pb-3 md:pt-4 md:pb-4 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
           className
         )}
       >
@@ -394,7 +394,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-5 pb-4 md:pt-6 md:pb-5 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-3 pb-3 md:pt-4 md:pb-4 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
         className
       )}
     >

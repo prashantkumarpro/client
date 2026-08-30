@@ -53,7 +53,7 @@ export default function WelcomeBanner () {
               />
 
               {/* Peak Paper sheet */}
-              <rect x='15' y='10' width='70' height='45' rx='3' fill='#ffffff' opacity='0.95' />
+              <rect x='15' y='10' width='70' height='45' rx='0' fill='#ffffff' opacity='0.95' />
 
               {/* Folder Front Cover */}
               <path

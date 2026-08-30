@@ -81,10 +81,8 @@ body {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-duration: 200ms;
 }
-/* Remove outline, borders, and border-radius from the entire UI */
+/* Remove outline and border-radius from the entire UI */
 *, *::before, *::after {
-  border: none !important;
-  border-width: 0 !important;
   outline: none !important;
   outline-width: 0 !important;
   border-radius: 0px !important;

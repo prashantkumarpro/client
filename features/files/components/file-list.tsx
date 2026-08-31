@@ -169,12 +169,16 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
             <p className="text-[11px] text-text-muted mt-1 max-w-[220px] leading-normal font-light">We couldn&apos;t find any matches for &ldquo;{searchQuery}&rdquo;. Try checking your spelling.</p>
           </div>
         ) : (
-          <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
-            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8 rounded-xl">
+            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-650 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18" />
             </svg>
-            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No files or folders</h4>
-            <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">There are no items currently stored in this category.</p>
+            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">
+              {currentSection === 'Shared' ? 'No files shared' : currentSection === 'Starred' ? 'No starred files' : 'No files or folders'}
+            </h4>
+            <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">
+              {currentSection === 'Shared' ? 'No files shared with you yet.' : currentSection === 'Starred' ? 'Files you star will appear here.' : 'There are no items currently stored in this category.'}
+            </p>
           </div>
         )
       ) : (
@@ -254,7 +258,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
                           onClick={() => {
                             if (isFolder) setActiveFolderId(file.id);
                           }}
-                          className="text-xs font-semibold text-text-secondary group-hover:text-foreground line-clamp-2 break-words leading-snug uppercase tracking-[0.5px]"
+                          className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#0056f7] dark:group-hover:text-blue-400 line-clamp-2 break-words leading-snug"
                         >
                           {file.name}
                         </span>

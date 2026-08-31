@@ -23,7 +23,7 @@ export default function MyFilesView () {
                   disabled={isLast}
                   onClick={() => setActiveFolderId(crumb.id)}
                   className={cn(
-                    'text-xs font-bold uppercase tracking-[0.5px] transition-colors focus:outline-none',
+                    'text-xs font-bold transition-colors focus:outline-none',
                     isLast
                       ? 'text-[#0056f7] cursor-default'
                       : 'text-text-secondary hover:text-foreground cursor-pointer'

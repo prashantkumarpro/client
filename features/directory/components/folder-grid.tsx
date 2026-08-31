@@ -90,7 +90,7 @@ export function FolderGrid() {
                 </div>
 
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-semibold line-clamp-2 break-words leading-snug text-[#475569] dark:text-[#bbbbbb] group-hover:text-foreground transition-colors uppercase tracking-[0.5px]">
+                  <span className="text-xs font-bold line-clamp-2 break-words leading-snug text-slate-900 dark:text-white group-hover:text-[#0056f7] dark:group-hover:text-blue-400 transition-colors">
                     {folder.name}
                   </span>
                 </div>

@@ -10,7 +10,7 @@ export function SearchBar() {
     <div className="relative w-full max-w-lg">
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
         <svg
-          className="h-4 w-4 text-[#0056f7]"
+          className="h-4 w-4 text-[#2563EB]"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -28,7 +28,7 @@ export function SearchBar() {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Search files, folders, images..."
-        className="w-full bg-slate-50 dark:bg-zinc-900/50 hover:bg-slate-100/50 dark:hover:bg-zinc-900/80 text-foreground rounded-full pl-11 pr-6 lg:pr-20 py-3 text-xs font-semibold placeholder-text-muted transition-all duration-200 focus:outline-none focus:bg-white dark:focus:bg-zinc-950 shadow-[inset_0_0_0_1px_var(--color-card-border)] hover:shadow-[inset_0_0_0_1px_#cbd5e1] dark:hover:shadow-[inset_0_0_0_1px_#3f3f46] focus:shadow-[inset_0_0_0_1px_#0056f7,0_0_0_4px_rgba(0,86,247,0.1)] focus:ring-0"
+        className="w-full bg-input-bg text-foreground rounded-lg pl-11 pr-6 lg:pr-20 py-3 text-xs font-semibold placeholder-text-muted transition-all duration-200 focus:outline-none focus:bg-card-bg border border-card-border hover:border-text-secondary focus:border-[#2563EB] focus:ring-0 shadow-none hover:shadow-none focus:shadow-none"
       />
       {searchQuery ? (
         <button

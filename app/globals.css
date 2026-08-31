@@ -40,7 +40,7 @@
   --sidebar-border: #e2e8f0;
   --sidebar-active-bg: #eff6ff;
   /* light blue active pill */
-  --sidebar-active-text: #0056f7;
+  --sidebar-active-text: #2563EB;
   /* blue text */
   --text-muted: #94a3b8;
   /* slate-400 */
@@ -51,40 +51,45 @@
 }
 
 .dark {
-  /* Dark mode */
-  --background: #0b0e14;
-  /* zinc-950 canvas */
-  --foreground: #f4f4f5;
-  /* white text */
-  --card-bg: #18181b;
-  /* zinc-900 */
-  --card-border: #27272a;
-  /* zinc-800 border */
-  --sidebar-bg: #09090b;
-  /* zinc-950 sidebar */
-  --sidebar-border: #18181b;
-  --sidebar-active-bg: #27272a;
-  /* active zinc-800 pill */
+  /* Dark mode inspired by DeepSeek premium black UI */
+  --background: #0A0A0C;
+  /* rich absolute black canvas */
+  --foreground: #EDEDF2;
+  /* clear gray-white text */
+  --card-bg: #121214;
+  /* deep charcoal card background */
+  --card-border: #1E1E22;
+  /* subtle dark card border */
+  --sidebar-bg: #121214;
+  /* unified sidebar matching card bg */
+  --sidebar-border: #1E1E22;
+  --sidebar-active-bg: #1F1F24;
+  /* active navigation item background */
   --sidebar-active-text: #ffffff;
-  --text-muted: #71717a;
-  /* zinc-500 */
-  --text-secondary: #a1a1aa;
-  /* zinc-400 */
-  --input-bg: #09090b;
-  --divider: #27272a;
+  --text-muted: #7E7E86;
+  /* clean gray-muted text */
+  --text-secondary: #A2A2A9;
+  /* secondary text */
+  --input-bg: #18181C;
+  /* dark input bg */
+  --divider: #1A1A1E;
+}
+
+body, aside, header, main, div, input, select, button, span, svg, tr, td, p, h1, h2, h3, h4, h5, h6 {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-duration: 200ms;
 }
 
 /* Keyboard focus accessibility states */
 *:focus-visible {
-  outline: 2px solid #0056f7 !important;
+  outline: 2px solid #2563EB !important;
   outline-offset: 2px !important;
 }
 

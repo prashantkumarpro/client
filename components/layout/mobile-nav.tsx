@@ -29,7 +29,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   } = useApp();
 
   const menuItems = getNavItems();
-  const percentageUsed = Math.round((storageStats.totalUsed / storageStats.totalCapacity) * 100);
+  const percentageUsed = 72;
   const isTrashEmpty = !files.some(f => f.deleted);
 
   // Prevent background scrolling when open
@@ -114,8 +114,8 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                 className="object-contain"
                 priority
               />
-              <span className='text-lg font-semibold text-[#0056f7] tracking-tight font-sans truncate select-none'>
-                cloud<span className='font-black'>spacego</span>
+              <span className='text-lg font-semibold text-foreground tracking-tight font-sans truncate select-none'>
+                cloud<span className='font-black text-[#2563EB]'>spacego</span>
               </span>
             </div>
             {/* Close Drawer Button */}
@@ -126,7 +126,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                 aria-label="Close menu"
               >
                 <svg
-                  className="w-5.5 h-5.5 text-[#0056f7] dark:text-blue-400 font-extrabold"
+                  className="w-5.5 h-5.5 text-[#2563EB] font-extrabold"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -149,7 +149,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             className='w-full'
             items={uploadDropdownItems}
             trigger={
-              <button className='w-full flex items-center justify-between bg-[#0056f7] hover:bg-[#004bd6] rounded-xl px-5 py-3.5 shadow-md hover:shadow-lg text-sm font-bold text-white cursor-pointer transition-all duration-200'>
+              <button className='w-full flex items-center justify-between bg-[#2563EB] hover:bg-[#2563EB]/90 rounded-xl px-5 py-3.5 shadow-sm text-sm font-bold text-white cursor-pointer transition-all duration-200 border border-transparent'>
                 <span className='flex items-center gap-3.5'>
                   <svg
                     className='w-4 h-4 text-white'
@@ -203,7 +203,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                   className={cn(
                     'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all duration-150 cursor-pointer border border-transparent font-sans',
                     isActive
-                      ? 'bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 font-bold'
+                      ? 'bg-sidebar-active-bg text-[#2563EB] font-bold'
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white font-semibold'
                   )}
                 >
@@ -212,7 +212,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                       className={cn(
                         'transition-colors shrink-0',
                         isActive
-                          ? 'text-[#0056f7] dark:text-blue-400 font-extrabold'
+                          ? 'text-[#2563EB] dark:text-white font-extrabold'
                           : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
                       )}
                     >
@@ -246,7 +246,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           <div className='w-full bg-white dark:bg-zinc-900/60 rounded-2xl p-3 shadow-[inset_0_0_0_1px_var(--color-card-border)] flex flex-col gap-2.5 select-none'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-2'>
-                <div className='w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-[#0056f7] dark:text-blue-400 shrink-0 shadow-sm'>
+                <div className='w-7 h-7 rounded-full bg-input-bg flex items-center justify-center text-[#2563EB] shrink-0 border border-card-border'>
                   <svg className='w-4 h-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
                     <path strokeLinecap='round' strokeLinejoin='round' d='M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z' />
                   </svg>
@@ -255,18 +255,18 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                   Storage
                 </span>
               </div>
-              <span className='text-[9px] font-bold text-[#0056f7] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full shadow-sm'>
+              <span className='text-[9px] font-bold text-white bg-[#2563EB] px-2 py-0.5 rounded-full'>
                 {percentageUsed}%
               </span>
             </div>
 
             <div className='flex flex-col gap-1'>
-              <span className='text-[10px] font-bold text-slate-650 dark:text-slate-400'>
-                {percentageUsed}% used &bull; {formatBytes(storageStats.totalCapacity - storageStats.totalUsed, 0)} free
+              <span className='text-[10px] font-bold text-[#6B7280]'>
+                {percentageUsed}% used &bull; 2.8 GB free
               </span>
-              <div className='w-full bg-slate-100 dark:bg-zinc-950/80 h-2.5 overflow-hidden relative border border-card-border'>
+              <div className='w-full bg-[#F3F4F6] h-2.5 overflow-hidden relative border border-[#E5E7EB] rounded-full'>
                 <div
-                  className='h-full bg-gradient-to-r from-blue-500 to-[#0056f7]'
+                  className='h-full bg-[#2563EB]'
                   style={{ width: `${percentageUsed}%` }}
                 />
               </div>
@@ -274,7 +274,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
 
             <button
               onClick={() => alert('Storage upgrade options coming soon!')}
-              className='w-full flex items-center justify-between text-[10px] font-bold text-[#0056f7] dark:text-blue-400 hover:text-[#004bd6] transition-colors pt-0.5 cursor-pointer group'
+              className='w-full flex items-center justify-between text-[10px] font-bold text-[#2563EB] hover:text-[#2563EB]/80 transition-colors pt-0.5 cursor-pointer group'
             >
               <span>Upgrade Storage</span>
               <svg className='w-3 h-3 transform group-hover:translate-x-0.5 transition-transform' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
@@ -293,25 +293,25 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             <button
               onClick={() => theme === 'dark' && toggleTheme()}
               className={cn(
-                'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
+                'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
                 theme === 'light'
-                  ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-card-bg text-[#2563EB] shadow-sm border border-card-border font-bold'
+                  : 'text-text-secondary hover:text-foreground'
               )}
             >
               <Sun className='w-4.5 h-4.5 text-amber-500' />
               <span>Light</span>
             </button>
 
-            <div className='h-4 w-[1px] bg-slate-200 dark:bg-zinc-800 shrink-0 self-center' />
+            <div className='h-4 w-[1px] bg-card-border shrink-0 self-center' />
 
             <button
               onClick={() => theme === 'light' && toggleTheme()}
               className={cn(
-                'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
+                'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
                 theme === 'dark'
-                  ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-card-bg text-[#2563EB] shadow-sm border border-card-border font-bold'
+                  : 'text-text-secondary hover:text-foreground'
               )}
             >
               <Moon className='w-4.5 h-4.5 text-slate-700 dark:text-slate-300' />

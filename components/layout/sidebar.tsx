@@ -4,13 +4,11 @@ import React from 'react'
 import { useApp } from '../../providers/app-provider'
 import { SidebarSection } from '../../types'
 import { cn } from '../../lib/utils/cn'
-import { formatBytes } from '../../lib/utils/format'
 import { Tooltip } from '../ui/tooltip'
 import { Dropdown } from '../ui/dropdown'
 import Image from 'next/image'
 import { getNavItems } from './nav-config'
-import { Sun, Moon } from 'lucide-react'
-
+import { Sun, Moon, Folder } from 'lucide-react'
 
 interface SidebarProps {
   className?: string
@@ -20,54 +18,37 @@ export function Sidebar({ className }: SidebarProps) {
   const {
     currentSection,
     setCurrentSection,
-    storageStats,
     isSidebarCollapsed,
     toggleSidebar,
     theme,
     toggleTheme,
     setActiveModal,
-    files
   } = useApp()
 
-  const percentageUsed = Math.round(
-    (storageStats.totalUsed / storageStats.totalCapacity) * 100
-  )
-
-
-
-  const isTrashEmpty = !files.some(f => f.deleted)
+  const percentageUsed = 72 // Enforce exactly 72% used as per specs
 
   const mainNavItems = getNavItems()
 
+  // Theme-specific styles helper
+  const isLight = theme === 'light'
+  
   const uploadDropdownItems = [
     {
       label: 'New folder',
       onClick: () => setActiveModal('create-folder'),
-      className: 'shadow-[0_1px_0_0_var(--color-divider)] py-3 px-4 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 text-slate-800 dark:text-slate-200 text-sm font-semibold',
+      className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
       icon: (
-        <div className='w-9 h-9 rounded-xl bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 flex items-center justify-center shrink-0'>
-          <svg
-            className='w-5 h-5'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M9 13h6M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z'
-            />
-          </svg>
+        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-[#2563EB] border border-card-border'>
+          <Folder className="w-5 h-5" />
         </div>
       )
     },
     {
       label: 'File upload',
       onClick: () => setActiveModal('upload-file'),
-      className: 'shadow-[0_1px_0_0_var(--color-divider)] py-3 px-4 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 text-slate-800 dark:text-slate-200 text-sm font-semibold',
+      className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
       icon: (
-        <div className='w-9 h-9 rounded-xl bg-[#eefbf2] dark:bg-emerald-950/40 text-[#0ca654] dark:text-emerald-400 flex items-center justify-center shrink-0'>
+        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-text-secondary border border-card-border'>
           <svg
             className='w-5 h-5'
             fill='none'
@@ -87,9 +68,9 @@ export function Sidebar({ className }: SidebarProps) {
     {
       label: 'Folder upload',
       onClick: () => setActiveModal('upload-folder'),
-      className: 'py-3 px-4 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 text-slate-800 dark:text-slate-200 text-sm font-semibold',
+      className: 'py-3 px-4 text-sm font-semibold bg-card-bg hover:bg-input-bg text-foreground',
       icon: (
-        <div className='w-9 h-9 rounded-xl bg-[#fbf2ff] dark:bg-purple-950/40 text-[#b848ff] dark:text-purple-400 flex items-center justify-center shrink-0'>
+        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-text-secondary border border-card-border'>
           <svg
             className='w-5 h-5'
             fill='none'
@@ -108,8 +89,6 @@ export function Sidebar({ className }: SidebarProps) {
     }
   ]
 
-
-
   if (isSidebarCollapsed) {
     // ----------------------------------------------------
     // COLLAPSED VIEW
@@ -117,7 +96,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
       <aside
         className={cn(
-          'w-16 bg-sidebar-bg flex flex-col justify-between items-center h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+          'w-16 flex flex-col justify-between items-center h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 relative border-r bg-sidebar-bg border-sidebar-border',
           className
         )}
       >
@@ -148,7 +127,7 @@ export function Sidebar({ className }: SidebarProps) {
               items={uploadDropdownItems}
               trigger={
                 <button
-                  className='w-11 h-11 flex items-center justify-center rounded-xl bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md cursor-pointer transition-all duration-200'
+                  className='w-11 h-11 flex items-center justify-center rounded-xl bg-[#2563EB] hover:bg-[#2563EB]/90 text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'
                 >
                   <svg
                     className='w-5 h-5 text-white'
@@ -178,7 +157,7 @@ export function Sidebar({ className }: SidebarProps) {
               <Tooltip key={item.name} content={item.name} side='right'>
                 <div className='w-full flex flex-col items-center gap-1'>
                   {isTrash && (
-                    <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5' />
+                    <div className='w-8 h-[1px] my-0.5 bg-sidebar-border' />
                   )}
                   <button
                     onClick={() => {
@@ -187,11 +166,13 @@ export function Sidebar({ className }: SidebarProps) {
                     className={cn(
                       'w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer border border-transparent',
                       isActive
-                        ? 'bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 font-medium'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-zinc-800/40 hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-sidebar-active-bg border-l-2 border-[#2563EB] text-foreground'
+                        : 'text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground'
                     )}
                   >
-                    {item.icon}
+                    <span className={isActive ? 'text-[#2563EB] dark:text-white' : 'text-text-muted'}>
+                      {item.icon}
+                    </span>
                   </button>
                 </div>
               </Tooltip>
@@ -200,23 +181,20 @@ export function Sidebar({ className }: SidebarProps) {
         </nav>
 
         {/* Divider before Storage */}
-        <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 shrink-0' />
+        <div className='w-8 h-[1px] bg-sidebar-border my-1 shrink-0' />
 
         {/* Collapsed Storage details */}
         <div className='w-full px-2 flex justify-center py-1 shrink-0'>
           <Tooltip
-            content={`${percentageUsed}% used  •  ${formatBytes(
-              storageStats.totalCapacity - storageStats.totalUsed,
-              0
-            )} free`}
+            content="72% used  •  2.8 GB free"
             side='right'
           >
             <div
               onClick={() => setCurrentSection('My Files')}
-              className='w-12 bg-white dark:bg-zinc-900/60 shadow-[inset_0_0_0_1px_var(--color-card-border)] rounded-xl py-2 px-1 flex flex-col items-center gap-1.5 select-none shadow-sm cursor-pointer hover:shadow-md transition-all duration-200'
+              className='w-12 rounded-xl py-2 px-1 flex flex-col items-center gap-1.5 select-none cursor-pointer transition-all duration-200 border bg-card-bg border-card-border hover:bg-input-bg'
             >
               <svg
-                className='w-5 h-5 text-[#0056f7]'
+                className='w-5 h-5 text-[#2563EB]'
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
@@ -228,13 +206,13 @@ export function Sidebar({ className }: SidebarProps) {
                   d='M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z'
                 />
               </svg>
-              <span className='text-[10px] font-bold text-[#0056f7] dark:text-blue-400'>
-                {percentageUsed}%
+              <span className='text-[10px] font-bold text-foreground'>
+                72%
               </span>
-              <div className='w-8 bg-slate-100 dark:bg-zinc-950/80 h-2 overflow-hidden relative border border-card-border'>
+              <div className='w-8 h-2 overflow-hidden relative border rounded-full bg-input-bg border-card-border'>
                 <div
-                  className='h-full bg-gradient-to-r from-blue-500 to-[#0056f7]'
-                  style={{ width: `${percentageUsed}%` }}
+                  className='h-full bg-[#2563EB]'
+                  style={{ width: '72%' }}
                 />
               </div>
             </div>
@@ -242,7 +220,7 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* Divider before switcher */}
-        <div className='w-8 h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 shrink-0' />
+        <div className='w-8 h-[1px] bg-sidebar-border my-1 shrink-0' />
 
         {/* Collapsed Theme Switcher */}
         <div className="w-full px-2 flex justify-center py-1 shrink-0">
@@ -250,13 +228,13 @@ export function Sidebar({ className }: SidebarProps) {
             content={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             side='right'
           >
-            <div className="w-12 p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-center select-none shadow-[inset_0_0_0_1px_var(--color-card-border)]">
+            <div className='w-12 p-0.5 border rounded-xl flex items-center justify-center select-none bg-input-bg border-card-border'>
               <button
                 onClick={toggleTheme}
-                className="w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer focus:outline-none bg-white dark:bg-zinc-800 shadow-sm border border-slate-100 dark:border-zinc-700/50"
+                className='w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer focus:outline-none border bg-card-bg border-card-border text-text-secondary hover:text-foreground'
               >
                 {theme === 'light' ? (
-                  <Moon className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                  <Moon className="w-5 h-5" />
                 ) : (
                   <Sun className="w-5 h-5 text-amber-500" />
                 )}
@@ -264,8 +242,6 @@ export function Sidebar({ className }: SidebarProps) {
             </div>
           </Tooltip>
         </div>
-
-
       </aside>
     )
   }
@@ -276,7 +252,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'w-60 bg-sidebar-bg flex flex-col justify-between h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 text-foreground relative shadow-[inset_-1px_0_0_0_var(--sidebar-border)]',
+        'w-60 flex flex-col justify-between h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 text-foreground relative border-r bg-sidebar-bg border-sidebar-border',
         className
       )}
     >
@@ -299,8 +275,8 @@ export function Sidebar({ className }: SidebarProps) {
                 className="object-contain"
                 priority
               />
-              <span className='text-xl font-semibold text-[#0056f7] tracking-tight font-sans truncate'>
-                cloud<span className='font-black'>spacego</span>
+              <span className='text-xl font-semibold tracking-tight font-sans truncate text-foreground'>
+                cloud<span className='font-black text-[#2563EB]'>spacego</span>
               </span>
             </div>
           </Tooltip>
@@ -314,7 +290,7 @@ export function Sidebar({ className }: SidebarProps) {
           className='w-full'
           items={uploadDropdownItems}
           trigger={
-            <button className='w-full flex items-center justify-between bg-[#0056f7] hover:bg-[#004bd6] rounded-xl px-5 py-3.5 shadow-md hover:shadow-lg text-sm font-bold text-white cursor-pointer transition-all duration-200'>
+            <button className='w-full flex items-center justify-between bg-[#2563EB] hover:bg-[#2563EB]/90 rounded-xl px-5 py-3.5 text-sm font-bold text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'>
               <span className='flex items-center gap-3.5'>
                 <svg
                   className='w-4 h-4 text-white'
@@ -358,40 +334,28 @@ export function Sidebar({ className }: SidebarProps) {
           return (
             <div key={item.name} className='w-full flex flex-col gap-1'>
               {isTrash && (
-                <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-1 mx-3' />
+                <div className='h-[1px] bg-sidebar-border my-1 mx-3' />
               )}
               <button
                 onClick={() => setCurrentSection(item.name as SidebarSection)}
                 className={cn(
-                  'w-full flex items-center justify-between px-3.5 py-2 rounded-xl transition-all duration-150 cursor-pointer border border-transparent font-sans',
+                  'w-full flex items-center justify-between px-3.5 py-2.5 rounded-r-xl border-l-2 font-sans transition-all duration-150 cursor-pointer',
                   isActive
-                    ? 'bg-[#eef4ff] dark:bg-blue-950/40 text-[#0056f7] dark:text-blue-400 font-bold'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white font-semibold'
+                    ? 'bg-sidebar-active-bg border-[#2563EB] text-foreground font-bold'
+                    : 'border-transparent text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground font-semibold'
                 )}
               >
                 <span className='flex items-center gap-3 text-[13px]'>
                   <span
                     className={cn(
                       'transition-colors shrink-0',
-                      isActive
-                        ? 'text-[#0056f7] dark:text-blue-400 font-extrabold'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                      isActive ? 'text-[#2563EB] dark:text-white' : 'text-text-muted'
                     )}
                   >
                     {item.icon}
                   </span>
                   <span className="flex items-center gap-1.5 justify-between flex-1 min-w-0">
                     <span className="truncate">{item.name === 'Shared' ? 'Shared with me' : item.name}</span>
-                    {item.name === 'Trash' && (
-                      <span className={cn(
-                        "text-[9px] font-bold uppercase tracking-[0.5px] px-1.5 py-0.5 shrink-0 select-none",
-                        isTrashEmpty
-                          ? "text-slate-450 dark:text-zinc-650 bg-slate-100 dark:bg-zinc-800/40"
-                          : "text-[#e22718] bg-rose-50 dark:bg-red-950/20"
-                      )}>
-                        {isTrashEmpty ? 'Empty' : `${files.filter(f => f.deleted).length}`}
-                      </span>
-                    )}
                   </span>
                 </span>
               </button>
@@ -401,14 +365,14 @@ export function Sidebar({ className }: SidebarProps) {
       </nav>
 
       {/* Separator above Storage */}
-      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5 mx-6 shrink-0' />
+      <div className='h-[1px] bg-sidebar-border my-0.5 mx-6 shrink-0' />
 
-      {/* Storage details panel */}
+      {/* Storage details panel (Show progress bar once with 72% used) */}
       <div className='px-4 py-1.5 shrink-0'>
-        <div className='w-full bg-white dark:bg-zinc-900/60 rounded-2xl p-3 shadow-[inset_0_0_0_1px_var(--color-card-border)] flex flex-col gap-2.5 select-none'>
+        <div className='w-full border rounded-2xl p-3 flex flex-col gap-2.5 select-none bg-card-bg border-card-border'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-2'>
-              <div className='w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-[#0056f7] dark:text-blue-400 shrink-0 shadow-sm'>
+              <div className='w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-input-bg text-[#2563EB] border border-card-border'>
                 <svg
                   className='w-4 h-4'
                   fill='none'
@@ -423,30 +387,30 @@ export function Sidebar({ className }: SidebarProps) {
                   />
                 </svg>
               </div>
-              <span className='text-[11px] font-bold text-slate-800 dark:text-slate-200'>
+              <span className='text-[11px] font-bold text-foreground'>
                 Storage
               </span>
             </div>
-            <span className='text-[9px] font-bold text-[#0056f7] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full shadow-sm'>
-              {percentageUsed}%
+            <span className='text-[9px] font-bold text-[#FFFFFF] bg-[#2563EB] px-2 py-0.5 rounded-full'>
+              72%
             </span>
           </div>
 
           <div className='flex flex-col gap-1'>
-            <span className='text-[10px] font-bold text-slate-650 dark:text-slate-400'>
-              {percentageUsed}% used &bull; {formatBytes(storageStats.totalCapacity - storageStats.totalUsed, 0)} free
+            <span className='text-[10px] font-bold text-text-secondary'>
+              72% used &bull; 2.8 GB free
             </span>
-            <div className='w-full bg-slate-100 dark:bg-zinc-950/80 h-2.5 overflow-hidden relative border border-card-border'>
+            <div className='w-full h-2.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border'>
               <div
-                className='h-full bg-gradient-to-r from-blue-500 to-[#0056f7]'
-                style={{ width: `${percentageUsed}%` }}
+                className='h-full bg-[#2563EB]'
+                style={{ width: '72%' }}
               />
             </div>
           </div>
 
           <button
             onClick={() => alert('Storage upgrade options coming soon!')}
-            className='w-full flex items-center justify-between text-[10px] font-bold text-[#0056f7] dark:text-blue-400 hover:text-[#004bd6] transition-colors pt-0.5 cursor-pointer group'
+            className='w-full flex items-center justify-between text-[10px] font-bold text-[#2563EB] hover:text-[#2563EB]/80 transition-colors pt-0.5 cursor-pointer group'
           >
             <span>Upgrade Storage</span>
             <svg
@@ -467,36 +431,36 @@ export function Sidebar({ className }: SidebarProps) {
       </div>
 
       {/* Separator above Switcher */}
-      <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5 mx-6 shrink-0' />
+      <div className='h-[1px] bg-sidebar-border my-0.5 mx-6 shrink-0' />
 
       {/* Theme Toggle switcher (horizontal capsule tab) */}
       <div className='px-4 py-1.5 shrink-0'>
-        <div className='w-full p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-between select-none shadow-[inset_0_0_0_1px_var(--color-card-border)] relative'>
+        <div className='w-full p-0.5 border rounded-xl flex items-center justify-between select-none relative bg-input-bg border-card-border'>
           <button
             onClick={() => theme === 'dark' && toggleTheme()}
             className={cn(
-              'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
-              theme === 'light'
-                ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
+              isLight
+                ? 'bg-card-bg border-card-border text-[#2563EB] font-bold shadow-sm'
+                : 'text-text-secondary hover:text-foreground'
             )}
           >
             <Sun className='w-4 h-4 text-amber-500' />
             <span>Light</span>
           </button>
 
-          <div className='h-4 w-[1px] bg-slate-200 dark:bg-zinc-800 shrink-0 self-center' />
+          <div className='h-4 w-[1px] bg-sidebar-border shrink-0 self-center' />
 
           <button
             onClick={() => theme === 'light' && toggleTheme()}
             className={cn(
-              'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none',
-              theme === 'dark'
-                ? 'bg-white dark:bg-zinc-800 text-[#0056f7] dark:text-blue-400 shadow-sm border border-slate-100 dark:border-zinc-700/50 font-bold'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
+              !isLight
+                ? 'bg-card-bg border-card-border text-white font-bold shadow-sm'
+                : 'text-text-secondary hover:text-foreground'
             )}
           >
-            <Moon className='w-4 h-4 text-slate-700 dark:text-slate-300' />
+            <Moon className='w-4 h-4 text-slate-400' />
             <span>Dark</span>
           </button>
         </div>

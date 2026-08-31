@@ -40,47 +40,10 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'h-16 mx-4 mt-1 min-[800px]:mx-8 min-[800px]:mt-1.5 bg-card-bg shadow-[inset_0_0_0_1px_var(--color-card-border),0_2px_12px_rgba(0,0,0,0.03)] rounded-2xl flex items-center justify-between px-4 min-[800px]:px-6 text-foreground select-none relative transition-all duration-200 shrink-0',
+          'h-16 w-full bg-card-bg border-b border-card-border flex items-center justify-between px-6 text-foreground select-none relative transition-all duration-200 shrink-0 z-20',
           className
         )}
       >
-        {/* Background waves decoration */}
-        <div className='absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0'>
-          <svg
-            className='absolute bottom-0 left-0 w-full h-full opacity-60 dark:opacity-20'
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 1000 100'
-            fill='none'
-            preserveAspectRatio='none'
-          >
-            <path
-              d='M0,100 C150,90 350,50 500,70 C650,90 850,95 1000,80 L1000,100 L0,100 Z'
-              fill='rgba(0, 86, 247, 0.02)'
-            />
-            <path
-              d='M0,100 C200,80 400,95 600,60 C800,25 900,60 1000,50 L1000,100 L0,100 Z'
-              fill='rgba(147, 51, 234, 0.015)'
-            />
-            <path
-              d='M0,90 C250,50 450,90 700,60 C850,45 930,75 1000,50'
-              stroke='rgba(0, 86, 247, 0.08)'
-              strokeWidth='1'
-              fill='none'
-            />
-            <path
-              d='M0,75 C300,90 500,45 750,85 C880,105 940,65 1000,60'
-              stroke='rgba(147, 51, 234, 0.06)'
-              strokeWidth='1.2'
-              fill='none'
-            />
-            <path
-              d='M0,60 C350,40 600,100 800,50 C900,25 950,55 1000,45'
-              stroke='rgba(0, 86, 247, 0.04)'
-              strokeWidth='0.8'
-              fill='none'
-            />
-          </svg>
-        </div>
 
         {/* Left Side: Search Bar & Actions */}
         <div className='flex items-center gap-3.5 flex-1 z-10 min-w-0'>
@@ -114,7 +77,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
           <Tooltip content={isSidebarCollapsed ? 'open sidebar' : 'close sidebar'} side='bottom'>
             <button
               onClick={toggleSidebar}
-              className='hidden md:flex w-11 h-11 bg-[#0056f7] hover:bg-[#004bd6] text-white shadow-md hover:shadow-lg rounded-xl items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shrink-0'
+              className='hidden md:flex w-11 h-11 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white rounded-lg items-center justify-center cursor-pointer transition-all duration-200 shrink-0 border border-transparent'
             >
               <svg
                 className='w-5.5 h-5.5'
@@ -162,7 +125,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
                 />
               </svg>
               {/* Blue badge corresponding to screenshot design */}
-              <span className='absolute top-1.5 right-1.5 bg-[#0056f7] text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm pointer-events-none'>
+              <span className='absolute top-1.5 right-1.5 bg-[#2563EB] text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm pointer-events-none'>
                 3
               </span>
             </button>

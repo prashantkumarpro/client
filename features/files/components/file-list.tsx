@@ -88,20 +88,20 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         );
       case 'folder':
         return (
-          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400")}>
+          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-955/20 text-[#2563EB] dark:text-blue-450")}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full" />}
+            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#2563EB] rounded-full" />}
           </div>
         );
       case 'document':
         return (
-          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-950/20 text-[#0056f7] dark:text-blue-400")}>
+          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-955/20 text-[#2563EB] dark:text-blue-450")}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v12m0 0l-4-4m4 4l4-4" />
             </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full" />}
+            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#2563EB] rounded-full" />}
           </div>
         );
       default:
@@ -142,7 +142,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
   const defaultTitle = currentSection === 'Dashboard' ? 'Recent Files' : currentSection;
 
   return (
-    <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 shadow-sm transition-colors duration-200 flex-1 min-h-0">
+    <div className="bg-card-bg border border-card-border rounded-xl p-6 text-foreground flex flex-col gap-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-colors duration-200 flex-1 min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-divider pb-4 shrink-0 select-none">
         <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
@@ -151,7 +151,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         {showViewAll && currentSection === 'Dashboard' && (
           <button
             onClick={() => setCurrentSection('My Files')}
-            className="text-[11px] font-bold text-[#0056f7] hover:text-[#004bd6] transition-colors cursor-pointer"
+            className="text-[11px] font-bold text-[#2563EB] hover:text-[#2563EB]/80 transition-colors cursor-pointer"
           >
             View all
           </button>
@@ -245,7 +245,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
                 return (
                   <tr
                     key={file.id}
-                    className="hover:bg-divider/30 transition-colors group cursor-pointer"
+                    className="hover:bg-[#F8FAFC] dark:hover:bg-[#1F1F24] transition-colors group cursor-pointer"
                     onDoubleClick={() => {
                       if (isFolder) setActiveFolderId(file.id);
                     }}
@@ -258,7 +258,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
                           onClick={() => {
                             if (isFolder) setActiveFolderId(file.id);
                           }}
-                          className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#0056f7] dark:group-hover:text-blue-400 line-clamp-2 break-words leading-snug"
+                          className="text-xs font-bold text-foreground group-hover:text-[#2563EB] line-clamp-2 break-words leading-snug"
                         >
                           {file.name}
                         </span>

@@ -57,10 +57,10 @@ export function ActionMenu ({ items, className, align = 'right', placement = 'bo
       {/* Three-dots trigger button */}
       <button
         onClick={toggle}
-        className='bg-white/90 dark:bg-zinc-855/90 hover:bg-white dark:hover:bg-zinc-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border border-slate-100 dark:border-zinc-750 cursor-pointer focus:outline-none transition-colors'
+        className='bg-card-bg hover:bg-input-bg w-8 h-8 rounded-full flex items-center justify-center border border-card-border cursor-pointer focus:outline-none transition-colors'
         title='Folder menu'
       >
-        <svg className='w-4 h-4 text-slate-500 dark:text-slate-300' fill='currentColor' viewBox='0 0 24 24'>
+        <svg className='w-4 h-4 text-text-secondary' fill='currentColor' viewBox='0 0 24 24'>
           <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
         </svg>
       </button>

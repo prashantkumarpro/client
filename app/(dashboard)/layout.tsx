@@ -20,12 +20,12 @@ export default function DashboardLayout({
         <Sidebar className='hidden md:flex' />
 
         {/* Main content viewport */}
-        <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden'>
+        <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-background'>
           {/* Top Header */}
           <Header onMenuToggle={() => setIsMobileNavOpen(true)} />
 
           {/* Dashboard Inner Scrollable Body */}
-          <main className='flex-1 overflow-y-auto mx-4 min-[800px]:mx-8 mt-2 mb-4 md:mb-5 py-3 flex flex-col gap-4 md:gap-5'>
+          <main className='flex-1 overflow-y-auto p-6 flex flex-col gap-6'>
             {children}
           </main>
         </div>

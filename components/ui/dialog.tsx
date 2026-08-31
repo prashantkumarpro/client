@@ -58,7 +58,7 @@ export function Dialog({ isOpen, onClose, title, children, className }: DialogPr
         aria-modal="true"
       >
         {/* Subtle Brand Accent Line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-[#0056f7] rounded-t-2xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-[#2563EB] rounded-t-2xl" />
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5 pt-1">

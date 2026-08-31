@@ -307,6 +307,7 @@ export default function DashboardOverview () {
                     </div>
                     <div className="shrink-0" onClick={e => e.stopPropagation()}>
                       <ActionMenu
+                        placement='bottom-right'
                         items={dropdownItems}
                         onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
                       />

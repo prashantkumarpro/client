@@ -14,10 +14,11 @@ interface ActionMenuProps {
   items: ActionMenuItem[]
   className?: string
   align?: 'left' | 'right'
+  placement?: 'top' | 'bottom' | 'right' | 'bottom-right'
   onOpenChange?: (isOpen: boolean) => void
 }
 
-export function ActionMenu ({ items, className, align = 'right', onOpenChange }: ActionMenuProps) {
+export function ActionMenu ({ items, className, align = 'right', placement = 'bottom', onOpenChange }: ActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -56,7 +57,7 @@ export function ActionMenu ({ items, className, align = 'right', onOpenChange }:
       {/* Three-dots trigger button */}
       <button
         onClick={toggle}
-        className='bg-white/90 dark:bg-zinc-850/90 hover:bg-white dark:hover:bg-zinc-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border border-slate-100 dark:border-zinc-750 cursor-pointer focus:outline-none transition-colors'
+        className='bg-white/90 dark:bg-zinc-855/90 hover:bg-white dark:hover:bg-zinc-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm border border-slate-100 dark:border-zinc-750 cursor-pointer focus:outline-none transition-colors'
         title='Folder menu'
       >
         <svg className='w-4 h-4 text-slate-500 dark:text-slate-300' fill='currentColor' viewBox='0 0 24 24'>
@@ -68,8 +69,11 @@ export function ActionMenu ({ items, className, align = 'right', onOpenChange }:
       {isOpen && (
         <div
           className={cn(
-            'absolute w-48 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700/80 py-1 z-40 animate-in fade-in slide-in-from-top-2 duration-150',
-            align === 'right' ? 'right-0 top-9' : 'left-0 top-9'
+            'absolute w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-slate-100 dark:border-zinc-700/80 py-1 z-40',
+            placement === 'top' && 'bottom-9 right-0 animate-in fade-in slide-in-from-bottom-2 duration-150',
+            placement === 'bottom' && 'top-8 right-0 animate-in fade-in slide-in-from-top-2 duration-150',
+            placement === 'right' && 'left-full top-0 ml-2.5 animate-in fade-in slide-in-from-left-2 duration-150',
+            placement === 'bottom-right' && 'left-0 top-8 animate-in fade-in slide-in-from-top-2 duration-150'
           )}
         >
           {items.map((item, idx) => (

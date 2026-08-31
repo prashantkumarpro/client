@@ -15,7 +15,7 @@ interface HeaderProps {
   className?: string
 }
 
-export function Header ({ onMenuToggle, className }: HeaderProps) {
+export function Header({ onMenuToggle, className }: HeaderProps) {
   const { currentSection, setCurrentSection, isSidebarCollapsed, toggleSidebar } = useApp()
   const { user, logout } = useAuth()
   const [isAccountDetailsOpen, setIsAccountDetailsOpen] = useState(false)
@@ -35,7 +35,7 @@ export function Header ({ onMenuToggle, className }: HeaderProps) {
       className: 'text-red-500 hover:bg-red-500/10'
     }
   ]
-  
+
   return (
     <>
       <header

@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/header'
 import { MobileNav } from '@/components/layout/mobile-nav'
 import { AuthGuard } from '@/components/auth/auth-gaurd'
 
-export default function DashboardLayout ({
+export default function DashboardLayout({
   children
 }: {
   children: React.ReactNode

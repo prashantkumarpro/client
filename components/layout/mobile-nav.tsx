@@ -18,14 +18,14 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
-  const { 
-    currentSection, 
-    setCurrentSection, 
-    storageStats, 
-    files, 
-    theme, 
+  const {
+    currentSection,
+    setCurrentSection,
+    storageStats,
+    files,
+    theme,
     toggleTheme,
-    setActiveModal 
+    setActiveModal
   } = useApp();
 
   const menuItems = getNavItems();
@@ -89,7 +89,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       isOpen ? "visible" : "invisible pointer-events-none"
     )}>
       {/* Backdrop overlay */}
-      <div 
+      <div
         className={cn(
           "fixed inset-0 bg-slate-900/30 dark:bg-black/60 transition-opacity duration-300 ease-in-out",
           isOpen ? "opacity-100" : "opacity-0"

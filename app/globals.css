@@ -38,9 +38,9 @@
   --sidebar-bg: #ffffff;
   /* white sidebar */
   --sidebar-border: #e2e8f0;
-  --sidebar-active-bg: #eff6ff;
-  /* light blue active pill */
-  --sidebar-active-text: #2563EB;
+  --sidebar-active-bg: #F5F3FF;
+  /* light violet active pill */
+  --sidebar-active-text: #6E60EE;
   /* blue text */
   --text-muted: #94a3b8;
   /* slate-400 */
@@ -51,28 +51,28 @@
 }
 
 .dark {
-  /* Dark mode inspired by DeepSeek premium black UI */
-  --background: #0A0A0C;
-  /* rich absolute black canvas */
-  --foreground: #EDEDF2;
-  /* clear gray-white text */
-  --card-bg: #121214;
-  /* deep charcoal card background */
-  --card-border: #1E1E22;
+  /* Sleek Leonardo.ai Style Dark Mode */
+  --background: #000000;
+  /* pure black canvas */
+  --foreground: #FFFFFF;
+  /* absolute white text */
+  --card-bg: #0A0A0E;
+  /* ultra dark card background */
+  --card-border: #16161C;
   /* subtle dark card border */
-  --sidebar-bg: #121214;
-  /* unified sidebar matching card bg */
-  --sidebar-border: #1E1E22;
-  --sidebar-active-bg: #1F1F24;
-  /* active navigation item background */
+  --sidebar-bg: #08080A;
+  /* very dark sidebar */
+  --sidebar-border: #121216;
+  --sidebar-active-bg: #15151F;
+  /* active navigation item background with violet hue */
   --sidebar-active-text: #ffffff;
-  --text-muted: #7E7E86;
+  --text-muted: #686875;
   /* clean gray-muted text */
-  --text-secondary: #A2A2A9;
+  --text-secondary: #9A9AAB;
   /* secondary text */
-  --input-bg: #18181C;
+  --input-bg: #0E0E12;
   /* dark input bg */
-  --divider: #1A1A1E;
+  --divider: #121216;
 }
 
 body, aside, header, main, div, input, select, button, span, svg, tr, td, p, h1, h2, h3, h4, h5, h6 {
@@ -89,7 +89,7 @@ body {
 
 /* Keyboard focus accessibility states */
 *:focus-visible {
-  outline: 2px solid #2563EB !important;
+  outline: 2px solid #6E60EE !important;
   outline-offset: 2px !important;
 }
 

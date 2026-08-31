@@ -72,7 +72,7 @@ export function FolderGrid() {
             <div
               key={folder.id}
               onDoubleClick={() => setActiveFolderId(folder.id)}
-              className="bg-card-bg border border-card-border hover:border-[#2563EB] rounded-xl p-4 flex items-center justify-between group transition-all duration-200 cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
+              className="bg-card-bg border border-card-border hover:border-[#6E60EE] rounded-xl p-4 flex items-center justify-between group transition-all duration-200 cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
             >
               {/* Folder Details */}
               <div 
@@ -80,17 +80,17 @@ export function FolderGrid() {
                 onClick={() => setActiveFolderId(folder.id)}
               >
                 {/* Folder Icon Box */}
-                <div className="w-9 h-9 shrink-0 flex items-center justify-center text-[#2563EB] rounded-lg transition-colors relative">
+                <div className="w-9 h-9 shrink-0 flex items-center justify-center text-[#6E60EE] rounded-lg transition-colors relative">
                   <svg className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                   </svg>
                   {folder.starred && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#2563EB] rounded-full" title="Starred folder" />
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#6E60EE] rounded-full" title="Starred folder" />
                   )}
                 </div>
 
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold line-clamp-2 break-words leading-snug text-foreground group-hover:text-[#2563EB] transition-colors">
+                  <span className="text-xs font-bold line-clamp-2 break-words leading-snug text-foreground group-hover:text-[#6E60EE] transition-colors">
                     {folder.name}
                   </span>
                 </div>

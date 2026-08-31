@@ -88,20 +88,20 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         );
       case 'folder':
         return (
-          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-955/20 text-[#2563EB] dark:text-blue-450")}>
+          <div className={cn(baseClass, "bg-violet-50 dark:bg-violet-950/20 text-[#6E60EE] dark:text-violet-400")}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#2563EB] rounded-full" />}
+            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#6E60EE] rounded-full" />}
           </div>
         );
       case 'document':
         return (
-          <div className={cn(baseClass, "bg-blue-50 dark:bg-blue-955/20 text-[#2563EB] dark:text-blue-450")}>
+          <div className={cn(baseClass, "bg-violet-50 dark:bg-violet-950/20 text-[#6E60EE] dark:text-violet-400")}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v12m0 0l-4-4m4 4l4-4" />
             </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#2563EB] rounded-full" />}
+            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#6E60EE] rounded-full" />}
           </div>
         );
       default:
@@ -151,7 +151,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
         {showViewAll && currentSection === 'Dashboard' && (
           <button
             onClick={() => setCurrentSection('My Files')}
-            className="text-[11px] font-bold text-[#2563EB] hover:text-[#2563EB]/80 transition-colors cursor-pointer"
+            className="text-[11px] font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors cursor-pointer"
           >
             View all
           </button>
@@ -258,7 +258,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
                           onClick={() => {
                             if (isFolder) setActiveFolderId(file.id);
                           }}
-                          className="text-xs font-bold text-foreground group-hover:text-[#2563EB] line-clamp-2 break-words leading-snug"
+                          className="text-xs font-bold text-foreground group-hover:text-[#6E60EE] line-clamp-2 break-words leading-snug"
                         >
                           {file.name}
                         </span>

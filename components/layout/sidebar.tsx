@@ -38,7 +38,7 @@ export function Sidebar({ className }: SidebarProps) {
       onClick: () => setActiveModal('create-folder'),
       className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
       icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-[#2563EB] border border-card-border'>
+        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
           <Folder className="w-5 h-5" />
         </div>
       )
@@ -127,7 +127,7 @@ export function Sidebar({ className }: SidebarProps) {
               items={uploadDropdownItems}
               trigger={
                 <button
-                  className='w-11 h-11 flex items-center justify-center rounded-xl bg-[#2563EB] hover:bg-[#2563EB]/90 text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'
+                  className='w-11 h-11 flex items-center justify-center rounded-xl bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'
                 >
                   <svg
                     className='w-5 h-5 text-white'
@@ -157,7 +157,7 @@ export function Sidebar({ className }: SidebarProps) {
               <Tooltip key={item.name} content={item.name} side='right'>
                 <div className='w-full flex flex-col items-center gap-1'>
                   {isTrash && (
-                    <div className='w-8 h-[1px] my-0.5 bg-sidebar-border' />
+                    <div className='w-8 h-[1px] bg-sidebar-border my-0.5 shrink-0' />
                   )}
                   <button
                     onClick={() => {
@@ -166,11 +166,11 @@ export function Sidebar({ className }: SidebarProps) {
                     className={cn(
                       'w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer border border-transparent',
                       isActive
-                        ? 'bg-sidebar-active-bg border-l-2 border-[#2563EB] text-foreground'
+                        ? 'bg-sidebar-active-bg border-l-2 border-[#6E60EE] text-foreground'
                         : 'text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground'
                     )}
                   >
-                    <span className={isActive ? 'text-[#2563EB] dark:text-white' : 'text-text-muted'}>
+                    <span className={isActive ? 'text-[#6E60EE] dark:text-white' : 'text-text-muted'}>
                       {item.icon}
                     </span>
                   </button>
@@ -194,7 +194,7 @@ export function Sidebar({ className }: SidebarProps) {
               className='w-12 rounded-xl py-2 px-1 flex flex-col items-center gap-1.5 select-none cursor-pointer transition-all duration-200 border bg-card-bg border-card-border hover:bg-input-bg'
             >
               <svg
-                className='w-5 h-5 text-[#2563EB]'
+                className='w-5 h-5 text-[#6E60EE]'
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
@@ -211,7 +211,7 @@ export function Sidebar({ className }: SidebarProps) {
               </span>
               <div className='w-8 h-2 overflow-hidden relative border rounded-full bg-input-bg border-card-border'>
                 <div
-                  className='h-full bg-[#2563EB]'
+                  className='h-full bg-[#6E60EE]'
                   style={{ width: '72%' }}
                 />
               </div>
@@ -276,7 +276,7 @@ export function Sidebar({ className }: SidebarProps) {
                 priority
               />
               <span className='text-xl font-semibold tracking-tight font-sans truncate text-foreground'>
-                cloud<span className='font-black text-[#2563EB]'>spacego</span>
+                cloud<span className='font-black text-[#6E60EE]'>spacego</span>
               </span>
             </div>
           </Tooltip>
@@ -290,7 +290,7 @@ export function Sidebar({ className }: SidebarProps) {
           className='w-full'
           items={uploadDropdownItems}
           trigger={
-            <button className='w-full flex items-center justify-between bg-[#2563EB] hover:bg-[#2563EB]/90 rounded-xl px-5 py-3.5 text-sm font-bold text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'>
+            <button className='w-full flex items-center justify-between bg-[#6E60EE] hover:bg-[#6E60EE]/90 rounded-xl px-5 py-3.5 text-sm font-bold text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'>
               <span className='flex items-center gap-3.5'>
                 <svg
                   className='w-4 h-4 text-white'
@@ -341,7 +341,7 @@ export function Sidebar({ className }: SidebarProps) {
                 className={cn(
                   'w-full flex items-center justify-between px-3.5 py-2.5 rounded-r-xl border-l-2 font-sans transition-all duration-150 cursor-pointer',
                   isActive
-                    ? 'bg-sidebar-active-bg border-[#2563EB] text-foreground font-bold'
+                    ? 'bg-sidebar-active-bg border-[#6E60EE] text-foreground font-bold'
                     : 'border-transparent text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground font-semibold'
                 )}
               >
@@ -349,7 +349,7 @@ export function Sidebar({ className }: SidebarProps) {
                   <span
                     className={cn(
                       'transition-colors shrink-0',
-                      isActive ? 'text-[#2563EB] dark:text-white' : 'text-text-muted'
+                      isActive ? 'text-[#6E60EE] dark:text-white' : 'text-text-muted'
                     )}
                   >
                     {item.icon}
@@ -372,7 +372,7 @@ export function Sidebar({ className }: SidebarProps) {
         <div className='w-full border rounded-2xl p-3 flex flex-col gap-2.5 select-none bg-card-bg border-card-border'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-2'>
-              <div className='w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-input-bg text-[#2563EB] border border-card-border'>
+              <div className='w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
                 <svg
                   className='w-4 h-4'
                   fill='none'
@@ -391,7 +391,7 @@ export function Sidebar({ className }: SidebarProps) {
                 Storage
               </span>
             </div>
-            <span className='text-[9px] font-bold text-[#FFFFFF] bg-[#2563EB] px-2 py-0.5 rounded-full'>
+            <span className='text-[9px] font-bold text-[#FFFFFF] bg-[#6E60EE] px-2 py-0.5 rounded-full'>
               72%
             </span>
           </div>
@@ -402,7 +402,7 @@ export function Sidebar({ className }: SidebarProps) {
             </span>
             <div className='w-full h-2.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border'>
               <div
-                className='h-full bg-[#2563EB]'
+                className='h-full bg-[#6E60EE]'
                 style={{ width: '72%' }}
               />
             </div>
@@ -410,7 +410,7 @@ export function Sidebar({ className }: SidebarProps) {
 
           <button
             onClick={() => alert('Storage upgrade options coming soon!')}
-            className='w-full flex items-center justify-between text-[10px] font-bold text-[#2563EB] hover:text-[#2563EB]/80 transition-colors pt-0.5 cursor-pointer group'
+            className='w-full flex items-center justify-between text-[10px] font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors pt-0.5 cursor-pointer group'
           >
             <span>Upgrade Storage</span>
             <svg
@@ -441,7 +441,7 @@ export function Sidebar({ className }: SidebarProps) {
             className={cn(
               'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
               isLight
-                ? 'bg-card-bg border-card-border text-[#2563EB] font-bold shadow-sm'
+                ? 'bg-card-bg border-card-border text-[#6E60EE] font-bold shadow-sm'
                 : 'text-text-secondary hover:text-foreground'
             )}
           >

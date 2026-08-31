@@ -77,7 +77,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
           <Tooltip content={isSidebarCollapsed ? 'open sidebar' : 'close sidebar'} side='bottom'>
             <button
               onClick={toggleSidebar}
-              className='hidden md:flex w-11 h-11 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white rounded-lg items-center justify-center cursor-pointer transition-all duration-200 shrink-0 border border-transparent'
+              className='hidden md:flex w-11 h-11 bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white rounded-lg items-center justify-center cursor-pointer transition-all duration-200 shrink-0 border border-transparent'
             >
               <svg
                 className='w-5.5 h-5.5'
@@ -125,7 +125,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
                 />
               </svg>
               {/* Blue badge corresponding to screenshot design */}
-              <span className='absolute top-1.5 right-1.5 bg-[#2563EB] text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm pointer-events-none'>
+              <span className='absolute top-1.5 right-1.5 bg-[#6E60EE] text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm pointer-events-none'>
                 3
               </span>
             </button>

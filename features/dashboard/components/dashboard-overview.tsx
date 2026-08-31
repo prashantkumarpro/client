@@ -144,7 +144,7 @@ export default function DashboardOverview () {
         <div className='flex md:hidden items-center gap-2 select-none'>
           <button
             onClick={() => setActiveModal('upload-file')}
-            className='inline-flex items-center gap-1.5 px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-[#2563EB]/90 transition-all duration-200 cursor-pointer focus:outline-none border border-transparent'
+            className='inline-flex items-center gap-1.5 px-4 py-2 bg-[#6E60EE] text-white rounded-lg text-sm font-bold hover:bg-[#6E60EE]/90 transition-all duration-200 cursor-pointer focus:outline-none border border-transparent'
           >
             <svg className='w-4 h-4 shrink-0 text-white' fill='none' stroke='currentColor' strokeWidth={2.5} viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5' />
@@ -169,10 +169,10 @@ export default function DashboardOverview () {
           setCurrentSection('My Files')
           setActiveFolderId('folder-1') // Set folder to Design Assets
         }}
-        className='bg-card-bg border border-card-border hover:border-[#2563EB] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-5 flex items-center justify-between transition-all duration-200 cursor-pointer group focus:outline-none'
+        className='bg-card-bg border border-card-border hover:border-[#6E60EE] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-5 flex items-center justify-between transition-all duration-200 cursor-pointer group focus:outline-none'
       >
         <div className='flex items-center gap-4 min-w-0'>
-          <div className='w-10 h-10 rounded-lg bg-input-bg border border-card-border flex items-center justify-center text-[#2563EB] group-hover:text-white group-hover:bg-[#2563EB] transition-all duration-200 shrink-0'>
+          <div className='w-10 h-10 rounded-lg bg-input-bg border border-card-border flex items-center justify-center text-[#6E60EE] group-hover:text-white group-hover:bg-[#6E60EE] transition-all duration-200 shrink-0'>
             <Folder className='w-5 h-5 shrink-0' />
           </div>
           <div className='flex flex-col min-w-0'>
@@ -188,7 +188,7 @@ export default function DashboardOverview () {
           <span className='text-xs font-normal text-text-secondary'>
             Last opened 12 min ago
           </span>
-          <ChevronRight className='w-4 h-4 text-text-secondary group-hover:text-[#2563EB] transition-colors duration-200' />
+          <ChevronRight className='w-4 h-4 text-text-secondary group-hover:text-[#6E60EE] transition-colors duration-200' />
         </div>
       </div>
 
@@ -203,13 +203,13 @@ export default function DashboardOverview () {
               setCurrentSection('My Files')
               setActiveFolderId(null) // Go to files root folder
             }}
-            className='text-xs font-bold text-[#2563EB] hover:text-[#2563EB]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none'
+            className='text-xs font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none'
           >
             <span>View all</span>
           </button>
         </div>
 
-        {/* Folders Cards Row/Grid (4 Columns, 16px gap, hover border changes to #2563EB, shadow-sm specs) */}
+        {/* Folders Cards Row/Grid (4 Columns, 16px gap, hover border changes to #6E60EE, shadow-sm specs) */}
         <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
           {folderCards.map(card => {
             const dropdownItems = [
@@ -258,12 +258,12 @@ export default function DashboardOverview () {
                     setActiveFolderId(card.id);
                   }
                 }}
-                className='flex items-center justify-between p-4 bg-card-bg rounded-xl border border-card-border hover:border-[#2563EB] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
+                className='flex items-center justify-between p-4 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
               >
                 <div className='flex items-center gap-3 min-w-0'>
-                  <Folder className='w-9 h-9 text-[#2563EB] shrink-0' />
+                  <Folder className='w-9 h-9 text-[#6E60EE] shrink-0' />
                   <div className='flex flex-col min-w-0'>
-                    <span className='text-sm font-bold text-foreground truncate group-hover:text-[#2563EB] transition-colors duration-200'>
+                    <span className='text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                       {card.title === 'Design Assets' ? 'Design' : card.title === 'Brand Photos' ? 'Photos' : card.title}
                     </span>
                     <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
@@ -298,7 +298,7 @@ export default function DashboardOverview () {
               className={cn(
                 'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
                 fileViewMode === 'grid'
-                  ? 'bg-card-border text-[#2563EB]'
+                  ? 'bg-card-border text-[#6E60EE]'
                   : 'text-text-secondary hover:text-foreground'
               )}
               aria-label='Grid View'
@@ -310,7 +310,7 @@ export default function DashboardOverview () {
               className={cn(
                 'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
                 fileViewMode === 'list'
-                  ? 'bg-card-border text-[#2563EB]'
+                  ? 'bg-card-border text-[#6E60EE]'
                   : 'text-text-secondary hover:text-foreground'
               )}
               aria-label='List View'
@@ -359,14 +359,14 @@ export default function DashboardOverview () {
               return (
                 <div
                   key={file.id}
-                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#2563EB] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4 flex flex-col gap-3 group relative select-none cursor-pointer transition-all duration-200'
+                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4 flex flex-col gap-3 group relative select-none cursor-pointer transition-all duration-200'
                 >
                   {/* File icon preview container */}
-                  <div className='w-full h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#2563EB]/5 group-hover:border-[#2563EB]/20 transition-all duration-200'>
+                  <div className='w-full h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
                     {file.starred && (
                       <div className="absolute top-2 right-2 bg-card-bg rounded-md p-1 border border-card-border shadow-sm">
-                        <Star className="w-3.5 h-3.5 text-[#2563EB] fill-[#2563EB]" />
+                        <Star className="w-3.5 h-3.5 text-[#6E60EE] fill-[#6E60EE]" />
                       </div>
                     )}
                   </div>
@@ -374,7 +374,7 @@ export default function DashboardOverview () {
                   {/* File details footer row */}
                   <div className='flex items-center justify-between gap-2 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
-                      <span className='text-sm font-bold text-foreground truncate group-hover:text-[#2563EB] transition-colors duration-200'>
+                      <span className='text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                         {file.name}
                       </span>
                       <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
@@ -424,11 +424,11 @@ export default function DashboardOverview () {
                   className='flex items-center justify-between p-4 hover:bg-divider/30 transition-colors duration-200 group cursor-pointer'
                 >
                   <div className='flex items-center gap-3.5 min-w-0 flex-1'>
-                    <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#2563EB] group-hover:text-white group-hover:border-transparent transition-all duration-200'>
+                    <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE] group-hover:text-white group-hover:border-transparent transition-all duration-200'>
                       {getFileIcon(file.type)}
                     </div>
                     <div className='flex flex-col min-w-0'>
-                      <span className='text-sm font-bold text-foreground truncate group-hover:text-[#2563EB] transition-colors duration-200'>
+                      <span className='text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                         {file.name}
                       </span>
                       <span className='text-[13px] font-normal text-text-secondary mt-0.5'>
@@ -438,7 +438,7 @@ export default function DashboardOverview () {
                   </div>
                   <div className='flex items-center gap-3.5 shrink-0' onClick={e => e.stopPropagation()}>
                     {file.starred && (
-                      <Star className='w-4 h-4 text-[#2563EB] fill-[#2563EB]' />
+                      <Star className='w-4 h-4 text-[#6E60EE] fill-[#6E60EE]' />
                     )}
                     <ActionMenu
                       placement='bottom-right'

@@ -25,8 +25,8 @@ interface AppContextType {
   shareFile: (id: string, emails: string[]) => void;
 
   // Modal State Management
-  activeModal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null;
-  setActiveModal: (modal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null) => void;
+  activeModal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | null;
+  setActiveModal: (modal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | null) => void;
   selectedFileId: string | null;
   setSelectedFileId: (id: string | null) => void;
 
@@ -64,7 +64,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Modal disclosures
-  const [activeModal, setActiveModal] = useState<'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | null>(null);
+  const [activeModal, setActiveModal] = useState<'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | null>(null);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
   // Sync theme to DOM root

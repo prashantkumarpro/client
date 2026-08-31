@@ -89,7 +89,7 @@ body {
 }
 
 /* Keyboard focus accessibility states */
-*:focus-visible {
+*:focus-visible:not(input):not(select):not(textarea) {
   outline: 2px solid #6E60EE !important;
   outline-offset: 2px !important;
 }

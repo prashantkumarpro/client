@@ -26,28 +26,29 @@
 }
 
 :root {
-  /* Light mode (default screenshot) */
-  --background: #f0f3f6;
-  /* light slate background */
-  --foreground: #0f172a;
-  /* dark slate text */
-  --card-bg: #ffffff;
-  /* pure white cards */
-  --card-border: #e2e8f0;
-  /* light border */
-  --sidebar-bg: #ffffff;
-  /* white sidebar */
-  --sidebar-border: #e2e8f0;
-  --sidebar-active-bg: #F5F3FF;
-  /* light violet active pill */
+  /* Soft off-white and muted lavender light mode */
+  --background: #FAF9F6;
+  /* clean, soft warm off-white canvas */
+  --foreground: #1E1B24;
+  /* soft deep charcoal text */
+  --card-bg: #FFFFFF;
+  /* pure white containers */
+  --card-border: #E8E6ED;
+  /* faint lavender-gray border */
+  --sidebar-bg: #FCFBF9;
+  /* warm off-white sidebar */
+  --sidebar-border: #E8E6ED;
+  --sidebar-active-bg: #F2EFFF;
+  /* calm soft lavender active pill */
   --sidebar-active-text: #6E60EE;
-  /* blue text */
-  --text-muted: #94a3b8;
-  /* slate-400 */
-  --text-secondary: #475569;
-  /* slate-600 */
-  --input-bg: #f8fafc;
-  --divider: #f1f5f9;
+  /* brand violet text */
+  --text-muted: #8A8594;
+  /* slate-gray-muted text */
+  --text-secondary: #585361;
+  /* deep slate-gray text */
+  --input-bg: #F5F3F7;
+  /* soft input background */
+  --divider: #EBE9F0;
 }
 
 .dark {

@@ -245,7 +245,7 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
                 return (
                   <tr
                     key={file.id}
-                    className="hover:bg-[#F8FAFC] dark:hover:bg-[#1F1F24] transition-colors group cursor-pointer"
+                    className="hover:bg-[#F5F3F7] dark:hover:bg-[#15151F] transition-colors group cursor-pointer"
                     onDoubleClick={() => {
                       if (isFolder) setActiveFolderId(file.id);
                     }}

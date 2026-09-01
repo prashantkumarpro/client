@@ -39,9 +39,10 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'h-16 w-full bg-card-bg border-b border-card-border flex items-center justify-between px-4 md:px-6 text-foreground select-none relative transition-all duration-200 shrink-0 z-20',
+          'h-16 w-full bg-card-bg border-b border-card-border flex items-center justify-between px-6 md:px-8 text-foreground select-none relative transition-all duration-200 shrink-0 z-20 rounded-l-none',
           className
         )}
+        style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
       >
         {/* Left Side: Hamburger & Search Bar */}
         <div className='flex items-center gap-3 z-10 min-w-0'>

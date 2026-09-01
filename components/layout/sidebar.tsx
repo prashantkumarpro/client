@@ -5,10 +5,9 @@ import { useApp } from '../../providers/app-provider'
 import { SidebarSection } from '../../types'
 import { cn } from '../../lib/utils/cn'
 import { Tooltip } from '../ui/tooltip'
-import { Dropdown } from '../ui/dropdown'
 import Image from 'next/image'
 import { getNavItems } from './nav-config'
-import { Sun, Moon, Folder } from 'lucide-react'
+import { Sun, Moon } from 'lucide-react'
 
 interface SidebarProps {
   className?: string
@@ -22,72 +21,12 @@ export function Sidebar({ className }: SidebarProps) {
     toggleSidebar,
     theme,
     toggleTheme,
-    setActiveModal,
   } = useApp()
-
-  const percentageUsed = 72 // Enforce exactly 72% used as per specs
 
   const mainNavItems = getNavItems()
 
   // Theme-specific styles helper
   const isLight = theme === 'light'
-
-  const uploadDropdownItems = [
-    {
-      label: 'New folder',
-      onClick: () => setActiveModal('create-folder'),
-      className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
-      icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
-          <Folder className="w-5 h-5" />
-        </div>
-      )
-    },
-    {
-      label: 'File upload',
-      onClick: () => setActiveModal('upload-file'),
-      className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
-      icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-text-secondary border border-card-border'>
-          <svg
-            className='w-5 h-5'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M12 19V5m0 0l-7 7m7-7l7 7'
-            />
-          </svg>
-        </div>
-      )
-    },
-    {
-      label: 'Folder upload',
-      onClick: () => setActiveModal('upload-folder'),
-      className: 'py-3 px-4 text-sm font-semibold bg-card-bg hover:bg-input-bg text-foreground',
-      icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-text-secondary border border-card-border'>
-          <svg
-            className='w-5 h-5'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M12 19V5m0 0l-7 7m7-7l7 7'
-            />
-          </svg>
-        </div>
-      )
-    }
-  ]
 
   if (isSidebarCollapsed) {
     // ----------------------------------------------------
@@ -119,37 +58,8 @@ export function Sidebar({ className }: SidebarProps) {
           </Tooltip>
         </div>
 
-        {/* Collapsed + New dropdown button trigger */}
-        <div className='w-full px-2 mt-4 flex justify-center'>
-          <Tooltip content='New File/Folder' side='right'>
-            <Dropdown
-              align='left'
-              items={uploadDropdownItems}
-              trigger={
-                <button
-                  className='w-11 h-11 flex items-center justify-center rounded-xl bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'
-                >
-                  <svg
-                    className='w-5 h-5 text-white'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth={3}
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M12 4v16m8-8H4'
-                    />
-                  </svg>
-                </button>
-              }
-            />
-          </Tooltip>
-        </div>
-
         {/* Main Nav Icons */}
-        <nav className='w-full flex-1 mt-4 px-2 flex flex-col gap-1 items-center'>
+        <nav className='w-full flex-1 mt-2 px-2 flex flex-col gap-1 items-center'>
           {mainNavItems.map(item => {
             const isActive = currentSection === item.name
             const isTrash = item.name === 'Trash'
@@ -283,50 +193,8 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
       </div>
 
-      {/* "+ New" Dropdown Button */}
-      <div className='px-4 mt-4'>
-        <Dropdown
-          align='left'
-          className='w-full'
-          items={uploadDropdownItems}
-          trigger={
-            <button className='w-full flex items-center justify-between bg-[#6E60EE] hover:bg-[#6E60EE]/90 rounded-xl px-5 py-3.5 text-sm font-bold text-white cursor-pointer transition-all duration-200 shadow-sm border border-transparent'>
-              <span className='flex items-center gap-3.5'>
-                <svg
-                  className='w-4 h-4 text-white'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                  strokeWidth={3}
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M12 4v16m8-8H4'
-                  />
-                </svg>
-                <span>New File/Folder</span>
-              </span>
-              <svg
-                className='w-4 h-4 text-white opacity-80'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M19 9l-7 7-7-7'
-                />
-              </svg>
-            </button>
-          }
-        />
-      </div>
-
       {/* Navigation List */}
-      <nav className='flex-1 px-3 mt-4 flex flex-col gap-1 select-none'>
+      <nav className='flex-1 px-3 mt-3 flex flex-col gap-1 select-none'>
         {mainNavItems.map(item => {
           const isActive = currentSection === item.name
           const isTrash = item.name === 'Trash'
@@ -339,10 +207,10 @@ export function Sidebar({ className }: SidebarProps) {
               <button
                 onClick={() => setCurrentSection(item.name as SidebarSection)}
                 className={cn(
-                  'w-full flex items-center justify-between px-3.5 py-2.5 rounded-r-xl border-l-2 font-sans transition-all duration-150 cursor-pointer',
+                  'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-sans transition-all duration-150 cursor-pointer border border-transparent',
                   isActive
-                    ? 'bg-sidebar-active-bg border-[#6E60EE] text-foreground font-bold'
-                    : 'border-transparent text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground font-semibold'
+                    ? 'bg-sidebar-active-bg text-[#6E60EE] dark:text-white font-bold'
+                    : 'text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground font-semibold'
                 )}
               >
                 <span className='flex items-center gap-3 text-[13px]'>

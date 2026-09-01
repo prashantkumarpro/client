@@ -5,8 +5,6 @@ import { useApp } from '../../providers/app-provider';
 import { SidebarSection } from '../../types';
 
 import { cn } from '../../lib/utils/cn';
-import { formatBytes } from '../../lib/utils/format';
-import { Dropdown } from '../ui/dropdown';
 import Image from 'next/image';
 import { getNavItems } from './nav-config';
 import { Tooltip } from '../ui/tooltip';
@@ -21,16 +19,11 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const {
     currentSection,
     setCurrentSection,
-    storageStats,
-    files,
     theme,
     toggleTheme,
-    setActiveModal
   } = useApp();
 
   const menuItems = getNavItems();
-  const percentageUsed = 72;
-  const isTrashEmpty = !files.some(f => f.deleted);
 
   // Prevent background scrolling when open
   useEffect(() => {
@@ -43,45 +36,6 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
-
-  const uploadDropdownItems = [
-    {
-      label: 'Upload File',
-      onClick: () => {
-        setActiveModal('upload-file');
-        onClose();
-      },
-      icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Upload Folder',
-      onClick: () => {
-        setActiveModal('upload-folder');
-        onClose();
-      },
-      icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        </svg>
-      ),
-    },
-    {
-      label: 'New Folder',
-      onClick: () => {
-        setActiveModal('create-folder');
-        onClose();
-      },
-      icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-    },
-  ];
 
   return (
     <div className={cn(
@@ -108,8 +62,8 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             <div className='flex items-center gap-3 min-w-0'>
               <Image
                 src="/images/logo.png"
-                width={44}
-                height={44}
+                width={40}
+                height={40}
                 alt="Logo"
                 className="object-contain"
                 priority
@@ -140,48 +94,6 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               </button>
             </Tooltip>
           </div>
-        </div>
-
-        {/* "+ New" Dropdown Button */}
-        <div className='mt-4 shrink-0'>
-          <Dropdown
-            align='left'
-            className='w-full'
-            items={uploadDropdownItems}
-            trigger={
-              <button className='w-full flex items-center justify-between bg-[#6E60EE] hover:bg-[#6E60EE]/90 rounded-xl px-5 py-3.5 shadow-sm text-sm font-bold text-white cursor-pointer transition-all duration-200 border border-transparent'>
-                <span className='flex items-center gap-3.5'>
-                  <svg
-                    className='w-4 h-4 text-white'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth={3}
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M12 4v16m8-8H4'
-                    />
-                  </svg>
-                  <span>New File/Folder</span>
-                </span>
-                <svg
-                  className='w-4 h-4 text-white opacity-80'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M19 9l-7 7-7-7'
-                  />
-                </svg>
-              </button>
-            }
-          />
         </div>
 
         {/* Navigation List */}
@@ -220,16 +132,6 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                     </span>
                     <span className="flex items-center gap-1.5 justify-between flex-1 min-w-0">
                       <span className="truncate">{item.name === 'Shared' ? 'Shared with me' : item.name}</span>
-                      {item.name === 'Trash' && (
-                        <span className={cn(
-                          "text-[9px] font-bold uppercase tracking-[0.5px] px-1.5 py-0.5 shrink-0 select-none",
-                          isTrashEmpty
-                            ? "text-slate-450 dark:text-zinc-650 bg-slate-100 dark:bg-zinc-800/40"
-                            : "text-[#e22718] bg-rose-50 dark:bg-red-950/20"
-                        )}>
-                          {isTrashEmpty ? 'Empty' : `${files.filter(f => f.deleted).length}`}
-                        </span>
-                      )}
                     </span>
                   </span>
                 </button>
@@ -238,11 +140,9 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           })}
         </nav>
 
-        {/* Separator above Storage */}
-        <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5 mx-3 shrink-0' />
-
-        {/* Storage details panel */}
-        <div className='py-1.5 shrink-0'>
+        {/* Bottom Section: Storage & Theme Toggle */}
+        <div className='flex flex-col gap-3 pt-2 border-t border-card-border mt-auto shrink-0'>
+          {/* Storage Information Card */}
           <div className='w-full bg-white dark:bg-zinc-900/60 rounded-2xl p-3 shadow-[inset_0_0_0_1px_var(--color-card-border)] flex flex-col gap-2.5 select-none'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-2'>
@@ -251,23 +151,23 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                     <path strokeLinecap='round' strokeLinejoin='round' d='M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z' />
                   </svg>
                 </div>
-                <span className='text-[11px] font-bold text-slate-800 dark:text-slate-200'>
+                <span className='text-[11px] font-bold text-foreground'>
                   Storage
                 </span>
               </div>
               <span className='text-[9px] font-bold text-white bg-[#6E60EE] px-2 py-0.5 rounded-full'>
-                {percentageUsed}%
+                72%
               </span>
             </div>
 
             <div className='flex flex-col gap-1'>
-              <span className='text-[10px] font-bold text-[#6B7280]'>
-                {percentageUsed}% used &bull; 2.8 GB free
+              <span className='text-[10px] font-bold text-text-secondary'>
+                72% used &bull; 2.8 GB free
               </span>
               <div className='w-full bg-[#F3F4F6] h-2.5 overflow-hidden relative border border-[#E5E7EB] rounded-full'>
                 <div
                   className='h-full bg-[#6E60EE]'
-                  style={{ width: `${percentageUsed}%` }}
+                  style={{ width: '72%' }}
                 />
               </div>
             </div>
@@ -282,39 +182,34 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               </svg>
             </button>
           </div>
-        </div>
 
-        {/* Separator above Switcher */}
-        <div className='h-[1px] bg-slate-100 dark:bg-zinc-800/80 my-0.5 mx-3 shrink-0' />
-
-        {/* Theme Toggle switcher (capsule tab layout) */}
-        <div className='py-1.5 shrink-0'>
+          {/* Theme Switcher Toggle */}
           <div className='w-full p-0.5 bg-slate-50/50 dark:bg-zinc-950/40 rounded-xl flex items-center justify-between select-none shadow-[inset_0_0_0_1px_var(--color-card-border)] relative border border-card-border'>
             <button
               onClick={() => theme === 'dark' && toggleTheme()}
               className={cn(
                 'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
                 theme === 'light'
-                  ? 'bg-card-bg text-[#6E60EE] shadow-sm border border-card-border font-bold'
+                  ? 'bg-card-bg border-card-border text-[#6E60EE] font-bold shadow-sm'
                   : 'text-text-secondary hover:text-foreground'
               )}
             >
-              <Sun className='w-4.5 h-4.5 text-amber-500' />
+              <Sun className='w-4 h-4 text-amber-500' />
               <span>Light</span>
             </button>
 
-            <div className='h-4 w-[1px] bg-card-border shrink-0 self-center' />
+            <div className='h-4 w-[1px] bg-sidebar-border shrink-0 self-center' />
 
             <button
               onClick={() => theme === 'light' && toggleTheme()}
               className={cn(
                 'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none border border-transparent',
                 theme === 'dark'
-                  ? 'bg-card-bg text-[#6E60EE] shadow-sm border border-card-border font-bold'
+                  ? 'bg-card-bg border-card-border text-white font-bold shadow-sm'
                   : 'text-text-secondary hover:text-foreground'
               )}
             >
-              <Moon className='w-4.5 h-4.5 text-slate-700 dark:text-slate-300' />
+              <Moon className='w-4 h-4 text-slate-400' />
               <span>Dark</span>
             </button>
           </div>

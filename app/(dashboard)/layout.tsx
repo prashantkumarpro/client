@@ -19,13 +19,19 @@ export default function DashboardLayout({
         {/* Sidebar Navigation */}
         <Sidebar className='hidden md:flex' />
 
-        {/* Main content viewport */}
-        <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-background'>
+        {/* Main content viewport - flush against the vertical divider */}
+        <div 
+          className='flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-background rounded-l-none'
+          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+        >
           {/* Top Header */}
-          <Header onMenuToggle={() => setIsMobileNavOpen(true)} />
+          <Header onMenuToggle={() => setIsMobileNavOpen(true)} className='rounded-l-none' />
 
           {/* Dashboard Inner Scrollable Body */}
-          <main className='flex-1 overflow-y-auto p-6 flex flex-col gap-6'>
+          <main 
+            className='flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-6 flex flex-col gap-6 rounded-l-none'
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          >
             {children}
           </main>
         </div>

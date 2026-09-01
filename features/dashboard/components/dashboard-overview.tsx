@@ -46,17 +46,17 @@ const INITIAL_FOLDER_CARDS: FolderCardData[] = [
   }
 ];
 
-export default function DashboardOverview () {
-  const { 
-    files, 
-    setCurrentSection, 
-    setActiveModal, 
-    setSelectedFileId, 
+export default function DashboardOverview() {
+  const {
+    files,
+    setCurrentSection,
+    setActiveModal,
+    setSelectedFileId,
     setActiveFolderId,
     toggleStar,
     deleteFile
   } = useApp()
-  
+
   const [folderCards, setFolderCards] = useState<FolderCardData[]>(INITIAL_FOLDER_CARDS)
   const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
   const [fileViewMode, setFileViewMode] = useState<'grid' | 'list'>('list')
@@ -164,7 +164,7 @@ export default function DashboardOverview () {
       </div>
 
       {/* Continue where you left off Card (Entire card is clickable, border hover, shadow-sm specs) */}
-      <div 
+      <div
         onClick={() => {
           setCurrentSection('My Files')
           setActiveFolderId('folder-1') // Set folder to Design Assets
@@ -290,7 +290,7 @@ export default function DashboardOverview () {
           <h3 className='text-lg font-bold text-foreground tracking-tight'>
             Recently Opened
           </h3>
-          
+
           {/* File View Mode Toggle Switcher */}
           <div className='flex items-center bg-divider border border-card-border p-0.5 rounded-lg shrink-0'>
             <button

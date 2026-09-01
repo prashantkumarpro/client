@@ -31,7 +31,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   // Theme-specific styles helper
   const isLight = theme === 'light'
-  
+
   const uploadDropdownItems = [
     {
       label: 'New folder',

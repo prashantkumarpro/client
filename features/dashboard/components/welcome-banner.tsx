@@ -2,12 +2,12 @@
 
 import React from 'react'
 
-export default function WelcomeBanner () {
+export default function WelcomeBanner() {
   return (
     <div className='flex flex-col gap-4 w-full shrink-0 select-none'>
       {/* Welcome Greeting Banner Card */}
       <div className='relative bg-gradient-to-r from-blue-50/40 to-indigo-50/20 dark:from-blue-950/10 dark:to-indigo-950/5 border border-blue-100/40 dark:border-blue-950/10 p-4 rounded-lg flex flex-row items-center justify-between overflow-hidden shadow-none min-h-[64px]'>
-        
+
         {/* Subtle cloud/file background illustration on the right */}
         <div className='absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-2 opacity-15 dark:opacity-25 pointer-events-none z-0'>
           {/* Cloud SVG */}

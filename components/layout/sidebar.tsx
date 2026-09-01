@@ -96,21 +96,21 @@ export function Sidebar({ className }: SidebarProps) {
     return (
       <aside
         className={cn(
-          'w-16 flex flex-col justify-between items-center h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 relative border-r bg-sidebar-bg border-sidebar-border',
+          'w-16 flex flex-col justify-between items-center h-full pb-2 md:pb-3 select-none shrink-0 transition-all duration-200 relative border-r bg-sidebar-bg border-sidebar-border',
           className
         )}
       >
-        {/* Brand Logo - Centered Icon */}
-        <div className='flex flex-col items-center shrink-0 w-full px-2'>
+        {/* Brand Logo - Height 16 matching top header baseline */}
+        <div className='h-16 flex items-center justify-center shrink-0 w-full px-2'>
           <Tooltip content="open sidebar" side="right">
             <div
               onClick={toggleSidebar}
-              className='w-12 h-12 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
+              className='w-10 h-10 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
             >
               <Image
                 src="/images/logo.png"
-                width={48}
-                height={48}
+                width={36}
+                height={36}
                 alt="Logo"
                 className="object-contain"
                 priority
@@ -252,12 +252,12 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'w-60 flex flex-col justify-between h-full pt-1.5 pb-2 md:pt-2.5 md:pb-3 select-none shrink-0 transition-all duration-200 text-foreground relative border-r bg-sidebar-bg border-sidebar-border',
+        'w-60 flex flex-col justify-between h-full pb-2 md:pb-3 select-none shrink-0 transition-all duration-200 text-foreground relative border-r bg-sidebar-bg border-sidebar-border',
         className
       )}
     >
-      {/* Brand Header */}
-      <div className='px-4 flex shrink-0 w-full'>
+      {/* Brand Header - Height 16 matching top header baseline */}
+      <div className='h-16 px-4 flex items-center shrink-0 w-full'>
         <div
           className='flex w-full items-center justify-start select-none'
         >
@@ -269,8 +269,8 @@ export function Sidebar({ className }: SidebarProps) {
             >
               <Image
                 src="/images/logo.png"
-                width={48}
-                height={48}
+                width={36}
+                height={36}
                 alt="Logo"
                 className="object-contain"
                 priority

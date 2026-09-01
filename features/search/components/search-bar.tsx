@@ -75,7 +75,7 @@ export function SearchBar() {
         </button>
       </Tooltip>
 
-      {/* 3. New File/Folder Dropdown (hidden on mobile/tablet) */}
+      {/* 3. Enhanced Primary "+" Action Button with Brand Color Fill (hidden on mobile/tablet) */}
       <div className="hidden md:block">
         <Tooltip content="New File/Folder" side="bottom">
           <Dropdown
@@ -83,12 +83,11 @@ export function SearchBar() {
             items={uploadDropdownItems}
             trigger={
               <button
-                className="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:text-foreground hover:bg-divider/60 transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white shadow-xs transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
                 aria-label="New folder or file upload options menu"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 8v8m-4-4h8" />
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14m-7-7h14" />
                 </svg>
               </button>
             }

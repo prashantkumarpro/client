@@ -73,13 +73,40 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
         </div>
 
         {/* Header Actions cluster */}
-        <div className='flex items-center gap-3 md:gap-4 ml-auto shrink-0 z-10'>
+        <div className='flex items-center gap-2 md:gap-3 ml-auto shrink-0 z-10'>
           {/* Notifications Icon Button */}
           <div className='relative shrink-0 flex items-center justify-center'>
+            <Tooltip content="Notifications" side="bottom">
+              <button
+                className='w-10 h-10 rounded-full bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg flex items-center justify-center cursor-pointer transition-all duration-200 relative'
+                onClick={() => alert('Viewing 3 mock notifications')}
+                aria-label='View notifications'
+              >
+                <svg
+                  className='w-5.5 h-5.5'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                  strokeWidth={2.2}
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                >
+                  <path d='M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' />
+                </svg>
+                {/* Red urgency badge with ring breathing room */}
+                <span className='absolute top-1 right-1 bg-red-500 text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm pointer-events-none ring-2 ring-card-bg'>
+                  3
+                </span>
+              </button>
+            </Tooltip>
+          </div>
+
+          {/* Settings Icon Button (grouped closely with bell, no isolating divider) */}
+          <Tooltip content="Settings" side="bottom">
             <button
-              className='w-10 h-10 bg-transparent text-text-secondary hover:text-foreground rounded-xl flex items-center justify-center cursor-pointer hover:bg-input-bg transition-all duration-200 relative'
-              onClick={() => alert('Viewing 3 mock notifications')}
-              aria-label='View notifications'
+              className='hidden md:flex w-10 h-10 rounded-full bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg items-center justify-center cursor-pointer transition-all duration-200 shrink-0'
+              onClick={() => setCurrentSection('Settings')}
+              aria-label='Open settings'
             >
               <svg
                 className='w-5.5 h-5.5'
@@ -90,47 +117,18 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
                 strokeLinecap='round'
                 strokeLinejoin='round'
               >
-                <path d='M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' />
+                <path d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' />
+                <path d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
               </svg>
-              {/* Red urgency badge with ring breathing room */}
-              <span className='absolute top-0.5 right-0.5 bg-red-500 text-white text-[8.5px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm pointer-events-none ring-2 ring-card-bg'>
-                3
-              </span>
             </button>
-          </div>
+          </Tooltip>
 
-          {/* Divider */}
-          <div className='hidden md:block h-6 w-[1px] bg-card-border shrink-0 self-center' />
-
-          {/* Settings Icon Button */}
-          <button
-            className='hidden md:flex w-10 h-10 bg-transparent text-text-secondary hover:text-foreground rounded-xl items-center justify-center cursor-pointer hover:bg-input-bg transition-all duration-200 shrink-0'
-            onClick={() => setCurrentSection('Settings')}
-            aria-label='Open settings'
-          >
-            <svg
-              className='w-5.5 h-5.5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-              strokeWidth={2.2}
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            >
-              <path d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' />
-              <path d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-            </svg>
-          </button>
-
-          {/* Divider */}
-          <div className='hidden md:block h-6 w-[1px] bg-card-border shrink-0 self-center' />
-
-          {/* User profile dropdown - Avatar and chevron grouped tightly as one unit */}
+          {/* User profile dropdown - Pill style matching left-side pill visual weight */}
           <Dropdown
             align='right'
             items={profileDropdownItems}
             trigger={
-              <div className='flex items-center gap-1.5 p-1 pr-1.5 rounded-full hover:bg-input-bg cursor-pointer select-none transition-colors group relative shrink-0 h-10 border border-transparent hover:border-card-border'>
+              <div className='flex items-center gap-1.5 p-1 pl-1 pr-2.5 rounded-full bg-input-bg hover:bg-input-bg/80 border border-card-border cursor-pointer select-none transition-all group relative shrink-0 h-10 shadow-none'>
                 <div className='w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-800 overflow-hidden relative shrink-0 shadow-[inset_0_0_0_1px_var(--color-card-border)]'>
                   <img
                     src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&fit=crop'

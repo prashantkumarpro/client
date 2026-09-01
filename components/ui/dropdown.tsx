@@ -49,12 +49,12 @@ export function Dropdown({ trigger, items, align = 'right', className }: Dropdow
       {isOpen && (
         <div
           className={cn(
-            "absolute z-30 mt-2 w-56 bg-card-bg border border-card-border rounded-xl shadow-xl focus:outline-none transition-all duration-150 overflow-hidden",
+            "absolute z-40 mt-2.5 w-60 bg-card-bg border border-card-border rounded-2xl shadow-2xl focus:outline-none transition-all duration-150 p-1.5 flex flex-col gap-0.5",
             align === 'right' ? 'right-0' : 'left-0'
           )}
         >
           {/* Dropdown Items list */}
-          <div className="py-1" role="menu" aria-orientation="vertical">
+          <div className="flex flex-col gap-0.5 w-full" role="menu" aria-orientation="vertical">
             {items.map((item, index) => (
               <button
                 key={index}
@@ -66,13 +66,13 @@ export function Dropdown({ trigger, items, align = 'right', className }: Dropdow
                 }}
                 disabled={item.disabled}
                 className={cn(
-                  "w-full text-left px-4 py-3 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-divider transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+                  "w-full text-left px-3 py-2.5 text-sm font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg transition-colors flex items-center gap-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none",
                   item.className
                 )}
                 role="menuitem"
               >
-                {item.icon && <span className="text-text-muted shrink-0 group-hover:text-foreground">{item.icon}</span>}
-                <span>{item.label}</span>
+                {item.icon && <span className="shrink-0 flex items-center justify-center">{item.icon}</span>}
+                <span className="truncate">{item.label}</span>
               </button>
             ))}
           </div>

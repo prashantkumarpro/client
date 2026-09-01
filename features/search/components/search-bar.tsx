@@ -4,7 +4,7 @@ import React from 'react';
 import { useApp } from '@/providers/app-provider';
 import { Tooltip } from '@/components/ui/tooltip';
 import { Dropdown } from '@/components/ui/dropdown';
-import { Folder, Search } from 'lucide-react';
+import { Search, FolderPlus, FileUp, FolderUp } from 'lucide-react';
 
 export function SearchBar() {
   const { toggleSidebar, isSidebarCollapsed, setActiveModal } = useApp();
@@ -13,34 +13,30 @@ export function SearchBar() {
     {
       label: 'New folder',
       onClick: () => setActiveModal('create-folder'),
-      className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
+      className: 'px-3 py-2.5 rounded-xl hover:bg-input-bg text-foreground transition-colors font-semibold text-sm',
       icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
-          <Folder className="w-5 h-5" />
+        <div className='w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
+          <FolderPlus className="w-4 h-4" strokeWidth={2.2} />
         </div>
       )
     },
     {
       label: 'File upload',
       onClick: () => setActiveModal('upload-file'),
-      className: 'py-3 px-4 text-sm font-semibold border-b bg-card-bg hover:bg-input-bg text-foreground border-card-border',
+      className: 'px-3 py-2.5 rounded-xl hover:bg-input-bg text-foreground transition-colors font-semibold text-sm',
       icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-text-secondary border border-card-border'>
-          <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.2} strokeLinecap='round' strokeLinejoin='round'>
-            <path d='M12 19V5m0 0l-7 7m7-7l7 7' />
-          </svg>
+        <div className='w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
+          <FileUp className="w-4 h-4" strokeWidth={2.2} />
         </div>
       )
     },
     {
       label: 'Folder upload',
       onClick: () => setActiveModal('upload-folder'),
-      className: 'py-3 px-4 text-sm font-semibold bg-card-bg hover:bg-input-bg text-foreground',
+      className: 'px-3 py-2.5 rounded-xl hover:bg-input-bg text-foreground transition-colors font-semibold text-sm',
       icon: (
-        <div className='w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-input-bg text-text-secondary border border-card-border'>
-          <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.2} strokeLinecap='round' strokeLinejoin='round'>
-            <path d='M12 19V5m0 0l-7 7m7-7l7 7' />
-          </svg>
+        <div className='w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
+          <FolderUp className="w-4 h-4" strokeWidth={2.2} />
         </div>
       )
     }
@@ -75,24 +71,22 @@ export function SearchBar() {
         </button>
       </Tooltip>
 
-      {/* 3. Enhanced Primary "+" Action Button with Brand Color Fill (hidden on mobile/tablet) */}
+      {/* 3. Enhanced Primary "+" Action Button with Dropdown (hidden on mobile/tablet) */}
       <div className="hidden md:block">
-        <Tooltip content="New File/Folder" side="bottom">
-          <Dropdown
-            align="left"
-            items={uploadDropdownItems}
-            trigger={
-              <button
-                className="w-7 h-7 rounded-full flex items-center justify-center bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white shadow-xs transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
-                aria-label="New folder or file upload options menu"
-              >
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14m-7-7h14" />
-                </svg>
-              </button>
-            }
-          />
-        </Tooltip>
+        <Dropdown
+          align="left"
+          items={uploadDropdownItems}
+          trigger={
+            <button
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white shadow-xs transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
+              aria-label="New folder or file upload options menu"
+            >
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14m-7-7h14" />
+              </svg>
+            </button>
+          }
+        />
       </div>
     </div>
   );

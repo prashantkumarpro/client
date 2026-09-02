@@ -75,9 +75,9 @@ export default function DashboardOverview() {
   // Get active time-aware greeting
   const getGreeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning, Prashant'
-    if (hour < 17) return 'Good afternoon, Prashant'
-    return 'Good evening, Prashant'
+    if (hour < 12) return 'Good morning, Prashant 👋'
+    if (hour < 17) return 'Good afternoon, Prashant 👋'
+    return 'Good evening, Prashant 👋'
   }
 
   // Helper to map file types to icons in mid gray color (grayscale)
@@ -125,76 +125,77 @@ export default function DashboardOverview() {
   }, [allFilesOnly])
 
   return (
-    <div className='flex flex-col gap-6 w-full select-none'>
-      {/* Title Header Greeting Area (Welcome Banner Card) */}
-      <div className='flex flex-col gap-4 w-full select-none'>
-        {/* Welcome Banner Card */}
-        <div className='bg-input-bg border border-card-border rounded-lg py-3 px-5 flex items-center justify-between select-none min-h-[50px]'>
-          <div className='flex items-center gap-3.5 min-w-0'>
-            <h2 className='text-base font-bold text-foreground shrink-0'>
-              {getGreeting()}
-            </h2>
-            <span className='text-card-border font-light'>|</span>
-            <p className='text-sm font-normal text-text-secondary truncate'>
-              Everything you need, right where you left it.
-            </p>
-          </div>
-        </div>
+    <div className='flex flex-col w-full select-none'>
+      {/* Top Greeting, Actions & Continue Section */}
+      <div className='flex flex-col items-start w-full select-none'>
+        {/* Greeting headline */}
+        <h1 className='text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-1.5'>
+          {getGreeting()}
+        </h1>
 
-        {/* Action Buttons (Upload Files primary, New Folder outline) */}
-        <div className='flex md:hidden items-center gap-2 select-none'>
+        {/* Subtitle (4–6px below greeting) */}
+        <p className='text-xs text-text-muted mt-1'>
+          Everything you need, right where you left it.
+        </p>
+
+        {/* Mobile-Only Action Buttons (12–16px below subtitle, hidden on desktop since desktop header has '+' button) */}
+        <div className='flex md:hidden items-center gap-2 mt-3.5'>
           <button
             onClick={() => setActiveModal('upload-file')}
-            className='inline-flex items-center gap-1.5 px-4 py-2 bg-[#6E60EE] text-white rounded-lg text-sm font-bold hover:bg-[#6E60EE]/90 transition-all duration-200 cursor-pointer focus:outline-none border border-transparent'
+            className='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer focus:outline-none'
           >
-            <svg className='w-4 h-4 shrink-0 text-white' fill='none' stroke='currentColor' strokeWidth={2.5} viewBox='0 0 24 24'>
+            <svg className='w-3.5 h-3.5 shrink-0 text-white' fill='none' stroke='currentColor' strokeWidth={2.2} viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5' />
             </svg>
             <span>Upload Files</span>
           </button>
+
           <button
             onClick={() => setActiveModal('create-folder')}
-            className='inline-flex items-center gap-1.5 px-4 py-2 bg-transparent text-foreground border border-card-border rounded-lg text-sm font-bold hover:bg-input-bg transition-all duration-200 cursor-pointer focus:outline-none'
+            className='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-card-bg hover:bg-input-bg text-foreground border border-card-border rounded-lg text-xs font-semibold transition-colors cursor-pointer focus:outline-none'
           >
-            <svg className='w-4 h-4 shrink-0 text-text-secondary' fill='none' stroke='currentColor' strokeWidth={2.5} viewBox='0 0 24 24'>
+            <svg className='w-3.5 h-3.5 shrink-0 text-text-secondary' fill='none' stroke='currentColor' strokeWidth={2.2} viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' d='M12 4.5v15m7.5-7.5h-15' />
             </svg>
             <span>New Folder</span>
           </button>
         </div>
-      </div>
 
-      {/* Continue where you left off Card (Entire card is clickable, border hover, shadow-sm specs) */}
-      <div
-        onClick={() => {
-          setCurrentSection('My Files')
-          setActiveFolderId('folder-1') // Set folder to Design Assets
-        }}
-        className='bg-card-bg border border-card-border hover:border-[#6E60EE] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-5 flex items-center justify-between transition-all duration-200 cursor-pointer group focus:outline-none'
-      >
-        <div className='flex items-center gap-4 min-w-0'>
-          <div className='w-10 h-10 rounded-lg bg-input-bg border border-card-border flex items-center justify-center text-[#6E60EE] group-hover:text-white group-hover:bg-[#6E60EE] transition-all duration-200 shrink-0'>
-            <Folder className='w-5 h-5 shrink-0' />
+        {/* Compact Continue where you left off row (Desktop: ~500-600px wide, left-aligned; Mobile: full-width below buttons) */}
+        <div
+          onClick={() => {
+            setCurrentSection('My Files')
+            setActiveFolderId('folder-1') // Set folder to Design Assets
+          }}
+          className='w-full md:w-[560px] md:max-w-[600px] mt-3 md:mt-3.5 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-3.5 py-2 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
+        >
+          <div className='flex items-center gap-2.5 min-w-0'>
+            <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>
+              <Folder className='w-3.5 h-3.5 shrink-0' />
+            </div>
+            <div className='flex items-center gap-1.5 min-w-0'>
+              <span className='text-[11px] font-semibold uppercase tracking-wider text-text-muted shrink-0'>
+                Continue:
+              </span>
+              <span className='font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors'>
+                Design Assets
+              </span>
+            </div>
           </div>
-          <div className='flex flex-col min-w-0'>
-            <span className='text-[12px] font-bold uppercase tracking-wider text-text-muted'>
-              Continue where you left off
+          <div className='flex items-center gap-2 shrink-0 text-text-secondary group-hover:text-[#6E60EE] transition-colors'>
+            <span className='text-[11px] text-text-muted hidden xs:inline'>
+              Last opened 12 min ago
             </span>
-            <span className='text-sm font-bold text-foreground truncate mt-0.5'>
-              Design Assets
+            <span className='text-[11px] text-text-muted xs:hidden'>
+              12m ago
             </span>
+            <ChevronRight className='w-3.5 h-3.5' />
           </div>
         </div>
-        <div className='flex items-center gap-3 shrink-0'>
-          <span className='text-xs font-normal text-text-secondary'>
-            Last opened 12 min ago
-          </span>
-          <ChevronRight className='w-4 h-4 text-text-secondary group-hover:text-[#6E60EE] transition-colors duration-200' />
-        </div>
       </div>
 
-      {/* Your folders Section */}
-      <div className='flex flex-col gap-3 mt-1'>
+      {/* Your folders Section (20–24px below Continue) */}
+      <div className='flex flex-col gap-3 mt-5 sm:mt-6'>
         <div className='flex items-center justify-between w-full'>
           <h3 className='text-lg font-bold text-foreground tracking-tight'>
             Your folders

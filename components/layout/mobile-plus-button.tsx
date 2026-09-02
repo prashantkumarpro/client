@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { useApp } from '@/providers/app-provider'
-import { Plus, FolderPlus, FileUp, FolderUp } from 'lucide-react'
+import { Plus, Upload, FolderPlus, X } from 'lucide-react'
 
 export function MobilePlusButton() {
   const [isOpen, setIsOpen] = useState(false)
@@ -25,85 +25,80 @@ export function MobilePlusButton() {
     }
   }, [isOpen])
 
-  const menuItems = [
-    {
-      label: 'New folder',
-      onClick: () => {
-        close()
-        setActiveModal('create-folder')
-      },
-      icon: <FolderPlus className='w-4 h-4' strokeWidth={2.2} />
-    },
-    {
-      label: 'File upload',
-      onClick: () => {
-        close()
-        setActiveModal('upload-file')
-      },
-      icon: <FileUp className='w-4 h-4' strokeWidth={2.2} />
-    },
-    {
-      label: 'Folder upload',
-      onClick: () => {
-        close()
-        setActiveModal('upload-folder')
-      },
-      icon: <FolderUp className='w-4 h-4' strokeWidth={2.2} />
-    }
-  ]
-
   return (
     <>
-      {/* Backdrop overlay for outside click dismissal on mobile */}
+      {/* Backdrop overlay */}
       {isOpen && (
         <div
           onClick={close}
-          className='fixed inset-0 z-40 bg-black/25 backdrop-blur-[1px] md:hidden transition-opacity animate-in fade-in duration-150'
+          className='fixed inset-0 z-40 bg-black/35 backdrop-blur-[2px] md:hidden transition-opacity duration-200 ease-out'
           aria-hidden='true'
         />
       )}
 
-      {/* Fixed Floating Container at bottom right */}
+      {/* Speed Dial Container at bottom right */}
       <div
         ref={containerRef}
-        className='fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] z-50 md:hidden'
+        className='fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] z-50 md:hidden flex flex-col items-end'
       >
-        {/* Menu opening upwards above the FAB */}
-        {isOpen && (
-          <div
-            className='absolute bottom-full right-0 mb-3 w-56 bg-card-bg border border-card-border rounded-2xl shadow-2xl p-1.5 flex flex-col gap-1 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150'
-            role='menu'
-            aria-orientation='vertical'
+        {/* Actions speed-dial expanding vertically above the FAB */}
+        <div
+          className={`flex flex-col items-end gap-2.5 mb-3 transition-all duration-200 ease-out origin-bottom-right ${
+            isOpen
+              ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+              : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
+          }`}
+          role='menu'
+          aria-orientation='vertical'
+        >
+          {/* Action 1: Upload */}
+          <button
+            onClick={() => {
+              close()
+              setActiveModal('upload-file')
+            }}
+            className='flex items-center gap-3 px-4 py-2.5 rounded-full bg-card-bg text-foreground border border-card-border shadow-xl hover:border-[#6E60EE]/50 active:bg-input-bg active:scale-95 transition-all text-sm font-semibold cursor-pointer select-none'
+            role='menuitem'
           >
-            {menuItems.map((item, index) => (
-              <button
-                key={index}
-                onClick={item.onClick}
-                className='w-full text-left px-3 py-2.5 text-sm font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg active:bg-input-bg transition-colors flex items-center gap-3 rounded-xl cursor-pointer select-none'
-                role='menuitem'
-              >
-                <div className='w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border'>
-                  {item.icon}
-                </div>
-                <span className='truncate'>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
+            <Upload className='w-4 h-4 text-[#6E60EE]' strokeWidth={2.2} />
+            <span>Upload</span>
+          </button>
 
-        {/* Floating Circular Plus Action Button */}
+          {/* Action 2: New folder */}
+          <button
+            onClick={() => {
+              close()
+              setActiveModal('create-folder')
+            }}
+            className='flex items-center gap-3 px-4 py-2.5 rounded-full bg-card-bg text-foreground border border-card-border shadow-xl hover:border-[#6E60EE]/50 active:bg-input-bg active:scale-95 transition-all text-sm font-semibold cursor-pointer select-none'
+            role='menuitem'
+          >
+            <FolderPlus className='w-4 h-4 text-[#6E60EE]' strokeWidth={2.2} />
+            <span>New folder</span>
+          </button>
+        </div>
+
+        {/* Floating Action Button (FAB) */}
         <button
           onClick={toggle}
           aria-expanded={isOpen}
-          aria-label='Create or upload new item'
-          className='w-14 h-14 rounded-full bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white flex items-center justify-center shadow-lg shadow-[#6E60EE]/35 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none'
+          aria-label={isOpen ? 'Close actions menu' : 'Open actions menu'}
+          className='w-14 h-14 rounded-full bg-[#6E60EE] hover:bg-[#6E60EE]/90 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-[#6E60EE]/35 transition-all duration-200 ease-out cursor-pointer focus:outline-none'
         >
-          <Plus
-            className={`w-6 h-6 text-white transition-transform duration-200 ${
-              isOpen ? 'rotate-45' : 'rotate-0'
-            }`}
-            strokeWidth={2.5}
-          />
+          <div className='relative w-6 h-6 flex items-center justify-center'>
+            <Plus
+              className={`w-6 h-6 text-white absolute transition-all duration-200 ease-out ${
+                isOpen ? 'rotate-90 opacity-0 scale-75' : 'rotate-0 opacity-100 scale-100'
+              }`}
+              strokeWidth={2.5}
+            />
+            <X
+              className={`w-6 h-6 text-white absolute transition-all duration-200 ease-out ${
+                isOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-75'
+              }`}
+              strokeWidth={2.5}
+            />
+          </div>
         </button>
       </div>
     </>

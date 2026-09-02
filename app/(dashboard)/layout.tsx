@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { MobileNav } from '@/components/layout/mobile-nav'
+import { MobilePlusButton } from '@/components/layout/mobile-plus-button'
 import { AuthGuard } from '@/components/auth/auth-gaurd'
 
 export default function DashboardLayout({
@@ -35,6 +36,9 @@ export default function DashboardLayout({
             {children}
           </main>
         </div>
+
+        {/* Mobile Floating Action Button (Global Plus) */}
+        <MobilePlusButton />
 
         {/* Mobile Drawer menu */}
         <MobileNav isOpen={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} />

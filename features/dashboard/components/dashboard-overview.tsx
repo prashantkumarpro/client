@@ -138,36 +138,13 @@ export default function DashboardOverview() {
           Everything you need, right where you left it.
         </p>
 
-        {/* Mobile-Only Action Buttons (12–16px below subtitle, hidden on desktop since desktop header has '+' button) */}
-        <div className='flex md:hidden items-center gap-2 mt-3.5'>
-          <button
-            onClick={() => setActiveModal('upload-file')}
-            className='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer focus:outline-none'
-          >
-            <svg className='w-3.5 h-3.5 shrink-0 text-white' fill='none' stroke='currentColor' strokeWidth={2.2} viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5' />
-            </svg>
-            <span>Upload Files</span>
-          </button>
-
-          <button
-            onClick={() => setActiveModal('create-folder')}
-            className='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-card-bg hover:bg-input-bg text-foreground border border-card-border rounded-lg text-xs font-semibold transition-colors cursor-pointer focus:outline-none'
-          >
-            <svg className='w-3.5 h-3.5 shrink-0 text-text-secondary' fill='none' stroke='currentColor' strokeWidth={2.2} viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' d='M12 4.5v15m7.5-7.5h-15' />
-            </svg>
-            <span>New Folder</span>
-          </button>
-        </div>
-
-        {/* Compact Continue where you left off row (Desktop: ~500-600px wide, left-aligned; Mobile: full-width below buttons) */}
+        {/* Compact Continue where you left off row (Desktop: ~500-600px wide, left-aligned; Mobile: full-width) */}
         <div
           onClick={() => {
             setCurrentSection('My Files')
             setActiveFolderId('folder-1') // Set folder to Design Assets
           }}
-          className='w-full md:w-[560px] md:max-w-[600px] mt-3 md:mt-3.5 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-3.5 py-2 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
+          className='w-full md:w-[560px] md:max-w-[600px] mt-3.5 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-3.5 py-2 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
         >
           <div className='flex items-center gap-2.5 min-w-0'>
             <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>

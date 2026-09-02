@@ -59,17 +59,17 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         {/* Brand Header */}
         <div className='flex shrink-0 w-full mt-1.5'>
           <div className='flex w-full items-center justify-between min-w-0'>
-            <div className='flex items-center gap-3 min-w-0'>
+            <div className='flex items-center gap-2.5 min-w-0'>
               <Image
-                src="/images/logo.png"
-                width={40}
-                height={40}
+                src="/images/cloudeLogo.png"
+                width={32}
+                height={28}
                 alt="Logo"
-                className="object-contain"
+                className="w-8 h-auto object-contain shrink-0"
                 priority
               />
-              <span className='text-lg font-semibold text-foreground tracking-tight font-sans truncate select-none'>
-                cloud<span className='font-black text-[#6E60EE]'>spacego</span>
+              <span className='text-lg font-bold text-foreground tracking-tight font-sans truncate select-none flex items-center'>
+                cloud<span className='font-extrabold text-[#6E60EE]'>spacego</span>
               </span>
             </div>
             {/* Close Drawer Button */}

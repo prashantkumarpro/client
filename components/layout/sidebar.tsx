@@ -44,14 +44,14 @@ export function Sidebar({ className }: SidebarProps) {
           <Tooltip content="open sidebar" side="right">
             <div
               onClick={toggleSidebar}
-              className='w-10 h-10 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0'
+              className='w-10 h-10 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0 transition-opacity'
             >
               <Image
-                src="/images/logo.png"
-                width={36}
-                height={36}
+                src="/images/cloudeLogo.png"
+                width={32}
+                height={28}
                 alt="Logo"
-                className="object-contain"
+                className="w-8 h-auto object-contain shrink-0"
                 priority
               />
             </div>
@@ -175,18 +175,18 @@ export function Sidebar({ className }: SidebarProps) {
           <Tooltip content="close sidebar" side="bottom">
             <div
               onClick={toggleSidebar}
-              className='flex items-center gap-3 cursor-pointer hover:opacity-85 min-w-0'
+              className='flex items-center gap-2.5 cursor-pointer hover:opacity-85 min-w-0'
             >
               <Image
-                src="/images/logo.png"
-                width={36}
-                height={36}
+                src="/images/cloudeLogo.png"
+                width={32}
+                height={28}
                 alt="Logo"
-                className="object-contain"
+                className="w-8 h-auto object-contain shrink-0"
                 priority
               />
-              <span className='text-xl font-semibold tracking-tight font-sans truncate text-foreground'>
-                cloud<span className='font-black text-[#6E60EE]'>spacego</span>
+              <span className='text-xl font-bold tracking-tight font-sans truncate text-foreground flex items-center'>
+                cloud<span className='font-extrabold text-[#6E60EE]'>spacego</span>
               </span>
             </div>
           </Tooltip>

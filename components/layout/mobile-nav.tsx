@@ -73,7 +73,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               </span>
             </div>
             {/* Close Drawer Button */}
-            <Tooltip content="close sidebar" side="bottom">
+            <Tooltip content="Close sidebar" side="bottom">
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800/40 cursor-pointer transition-colors"

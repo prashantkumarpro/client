@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { cn } from '@/lib/utils/cn'
 import { ActionMenu } from '@/components/ui/action-menu'
+import { Tooltip } from '@/components/ui/tooltip'
 import { formatBytes, formatDate } from '@/lib/utils/format'
 import { Clock, Star, Folder, Image as ImageIcon, ChevronRight, Users, FileText, Video, File as FileIcon, LayoutGrid, List } from 'lucide-react'
 
@@ -293,30 +294,34 @@ export default function DashboardOverview() {
 
           {/* File View Mode Toggle Switcher */}
           <div className='flex items-center bg-divider border border-card-border p-0.5 rounded-lg shrink-0'>
-            <button
-              onClick={() => setFileViewMode('grid')}
-              className={cn(
-                'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
-                fileViewMode === 'grid'
-                  ? 'bg-card-border text-[#6E60EE]'
-                  : 'text-text-secondary hover:text-foreground'
-              )}
-              aria-label='Grid View'
-            >
-              <LayoutGrid className='w-4 h-4' />
-            </button>
-            <button
-              onClick={() => setFileViewMode('list')}
-              className={cn(
-                'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
-                fileViewMode === 'list'
-                  ? 'bg-card-border text-[#6E60EE]'
-                  : 'text-text-secondary hover:text-foreground'
-              )}
-              aria-label='List View'
-            >
-              <List className='w-4 h-4' />
-            </button>
+            <Tooltip content="Grid view" side="top">
+              <button
+                onClick={() => setFileViewMode('grid')}
+                className={cn(
+                  'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
+                  fileViewMode === 'grid'
+                    ? 'bg-card-border text-[#6E60EE]'
+                    : 'text-text-secondary hover:text-foreground'
+                )}
+                aria-label='Grid view'
+              >
+                <LayoutGrid className='w-4 h-4' />
+              </button>
+            </Tooltip>
+            <Tooltip content="List view" side="top">
+              <button
+                onClick={() => setFileViewMode('list')}
+                className={cn(
+                  'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
+                  fileViewMode === 'list'
+                    ? 'bg-card-border text-[#6E60EE]'
+                    : 'text-text-secondary hover:text-foreground'
+                )}
+                aria-label='List view'
+              >
+                <List className='w-4 h-4' />
+              </button>
+            </Tooltip>
           </div>
         </div>
 

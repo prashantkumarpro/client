@@ -3,6 +3,7 @@
 import React from 'react';
 import { useApp } from '../../../providers/app-provider';
 import { Dropdown } from '../../../components/ui/dropdown';
+import { Tooltip } from '../../../components/ui/tooltip';
 import { FileItem } from '../../../types';
 
 export function FolderGrid() {
@@ -102,11 +103,16 @@ export function FolderGrid() {
                   align="right"
                   items={dropdownItems}
                   trigger={
-                    <button className="w-7 h-7 rounded-full flex items-center justify-center text-text-muted hover:text-foreground hover:bg-background border border-transparent hover:border-card-border transition-all focus:outline-none cursor-pointer">
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z" />
-                      </svg>
-                    </button>
+                    <Tooltip content="Folder actions" side="top">
+                      <button 
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-text-muted hover:text-foreground hover:bg-background border border-transparent hover:border-card-border transition-all focus:outline-none cursor-pointer"
+                        aria-label="Folder actions"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z" />
+                        </svg>
+                      </button>
+                    </Tooltip>
                   }
                 />
               </div>

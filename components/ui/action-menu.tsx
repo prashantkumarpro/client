@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils/cn'
+import { Tooltip } from './tooltip'
 
 export interface ActionMenuItem {
   label: string
@@ -55,15 +56,17 @@ export function ActionMenu ({ items, className, align = 'right', placement = 'bo
   return (
     <div className={cn('relative inline-block text-left', className)} ref={containerRef}>
       {/* Three-dots trigger button */}
-      <button
-        onClick={toggle}
-        className='bg-card-bg hover:bg-input-bg w-8 h-8 rounded-full flex items-center justify-center border border-card-border cursor-pointer focus:outline-none transition-colors'
-        title='Folder menu'
-      >
-        <svg className='w-4 h-4 text-text-secondary' fill='currentColor' viewBox='0 0 24 24'>
-          <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
-        </svg>
-      </button>
+      <Tooltip content="More actions" side="top">
+        <button
+          onClick={toggle}
+          className='bg-card-bg hover:bg-input-bg w-8 h-8 rounded-full flex items-center justify-center border border-card-border cursor-pointer focus:outline-none transition-colors'
+          aria-label='More actions'
+        >
+          <svg className='w-4 h-4 text-text-secondary' fill='currentColor' viewBox='0 0 24 24'>
+            <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
+          </svg>
+        </button>
+      </Tooltip>
 
       {/* Context menu dropdown overlay */}
       {isOpen && (

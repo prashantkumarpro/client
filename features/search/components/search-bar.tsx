@@ -46,7 +46,7 @@ export function SearchBar() {
     <div className="flex items-center bg-input-bg border border-card-border rounded-full p-1 gap-2 shadow-none transition-all duration-300 w-fit select-none shrink-0 h-10">
       {/* 1. Sidebar Toggle Button (hidden on mobile/tablet) */}
       <div className="hidden md:block">
-        <Tooltip content={isSidebarCollapsed ? 'open sidebar' : 'close sidebar'} side='bottom'>
+        <Tooltip content={isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'} side='bottom'>
           <button
             onClick={toggleSidebar}
             className="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:text-foreground hover:bg-divider/60 transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
@@ -77,14 +77,16 @@ export function SearchBar() {
           align="left"
           items={uploadDropdownItems}
           trigger={
-            <button
-              className="w-7 h-7 rounded-full flex items-center justify-center bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white shadow-xs transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
-              aria-label="New folder or file upload options menu"
-            >
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14m-7-7h14" />
-              </svg>
-            </button>
+            <Tooltip content="New" side="bottom">
+              <button
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-[#6E60EE] hover:bg-[#6E60EE]/90 text-white shadow-xs transition-all duration-200 cursor-pointer focus:outline-none shrink-0"
+                aria-label="New folder or file upload options menu"
+              >
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14m-7-7h14" />
+                </svg>
+              </button>
+            </Tooltip>
           }
         />
       </div>

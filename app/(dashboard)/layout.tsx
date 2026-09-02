@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { MobileNav } from '@/components/layout/mobile-nav'
 import { MobilePlusButton } from '@/components/layout/mobile-plus-button'
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav'
 import { AuthGuard } from '@/components/auth/auth-gaurd'
 
 export default function DashboardLayout({
@@ -35,6 +36,9 @@ export default function DashboardLayout({
           >
             {children}
           </main>
+
+          {/* Mobile Bottom Navigation (Shares exact same parent container & width as Header) */}
+          <MobileBottomNav />
         </div>
 
         {/* Mobile Floating Action Button (Global Plus) */}

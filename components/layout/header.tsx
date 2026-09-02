@@ -50,7 +50,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
           <Tooltip content="Open sidebar" side="bottom">
             <button
               onClick={onMenuToggle}
-              className='flex md:hidden w-10 h-10 bg-transparent text-text-secondary hover:text-foreground rounded-xl items-center justify-center cursor-pointer hover:bg-input-bg transition-colors shrink-0'
+              className='flex md:hidden w-10 h-10 bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg active:bg-[#6E60EE]/10 active:text-[#6E60EE] rounded-xl items-center justify-center cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg'
               aria-label='Open navigation menu'
             >
               <svg

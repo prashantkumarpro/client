@@ -172,9 +172,9 @@ export default function DashboardOverview() {
       </div>
 
       {/* Your folders Section (20–24px below Continue) */}
-      <div className='flex flex-col gap-3 mt-5 sm:mt-6'>
+      <div className='flex flex-col gap-2.5 sm:gap-3 mt-5 sm:mt-6'>
         <div className='flex items-center justify-between w-full'>
-          <h3 className='text-lg font-bold text-foreground tracking-tight'>
+          <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
             Your folders
           </h3>
           <button
@@ -188,8 +188,8 @@ export default function DashboardOverview() {
           </button>
         </div>
 
-        {/* Folders Cards Row/Grid (4 Columns, 16px gap, hover border changes to #6E60EE, shadow-sm specs) */}
-        <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+        {/* Folders Cards Row/Grid (2 Columns on mobile, 4 Columns on desktop with matching gaps) */}
+        <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
           {folderCards.map(card => {
             const dropdownItems = [
               {
@@ -237,20 +237,20 @@ export default function DashboardOverview() {
                     setActiveFolderId(card.id);
                   }
                 }}
-                className='flex items-center justify-between p-4 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
+                className='flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
               >
-                <div className='flex items-center gap-3 min-w-0'>
-                  <Folder className='w-9 h-9 text-[#6E60EE] shrink-0' />
-                  <div className='flex flex-col min-w-0'>
-                    <span className='text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
-                      {card.title === 'Design Assets' ? 'Design' : card.title === 'Brand Photos' ? 'Photos' : card.title}
+                <div className='flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1'>
+                  <Folder className='w-6 h-6 sm:w-7 sm:h-7 text-[#6E60EE] shrink-0' />
+                  <div className='flex flex-col min-w-0 flex-1'>
+                    <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                      {card.title}
                     </span>
-                    <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
+                    <span className='text-[10px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
                       {card.itemsCountText.split('•')[0].trim()}
                     </span>
                   </div>
                 </div>
-                <div className='shrink-0' onClick={e => e.stopPropagation()}>
+                <div className='shrink-0 -mr-0.5' onClick={e => e.stopPropagation()}>
                   <ActionMenu
                     placement='bottom-right'
                     items={dropdownItems}
@@ -264,9 +264,9 @@ export default function DashboardOverview() {
       </div>
 
       {/* Recently Opened Section */}
-      <div className='flex flex-col gap-3.5 w-full mt-1.5'>
+      <div className='flex flex-col gap-2.5 sm:gap-3 w-full mt-5 sm:mt-6'>
         <div className='flex items-center justify-between select-none'>
-          <h3 className='text-lg font-bold text-foreground tracking-tight'>
+          <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
             Recently Opened
           </h3>
 
@@ -314,7 +314,7 @@ export default function DashboardOverview() {
             </p>
           </div>
         ) : fileViewMode === 'grid' ? (
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
             {displayedFiles.map(file => {
               const fileDropdownItems = [
                 {
@@ -342,29 +342,29 @@ export default function DashboardOverview() {
               return (
                 <div
                   key={file.id}
-                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4 flex flex-col gap-3 group relative select-none cursor-pointer transition-all duration-200'
+                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
                   {/* File icon preview container */}
-                  <div className='w-full h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
+                  <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
                     {file.starred && (
-                      <div className="absolute top-2 right-2 bg-card-bg rounded-md p-1 border border-card-border shadow-sm">
-                        <Star className="w-3.5 h-3.5 text-[#6E60EE] fill-[#6E60EE]" />
+                      <div className="absolute top-1.5 right-1.5 bg-card-bg rounded-md p-1 border border-card-border shadow-xs">
+                        <Star className="w-3 h-3 text-[#6E60EE] fill-[#6E60EE]" />
                       </div>
                     )}
                   </div>
 
                   {/* File details footer row */}
-                  <div className='flex items-center justify-between gap-2 w-full min-w-0'>
+                  <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
-                      <span className='text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                         {file.name}
                       </span>
-                      <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
+                      <span className='text-[10px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
                         {formatBytes(file.size)}
                       </span>
                     </div>
-                    <div className='shrink-0' onClick={e => e.stopPropagation()}>
+                    <div className='shrink-0 -mr-0.5' onClick={e => e.stopPropagation()}>
                       <ActionMenu
                         placement='bottom-right'
                         items={fileDropdownItems}

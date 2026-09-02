@@ -14,12 +14,13 @@ export interface ActionMenuItem {
 interface ActionMenuProps {
   items: ActionMenuItem[]
   className?: string
+  triggerClassName?: string
   align?: 'left' | 'right'
   placement?: 'top' | 'bottom' | 'right' | 'bottom-right'
   onOpenChange?: (isOpen: boolean) => void
 }
 
-export function ActionMenu ({ items, className, align = 'right', placement = 'bottom', onOpenChange }: ActionMenuProps) {
+export function ActionMenu ({ items, className, triggerClassName, align = 'right', placement = 'bottom', onOpenChange }: ActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -59,10 +60,13 @@ export function ActionMenu ({ items, className, align = 'right', placement = 'bo
       <Tooltip content="More actions" side="top">
         <button
           onClick={toggle}
-          className='bg-card-bg hover:bg-input-bg w-8 h-8 rounded-full flex items-center justify-center border border-card-border cursor-pointer focus:outline-none transition-colors'
+          className={cn(
+            'bg-card-bg hover:bg-input-bg w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border border-card-border cursor-pointer focus:outline-none transition-colors shrink-0',
+            triggerClassName
+          )}
           aria-label='More actions'
         >
-          <svg className='w-4 h-4 text-text-secondary' fill='currentColor' viewBox='0 0 24 24'>
+          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-secondary' fill='currentColor' viewBox='0 0 24 24'>
             <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
           </svg>
         </button>

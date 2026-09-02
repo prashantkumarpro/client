@@ -6,7 +6,25 @@ import { cn } from '@/lib/utils/cn'
 import { ActionMenu } from '@/components/ui/action-menu'
 import { Tooltip } from '@/components/ui/tooltip'
 import { formatBytes, formatDate } from '@/lib/utils/format'
-import { Clock, Star, Folder, Image as ImageIcon, ChevronRight, Users, FileText, Video, File as FileIcon, LayoutGrid, List } from 'lucide-react'
+import {
+  Clock,
+  Star,
+  Folder,
+  Image as ImageIcon,
+  ChevronRight,
+  Users,
+  FileText,
+  Video,
+  File as FileIcon,
+  LayoutGrid,
+  List,
+  Eye,
+  Download,
+  Share2,
+  Edit3,
+  FolderInput,
+  Trash2,
+} from 'lucide-react'
 
 interface FolderCardData {
   id: string;
@@ -60,7 +78,7 @@ export default function DashboardOverview() {
 
   const [folderCards, setFolderCards] = useState<FolderCardData[]>(INITIAL_FOLDER_CARDS)
   const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
-  const [fileViewMode, setFileViewMode] = useState<'grid' | 'list'>('list')
+  const [fileViewMode, setFileViewMode] = useState<'grid' | 'list'>('grid')
 
   const toggleCardStar = (id: string) => {
     setFolderCards(prev =>
@@ -70,6 +88,15 @@ export default function DashboardOverview() {
 
   const deleteCard = (id: string) => {
     setFolderCards(prev => prev.filter(c => c.id !== id))
+  }
+
+  const renameCard = (id: string, currentTitle: string) => {
+    const newName = prompt('Enter new folder name:', currentTitle)
+    if (newName && newName.trim()) {
+      setFolderCards(prev =>
+        prev.map(c => (c.id === id ? { ...c, title: newName.trim() } : c))
+      )
+    }
   }
 
   // Get active time-aware greeting
@@ -148,18 +175,16 @@ export default function DashboardOverview() {
         >
           <div className='flex items-center gap-2.5 min-w-0'>
             <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>
-              <Folder className='w-3.5 h-3.5 shrink-0' />
+              <Folder className='w-3.5 h-3.5' />
             </div>
-            <div className='flex items-center gap-1.5 min-w-0'>
-              <span className='text-[11px] font-semibold uppercase tracking-wider text-text-muted shrink-0'>
-                Continue:
-              </span>
-              <span className='font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors'>
-                Design Assets
-              </span>
-            </div>
+            <span className='font-bold uppercase tracking-wider text-[10px] text-text-muted shrink-0'>
+              CONTINUE:
+            </span>
+            <span className='font-semibold text-foreground truncate text-xs group-hover:text-[#6E60EE] transition-colors'>
+              Design Assets
+            </span>
           </div>
-          <div className='flex items-center gap-2 shrink-0 text-text-secondary group-hover:text-[#6E60EE] transition-colors'>
+          <div className='flex items-center gap-1.5 text-text-muted shrink-0 ml-2'>
             <span className='text-[11px] text-text-muted hidden xs:inline'>
               Last opened 12 min ago
             </span>
@@ -188,79 +213,177 @@ export default function DashboardOverview() {
           </button>
         </div>
 
-        {/* Folders Cards Row/Grid (2 Columns on mobile, 4 Columns on desktop with matching gaps) */}
-        <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
-          {folderCards.map(card => {
-            const dropdownItems = [
-              {
-                label: 'View details',
-                onClick: () => alert(`Viewing details for ${card.title}`),
-                icon: <Folder className="w-4 h-4 text-text-secondary" />
-              },
-              {
-                label: 'Copy link',
-                onClick: () => {
-                  setSelectedFileId(card.id);
-                  setActiveModal('get-link');
+        {/* Folders Presentation (Grid View vs List View) */}
+        {fileViewMode === 'grid' ? (
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4'>
+            {folderCards.map(card => {
+              const dropdownItems = [
+                {
+                  label: 'Open',
+                  onClick: () => {
+                    setCurrentSection('My Files')
+                    if (card.id === 'folder-design-assets') {
+                      setActiveFolderId('folder-1')
+                    } else {
+                      setActiveFolderId(card.id)
+                    }
+                  },
+                  icon: <Eye className='w-4 h-4 text-text-secondary' />
                 },
-                icon: (
-                  <svg className="w-4 h-4 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                )
-              },
-              {
-                label: card.starred ? 'Unstar folder' : 'Star folder',
-                onClick: () => toggleCardStar(card.id),
-                icon: <Star className="w-4 h-4 text-text-secondary" />
-              },
-              {
-                label: 'Delete',
-                onClick: () => deleteCard(card.id),
-                icon: (
-                  <svg className="w-4 h-4 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                ),
-                danger: true
-              }
-            ];
+                {
+                  label: 'Rename',
+                  onClick: () => renameCard(card.id, card.title),
+                  icon: <Edit3 className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Share',
+                  onClick: () => {
+                    setSelectedFileId(card.id)
+                    setActiveModal('share')
+                  },
+                  icon: <Share2 className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: card.starred ? 'Unstar' : 'Star',
+                  onClick: () => toggleCardStar(card.id),
+                  icon: <Star className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Move',
+                  onClick: () => alert(`Move folder "${card.title}"`),
+                  icon: <FolderInput className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Delete',
+                  onClick: () => deleteCard(card.id),
+                  icon: <Trash2 className='w-4 h-4 text-rose-500' />,
+                  danger: true
+                }
+              ]
 
-            return (
-              <div
-                key={card.id}
-                onClick={() => {
-                  setCurrentSection('My Files');
-                  if (card.id === 'folder-design-assets') {
-                    setActiveFolderId('folder-1');
-                  } else {
-                    setActiveFolderId(card.id);
-                  }
-                }}
-                className='flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
-              >
-                <div className='flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1'>
-                  <Folder className='w-6 h-6 sm:w-7 sm:h-7 text-[#6E60EE] shrink-0' />
-                  <div className='flex flex-col min-w-0 flex-1'>
-                    <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
-                      {card.title}
-                    </span>
-                    <span className='text-[10px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
-                      {card.itemsCountText.split('•')[0].trim()}
-                    </span>
+              return (
+                <div
+                  key={card.id}
+                  onClick={() => {
+                    setCurrentSection('My Files')
+                    if (card.id === 'folder-design-assets') {
+                      setActiveFolderId('folder-1')
+                    } else {
+                      setActiveFolderId(card.id)
+                    }
+                  }}
+                  className='flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
+                >
+                  <div className='flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1'>
+                    <Folder className='w-6 h-6 sm:w-7 sm:h-7 text-[#6E60EE] shrink-0' />
+                    <div className='flex flex-col min-w-0 flex-1'>
+                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                        {card.title}
+                      </span>
+                      <span className='text-[10px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
+                        {card.itemsCountText.split('•')[0].trim()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className='shrink-0 -mr-0.5' onClick={e => e.stopPropagation()}>
+                    <ActionMenu
+                      placement='bottom-right'
+                      items={dropdownItems}
+                      onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
+                    />
                   </div>
                 </div>
-                <div className='shrink-0 -mr-0.5' onClick={e => e.stopPropagation()}>
-                  <ActionMenu
-                    placement='bottom-right'
-                    items={dropdownItems}
-                    onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
-                  />
+              )
+            })}
+          </div>
+        ) : (
+          <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-card-border'>
+            {folderCards.map(card => {
+              const dropdownItems = [
+                {
+                  label: 'Open',
+                  onClick: () => {
+                    setCurrentSection('My Files')
+                    if (card.id === 'folder-design-assets') {
+                      setActiveFolderId('folder-1')
+                    } else {
+                      setActiveFolderId(card.id)
+                    }
+                  },
+                  icon: <Eye className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Rename',
+                  onClick: () => renameCard(card.id, card.title),
+                  icon: <Edit3 className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Share',
+                  onClick: () => {
+                    setSelectedFileId(card.id)
+                    setActiveModal('share')
+                  },
+                  icon: <Share2 className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: card.starred ? 'Unstar' : 'Star',
+                  onClick: () => toggleCardStar(card.id),
+                  icon: <Star className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Move',
+                  onClick: () => alert(`Move folder "${card.title}"`),
+                  icon: <FolderInput className='w-4 h-4 text-text-secondary' />
+                },
+                {
+                  label: 'Delete',
+                  onClick: () => deleteCard(card.id),
+                  icon: <Trash2 className='w-4 h-4 text-rose-500' />,
+                  danger: true
+                }
+              ]
+
+              return (
+                <div
+                  key={card.id}
+                  onClick={() => {
+                    setCurrentSection('My Files')
+                    if (card.id === 'folder-design-assets') {
+                      setActiveFolderId('folder-1')
+                    } else {
+                      setActiveFolderId(card.id)
+                    }
+                  }}
+                  className='flex items-center justify-between p-3 sm:p-3.5 hover:bg-input-bg/50 transition-colors duration-200 group cursor-pointer select-none'
+                >
+                  <div className='flex items-center gap-3 min-w-0 flex-1'>
+                    <div className='w-9 h-9 rounded-lg bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0 group-hover:bg-[#6E60EE] group-hover:text-white transition-all duration-200'>
+                      <Folder className='w-5 h-5' />
+                    </div>
+                    <div className='flex flex-col min-w-0 flex-1'>
+                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                        {card.title}
+                      </span>
+                      <span className='text-[10px] sm:text-xs text-text-secondary truncate mt-0.5'>
+                        {card.itemsCountText}
+                      </span>
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-2 sm:gap-3 shrink-0' onClick={e => e.stopPropagation()}>
+                    {card.starred && (
+                      <Star className='w-4 h-4 text-[#6E60EE] fill-[#6E60EE]' />
+                    )}
+                    <ActionMenu
+                      placement='bottom-right'
+                      items={dropdownItems}
+                      onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Recently Opened Section */}
@@ -270,7 +393,7 @@ export default function DashboardOverview() {
             Recently Opened
           </h3>
 
-          {/* File View Mode Toggle Switcher */}
+          {/* Single View Mode Toggle Switcher */}
           <div className='flex items-center bg-divider border border-card-border p-0.5 rounded-lg shrink-0'>
             <Tooltip content="Grid view" side="top">
               <button
@@ -303,7 +426,7 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {/* Files Content List (White card layout with rows) */}
+        {/* Files Content (Grid View vs List View) */}
         {displayedFiles.length === 0 ? (
           <div className="w-full py-10 flex flex-col items-center justify-center text-center select-none bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-6">
             <h4 className="text-xs font-bold text-text-secondary">
@@ -314,37 +437,60 @@ export default function DashboardOverview() {
             </p>
           </div>
         ) : fileViewMode === 'grid' ? (
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4'>
             {displayedFiles.map(file => {
               const fileDropdownItems = [
                 {
-                  label: 'View details',
-                  onClick: () => alert(`Viewing details for ${file.name}`),
-                  icon: <Folder className="w-4 h-4 text-text-secondary" />
+                  label: 'Open',
+                  onClick: () => alert(`Opening ${file.name}`),
+                  icon: <Eye className="w-4 h-4 text-text-secondary" />
                 },
                 {
-                  label: file.starred ? 'Unstar file' : 'Star file',
+                  label: 'Download',
+                  onClick: () => alert(`Downloading ${file.name}`),
+                  icon: <Download className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: 'Share',
+                  onClick: () => {
+                    setSelectedFileId(file.id)
+                    setActiveModal('share')
+                  },
+                  icon: <Share2 className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: 'Rename',
+                  onClick: () => {
+                    const newName = prompt('Enter new filename:', file.name)
+                    if (newName && newName.trim()) {
+                      alert(`Renamed ${file.name} to ${newName.trim()}`)
+                    }
+                  },
+                  icon: <Edit3 className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: 'Move',
+                  onClick: () => alert(`Move file "${file.name}"`),
+                  icon: <FolderInput className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: file.starred ? 'Unstar' : 'Star',
                   onClick: () => toggleStar(file.id),
                   icon: <Star className="w-4 h-4 text-text-secondary" />
                 },
                 {
                   label: 'Delete',
                   onClick: () => deleteFile(file.id),
-                  icon: (
-                    <svg className="w-4 h-4 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  ),
+                  icon: <Trash2 className="w-4 h-4 text-rose-500" />,
                   danger: true
                 }
-              ];
+              ]
 
               return (
                 <div
                   key={file.id}
                   className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
-                  {/* File icon preview container */}
                   <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
                     {file.starred && (
@@ -353,8 +499,6 @@ export default function DashboardOverview() {
                       </div>
                     )}
                   </div>
-
-                  {/* File details footer row */}
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
                       <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
@@ -372,54 +516,78 @@ export default function DashboardOverview() {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         ) : (
-          <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-divider'>
+          <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-card-border'>
             {displayedFiles.map(file => {
               const fileDropdownItems = [
                 {
-                  label: 'View details',
-                  onClick: () => alert(`Viewing details for ${file.name}`),
-                  icon: <Folder className="w-4 h-4 text-text-secondary" />
+                  label: 'Open',
+                  onClick: () => alert(`Opening ${file.name}`),
+                  icon: <Eye className="w-4 h-4 text-text-secondary" />
                 },
                 {
-                  label: file.starred ? 'Unstar file' : 'Star file',
+                  label: 'Download',
+                  onClick: () => alert(`Downloading ${file.name}`),
+                  icon: <Download className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: 'Share',
+                  onClick: () => {
+                    setSelectedFileId(file.id)
+                    setActiveModal('share')
+                  },
+                  icon: <Share2 className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: 'Rename',
+                  onClick: () => {
+                    const newName = prompt('Enter new filename:', file.name)
+                    if (newName && newName.trim()) {
+                      alert(`Renamed ${file.name} to ${newName.trim()}`)
+                    }
+                  },
+                  icon: <Edit3 className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: 'Move',
+                  onClick: () => alert(`Move file "${file.name}"`),
+                  icon: <FolderInput className="w-4 h-4 text-text-secondary" />
+                },
+                {
+                  label: file.starred ? 'Unstar' : 'Star',
                   onClick: () => toggleStar(file.id),
                   icon: <Star className="w-4 h-4 text-text-secondary" />
                 },
                 {
                   label: 'Delete',
                   onClick: () => deleteFile(file.id),
-                  icon: (
-                    <svg className="w-4 h-4 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  ),
+                  icon: <Trash2 className="w-4 h-4 text-rose-500" />,
                   danger: true
                 }
-              ];
+              ]
 
               return (
                 <div
                   key={file.id}
-                  className='flex items-center justify-between p-4 hover:bg-divider/30 transition-colors duration-200 group cursor-pointer'
+                  className='flex items-center justify-between p-3 sm:p-3.5 hover:bg-input-bg/50 transition-colors duration-200 group cursor-pointer select-none'
                 >
                   <div className='flex items-center gap-3.5 min-w-0 flex-1'>
                     <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE] group-hover:text-white group-hover:border-transparent transition-all duration-200'>
                       {getFileIcon(file.type)}
                     </div>
-                    <div className='flex flex-col min-w-0'>
-                      <span className='text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                    <div className='flex flex-col min-w-0 flex-1'>
+                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                         {file.name}
                       </span>
-                      <span className='text-[13px] font-normal text-text-secondary mt-0.5'>
+                      <span className='text-[10px] sm:text-xs font-normal text-text-secondary mt-0.5'>
                         {formatBytes(file.size)} &bull; {formatDate(file.updatedAt)}
                       </span>
                     </div>
                   </div>
-                  <div className='flex items-center gap-3.5 shrink-0' onClick={e => e.stopPropagation()}>
+                  <div className='flex items-center gap-2 sm:gap-3 shrink-0' onClick={e => e.stopPropagation()}>
                     {file.starred && (
                       <Star className='w-4 h-4 text-[#6E60EE] fill-[#6E60EE]' />
                     )}
@@ -429,7 +597,7 @@ export default function DashboardOverview() {
                     />
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         )}

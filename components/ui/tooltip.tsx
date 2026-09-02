@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { cn } from '../../lib/utils/cn';
 
 interface TooltipProps {
-  content: React.ReactNode;
+  content?: React.ReactNode;
   children: React.ReactNode;
   side?: 'top' | 'right' | 'bottom' | 'left';
   className?: string;
@@ -12,6 +12,10 @@ interface TooltipProps {
 
 export function Tooltip({ content, children, side = 'top', className }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
+
+  if (!content) {
+    return <>{children}</>;
+  }
 
   const sideClasses = {
     top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
@@ -22,7 +26,7 @@ export function Tooltip({ content, children, side = 'top', className }: TooltipP
 
   return (
     <div
-      className="relative flex items-center justify-center"
+      className={cn("relative flex items-center justify-center", className)}
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >

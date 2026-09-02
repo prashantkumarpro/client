@@ -21,7 +21,7 @@ export default function DashboardLayout({
 
         {/* Main content viewport - flush against the vertical divider */}
         <div 
-          className='flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-background rounded-l-none'
+          className='flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-background rounded-l-none transition-all duration-[250ms] ease-out'
           style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
         >
           {/* Top Header */}

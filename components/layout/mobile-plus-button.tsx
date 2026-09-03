@@ -46,10 +46,10 @@ export function MobilePlusButton() {
       >
         {/* Actions speed-dial expanding vertically above the FAB */}
         <div
-          className={`flex flex-col items-end gap-2.5 mb-3 transition-all duration-200 ease-out origin-bottom-right ${
+          className={`flex flex-col items-end gap-2 mb-2 -mr-1 transition-all duration-200 ease-out origin-bottom-right ${
             isOpen
               ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
-              : 'opacity-0 translate-y-3 scale-95 pointer-events-none'
+              : 'opacity-0 translate-y-2 scale-95 pointer-events-none'
           }`}
           role='menu'
           aria-orientation='vertical'
@@ -68,10 +68,10 @@ export function MobilePlusButton() {
                 style={{
                   transitionDelay: `${staggerDelay}ms`,
                 }}
-                className={`w-[188px] h-[50px] px-5 flex items-center gap-3.5 rounded-full bg-white dark:bg-[#13131A] text-foreground border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_20px_-4px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_20px_-4px_rgba(0,0,0,0.5),0_2px_6px_-1px_rgba(0,0,0,0.3)] hover:bg-[#FAF9FF] dark:hover:bg-[#1C1C26] hover:border-[#6E60EE]/30 active:scale-[0.97] transition-all duration-200 ease-out text-sm font-semibold cursor-pointer select-none text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE] focus-visible:ring-offset-2 ${
+                className={`w-[188px] h-[50px] px-5 flex items-center gap-3.5 rounded-full bg-white dark:bg-[#13131A] text-foreground border border-black/[0.05] dark:border-white/[0.07] shadow-[0_3px_10px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.35)] hover:bg-[#FAF9FF] dark:hover:bg-[#1C1C26] hover:border-[#6E60EE]/30 active:scale-[0.97] transition-all duration-200 ease-out text-sm font-semibold cursor-pointer select-none text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE] focus-visible:ring-offset-2 ${
                   isOpen
                     ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
-                    : 'opacity-0 translate-y-3 scale-90 pointer-events-none'
+                    : 'opacity-0 translate-y-2 scale-90 pointer-events-none'
                 }`}
                 role='menuitem'
               >

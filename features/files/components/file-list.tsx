@@ -22,6 +22,7 @@ import {
   FolderInput,
   Star,
   Trash2,
+  Users,
   Search,
   Inbox
 } from 'lucide-react'
@@ -122,6 +123,18 @@ export function FileList({
     }
   }
 
+  const getLocationName = (file: FileItem) => {
+    if (file.parentFolderId) {
+      if (file.parentFolderId === 'folder-1' || file.parentFolderId === 'folder-design-assets') return 'Design Assets'
+      if (file.parentFolderId === 'folder-projects') return 'Projects'
+      if (file.parentFolderId === 'folder-documents') return 'Documents'
+      if (file.parentFolderId === 'folder-brand-photos') return 'Brand Photos'
+      const parent = globalFiles.find(f => f.id === file.parentFolderId)
+      if (parent) return parent.name
+    }
+    return 'My Files'
+  }
+
   const getDropdownItems = (file: FileItem): ActionMenuItem[] => [
     {
       label: 'Open',
@@ -197,6 +210,8 @@ export function FileList({
       ? 'Files and folders you star will appear here for quick access.'
       : 'This section does not have any items yet.')
 
+  const isDashboardOrRecent = currentSection === 'Dashboard' || currentSection === 'Recent'
+
   const content = (
     <div className='w-full flex flex-col'>
       {/* Optional Section Title / Header Row if title passed */}
@@ -235,16 +250,19 @@ export function FileList({
         </div>
       ) : (
         <div className='w-full flex flex-col select-none'>
-          {/* Structured Column Header */}
+          {/* Structured Column Header Row */}
           {showHeader && (
-            <div className='flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border/80 select-none'>
+            <div className='flex items-center justify-between px-3 sm:px-4 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border/80 select-none'>
               <div className='flex-1 min-w-0 pr-4'>
                 <span>Name</span>
               </div>
-              <div className='hidden md:block w-36 text-left pr-4'>
-                <span>Last modified</span>
+              <div className='hidden md:block w-48 text-left pr-4'>
+                <span>{isDashboardOrRecent ? 'Reason suggested' : 'Last modified'}</span>
               </div>
-              <div className='hidden sm:block w-24 text-left pr-4'>
+              <div className='hidden lg:block w-36 text-left pr-4'>
+                <span>Location</span>
+              </div>
+              <div className='hidden sm:block lg:hidden w-24 text-left pr-4'>
                 <span>Size</span>
               </div>
               <div className='w-20 text-right pr-2'>
@@ -253,11 +271,13 @@ export function FileList({
             </div>
           )}
 
-          {/* List Rows */}
+          {/* Structured File Rows */}
           <div className='flex flex-col divide-y divide-card-border/50'>
             {displayList.map(file => {
               const isFolder = file.type === 'folder'
               const dropdownItems = getDropdownItems(file)
+              const isShared = (file.sharedWith && file.sharedWith.length > 0) || file.owner !== 'Prashant'
+              const locationName = getLocationName(file)
 
               return (
                 <div
@@ -271,42 +291,58 @@ export function FileList({
                       else alert(`Opening ${file.name}`)
                     }
                   }}
-                  className='flex items-center justify-between px-3 py-2.5 sm:py-3 hover:bg-input-bg/60 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
+                  className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
                 >
-                  {/* Name Column */}
+                  {/* Name Column: Icon + Filename + Shared icon */}
                   <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
                     <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE]/10 group-hover:text-[#6E60EE] group-hover:border-[#6E60EE]/30 transition-all duration-200'>
                       {getFileIcon(file.type)}
                     </div>
                     <div className='flex flex-col min-w-0 flex-1'>
-                      <span
-                        className='text-xs sm:text-sm font-semibold text-foreground group-hover:text-[#6E60EE] truncate transition-colors duration-150'
-                        title={file.name}
-                      >
-                        {file.name}
-                      </span>
+                      <div className='flex items-center gap-1.5 min-w-0'>
+                        <span
+                          className='text-xs sm:text-sm font-semibold text-foreground group-hover:text-[#6E60EE] truncate transition-colors duration-150'
+                          title={file.name}
+                        >
+                          {file.name}
+                        </span>
+                        {isShared && (
+                          <Tooltip content="Shared file" side="top">
+                            <span className="shrink-0 text-text-muted/80 group-hover:text-text-secondary">
+                              <Users className='w-3.5 h-3.5' />
+                            </span>
+                          </Tooltip>
+                        )}
+                      </div>
+
                       {/* Mobile compact details subline */}
                       <div className='flex items-center gap-1.5 text-[11px] sm:hidden text-text-secondary mt-0.5 truncate'>
                         <span>{formatBytes(file.size)}</span>
                         <span>&bull;</span>
-                        <span>{formatDate(file.updatedAt)}</span>
+                        <span>{isDashboardOrRecent ? `Opened ${formatDate(file.updatedAt)}` : formatDate(file.updatedAt)}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Date Column (Tablet/Desktop) */}
-                  <div className='hidden md:block w-36 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    {formatDate(file.updatedAt)}
+                  {/* Reason suggested / Activity Column (Tablet & Desktop) */}
+                  <div className='hidden md:block w-48 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
+                    {isDashboardOrRecent ? `You opened • ${formatDate(file.updatedAt)}` : formatDate(file.updatedAt)}
                   </div>
 
-                  {/* Size Column (Tablet/Desktop) */}
-                  <div className='hidden sm:block w-24 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
+                  {/* Location Column (Desktop) */}
+                  <div className='hidden lg:flex items-center gap-1.5 w-36 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
+                    <Folder className='w-3.5 h-3.5 text-text-muted shrink-0' />
+                    <span className='truncate'>{locationName}</span>
+                  </div>
+
+                  {/* Size Column (Tablet only, when Location hidden) */}
+                  <div className='hidden sm:block lg:hidden w-24 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
                     {formatBytes(file.size)}
                   </div>
 
                   {/* Star & Actions Column */}
                   <div
-                    className='flex items-center justify-end gap-1.5 w-20 shrink-0'
+                    className='flex items-center justify-end gap-1 w-20 shrink-0'
                     onClick={e => e.stopPropagation()}
                   >
                     <Tooltip content={file.starred ? 'Unstar' : 'Star'} side='top'>

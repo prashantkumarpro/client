@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../../providers/app-provider';
 import { Dialog } from '../../../components/ui/dialog';
 import { Input } from '../../../components/ui/input';
@@ -10,8 +10,21 @@ export function CreateFolderModal() {
   const { activeModal, setActiveModal, createFolder } = useApp();
   const [folderName, setFolderName] = useState('');
   const [error, setError] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isOpen = activeModal === 'create-folder';
+
+  // Auto-focus the input field whenever the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFolderName('');
+      setError('');
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     setFolderName('');
@@ -21,36 +34,46 @@ export function CreateFolderModal() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!folderName.trim()) {
-      setError('Folder name is required');
+    const trimmed = folderName.trim();
+    if (!trimmed) {
+      setError('Please enter a folder name');
+      inputRef.current?.focus();
       return;
     }
-    createFolder(folderName.trim());
+    createFolder(trimmed);
     handleClose();
   };
 
+  const isSubmitDisabled = !folderName.trim();
+
   return (
-    <Dialog isOpen={isOpen} onClose={handleClose} title="Create New Folder">
-      <form onSubmit={handleCreate} className="flex flex-col gap-5 pt-2">
+    <Dialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Create New Folder"
+      maxWidth="max-w-[420px]"
+    >
+      <form onSubmit={handleCreate} className="flex flex-col gap-4">
         <Input
+          ref={inputRef}
           label="Folder Name"
-          placeholder="e.g. Design Assets, Documents"
+          placeholder="Enter folder name"
           value={folderName}
           onChange={(e) => {
             setFolderName(e.target.value);
             if (error) setError('');
           }}
           error={error}
-          autoFocus
+          autoComplete="off"
         />
 
-        <div className="flex justify-end gap-3 mt-2">
+        <div className="flex items-center justify-end gap-2.5 pt-2">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleClose}
-            className="h-10 text-[10px]"
+            className="h-9 px-4 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
           >
             Cancel
           </Button>
@@ -58,7 +81,8 @@ export function CreateFolderModal() {
             type="submit"
             variant="primary"
             size="sm"
-            className="h-10 text-[10px]"
+            disabled={isSubmitDisabled}
+            className="h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create
           </Button>

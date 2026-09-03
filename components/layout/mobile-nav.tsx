@@ -59,7 +59,22 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         {/* Brand Header */}
         <div className='flex shrink-0 w-full mt-1.5'>
           <div className='flex w-full items-center justify-between min-w-0'>
-            <div className='flex items-center gap-2.5 min-w-0'>
+            <div
+              onClick={() => {
+                setCurrentSection('Dashboard');
+                onClose();
+              }}
+              className='flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-85 select-none'
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setCurrentSection('Dashboard');
+                  onClose();
+                }
+              }}
+              aria-label="Home"
+            >
               <Image
                 src="/images/cloudeLogo.png"
                 width={32}

@@ -44,11 +44,11 @@ export function SearchBar() {
 
       {/* 1. Sidebar Toggle Button (hidden on mobile/tablet) */}
       <div className="hidden md:block">
-        <Tooltip content={isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'} side='bottom'>
+        <Tooltip content={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'} side='bottom'>
           <button
             onClick={toggleSidebar}
             className="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:text-foreground hover:bg-card-bg active:bg-[#6E60EE]/10 active:text-[#6E60EE] active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-input-bg shrink-0"
-            aria-label="Toggle sidebar"
+            aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <rect width="18" height="18" x="3" y="3" rx="2" />

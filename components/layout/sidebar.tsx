@@ -48,11 +48,11 @@ export function Sidebar({ className }: SidebarProps) {
           )}
         >
           {isSidebarCollapsed ? (
-            <Tooltip content="Open sidebar" side="right">
+            <Tooltip content="Home" side="right">
               <button
-                onClick={toggleSidebar}
+                onClick={() => setCurrentSection('Dashboard')}
                 className="w-10 h-10 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0 rounded-xl focus:outline-none"
-                aria-label="Open sidebar"
+                aria-label="Home"
               >
                 <Image
                   src="/images/cloudeLogo.png"
@@ -65,10 +65,18 @@ export function Sidebar({ className }: SidebarProps) {
               </button>
             </Tooltip>
           ) : (
-            <Tooltip content="Close sidebar" side="bottom">
+            <Tooltip content="Home" side="bottom">
               <div
-                onClick={toggleSidebar}
-                className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 min-w-0"
+                onClick={() => setCurrentSection('Dashboard')}
+                className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 min-w-0 select-none"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setCurrentSection('Dashboard')
+                  }
+                }}
+                aria-label="Home"
               >
                 <div className="w-8 h-8 flex items-center justify-center shrink-0">
                   <Image

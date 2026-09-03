@@ -42,7 +42,7 @@ export function MobilePlusButton() {
       {/* Speed Dial Container at bottom right, positioned above bottom navigation */}
       <div
         ref={containerRef}
-        className='fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] right-[calc(1.25rem+env(safe-area-inset-right,0px))] z-40 md:hidden flex flex-col items-end'
+        className='fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] z-40 md:hidden flex flex-col items-end'
       >
         {/* Actions speed-dial expanding vertically above the FAB */}
         <div

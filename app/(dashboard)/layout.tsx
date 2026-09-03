@@ -31,7 +31,7 @@ export default function DashboardLayout({
 
           {/* Dashboard Inner Scrollable Body */}
           <main 
-            className='flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-6 flex flex-col gap-6 rounded-l-none'
+            className='flex-1 overflow-y-auto px-4 py-5 pb-28 sm:px-6 sm:py-6 md:px-8 md:py-6 flex flex-col rounded-l-none'
             style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
           >
             {children}

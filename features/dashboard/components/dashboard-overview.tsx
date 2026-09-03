@@ -273,20 +273,20 @@ export default function DashboardOverview() {
                       setActiveFolderId(card.id)
                     }
                   }}
-                  className='flex items-center justify-between p-3.5 sm:p-4 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs transition-all duration-200 cursor-pointer group relative min-w-0'
+                  className='flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs transition-all duration-200 cursor-pointer group relative min-w-0'
                 >
-                  <div className='flex items-center gap-3 min-w-0 flex-1'>
+                  <div className='flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1'>
                     <Folder className='w-6 h-6 sm:w-7 sm:h-7 text-[#6E60EE] shrink-0' />
                     <div className='flex flex-col min-w-0 flex-1'>
-                      <span className='text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                      <span className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200' title={card.title}>
                         {card.title}
                       </span>
-                      <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
+                      <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
                         {card.itemsCountText.split('•')[0].trim()}
                       </span>
                     </div>
                   </div>
-                  <div className='shrink-0 -mr-0.5' onClick={e => e.stopPropagation()}>
+                  <div className='shrink-0 -mr-1' onClick={e => e.stopPropagation()}>
                     <ActionMenu
                       placement='bottom-right'
                       items={dropdownItems}
@@ -492,7 +492,7 @@ export default function DashboardOverview() {
               return (
                 <div
                   key={file.id}
-                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs p-3.5 sm:p-4 flex flex-col gap-3 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
+                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
                   <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
@@ -504,14 +504,14 @@ export default function DashboardOverview() {
                   </div>
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
-                      <span className='text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                      <span className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200' title={file.name}>
                         {file.name}
                       </span>
-                      <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
+                      <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
                         {formatBytes(file.size)}
                       </span>
                     </div>
-                    <div className='shrink-0 -mr-0.5' onClick={e => e.stopPropagation()}>
+                    <div className='shrink-0 -mr-1' onClick={e => e.stopPropagation()}>
                       <ActionMenu
                         placement='bottom-right'
                         items={fileDropdownItems}

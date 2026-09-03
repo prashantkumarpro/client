@@ -5,6 +5,7 @@ import { useApp } from '@/providers/app-provider'
 import { cn } from '@/lib/utils/cn'
 import { ActionMenu } from '@/components/ui/action-menu'
 import { Tooltip } from '@/components/ui/tooltip'
+import { FileList } from '@/features/files/components/file-list'
 import { formatBytes, formatDate } from '@/lib/utils/format'
 import {
   Clock,
@@ -523,86 +524,11 @@ export default function DashboardOverview() {
             })}
           </div>
         ) : (
-          <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-card-border'>
-            {displayedFiles.map(file => {
-              const fileDropdownItems = [
-                {
-                  label: 'Open',
-                  onClick: () => alert(`Opening ${file.name}`),
-                  icon: <Eye className="w-4 h-4 text-text-secondary" />
-                },
-                {
-                  label: 'Download',
-                  onClick: () => alert(`Downloading ${file.name}`),
-                  icon: <Download className="w-4 h-4 text-text-secondary" />
-                },
-                {
-                  label: 'Share',
-                  onClick: () => {
-                    setSelectedFileId(file.id)
-                    setActiveModal('share')
-                  },
-                  icon: <Share2 className="w-4 h-4 text-text-secondary" />
-                },
-                {
-                  label: 'Rename',
-                  onClick: () => {
-                    const newName = prompt('Enter new filename:', file.name)
-                    if (newName && newName.trim()) {
-                      alert(`Renamed ${file.name} to ${newName.trim()}`)
-                    }
-                  },
-                  icon: <Edit3 className="w-4 h-4 text-text-secondary" />
-                },
-                {
-                  label: 'Move',
-                  onClick: () => alert(`Move file "${file.name}"`),
-                  icon: <FolderInput className="w-4 h-4 text-text-secondary" />
-                },
-                {
-                  label: file.starred ? 'Unstar' : 'Star',
-                  onClick: () => toggleStar(file.id),
-                  icon: <Star className="w-4 h-4 text-text-secondary" />
-                },
-                {
-                  label: 'Delete',
-                  onClick: () => deleteFile(file.id),
-                  icon: <Trash2 className="w-4 h-4 text-rose-500" />,
-                  danger: true
-                }
-              ]
-
-              return (
-                <div
-                  key={file.id}
-                  className='flex items-center justify-between p-3 sm:p-3.5 hover:bg-input-bg/50 transition-colors duration-200 group cursor-pointer select-none'
-                >
-                  <div className='flex items-center gap-3.5 min-w-0 flex-1'>
-                    <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE] group-hover:text-white group-hover:border-transparent transition-all duration-200'>
-                      {getFileIcon(file.type)}
-                    </div>
-                    <div className='flex flex-col min-w-0 flex-1'>
-                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
-                        {file.name}
-                      </span>
-                      <span className='text-[10px] sm:text-xs font-normal text-text-secondary mt-0.5'>
-                        {formatBytes(file.size)} &bull; {formatDate(file.updatedAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className='flex items-center gap-2 sm:gap-3 shrink-0' onClick={e => e.stopPropagation()}>
-                    {file.starred && (
-                      <Star className='w-4 h-4 text-[#6E60EE] fill-[#6E60EE]' />
-                    )}
-                    <ActionMenu
-                      placement='bottom-right'
-                      items={fileDropdownItems}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          <FileList
+            files={displayedFiles}
+            showHeader={true}
+            showCardContainer={false}
+          />
         )}
       </div>
     </div>

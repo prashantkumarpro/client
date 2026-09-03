@@ -80,33 +80,36 @@ export function ActionMenu ({ items, className, triggerClassName, align = 'right
       {isOpen && (
         <div
           className={cn(
-            'absolute w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-slate-100 dark:border-zinc-700/80 py-1 z-40',
+            'absolute w-48 bg-card-bg rounded-xl shadow-lg border border-card-border py-1.5 z-50 divide-y divide-card-border/40',
             placement === 'top' && 'bottom-9 right-0 animate-in fade-in slide-in-from-bottom-2 duration-150',
-            placement === 'bottom' && 'top-8 right-0 animate-in fade-in slide-in-from-top-2 duration-150',
+            placement === 'bottom' && 'top-8.5 right-0 animate-in fade-in slide-in-from-top-2 duration-150',
             placement === 'right' && 'left-full top-0 ml-2.5 animate-in fade-in slide-in-from-left-2 duration-150',
-            placement === 'bottom-right' && 'left-0 top-8 animate-in fade-in slide-in-from-top-2 duration-150'
+            placement === 'bottom-right' && 'right-0 top-8.5 animate-in fade-in slide-in-from-top-2 duration-150',
+            placement === 'bottom-left' && 'left-0 top-8.5 animate-in fade-in slide-in-from-top-2 duration-150'
           )}
         >
-          {items.map((item, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                item.onClick()
-                close()
-              }}
-              className={cn(
-                'w-full px-4 py-2 text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none',
-                item.danger
-                  ? 'text-red-500 hover:bg-red-500/10'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-700/50'
-              )}
-            >
-              <span className={item.danger ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}>
-                {item.icon}
-              </span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <div className='py-0.5'>
+            {items.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  item.onClick()
+                  close()
+                }}
+                className={cn(
+                  'w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none rounded-lg mx-1 w-[calc(100%-8px)]',
+                  item.danger
+                    ? 'text-rose-500 hover:bg-rose-500/10'
+                    : 'text-text-secondary hover:text-foreground hover:bg-input-bg'
+                )}
+              >
+                <span className={item.danger ? 'text-rose-500' : 'text-text-secondary'}>
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

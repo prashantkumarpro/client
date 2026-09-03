@@ -1,21 +1,58 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { useApp } from '../../../providers/app-provider';
-import { ActionMenu } from '../../../components/ui/action-menu';
-import { formatBytes, formatDate } from '../../../lib/utils/format';
-import { FileItem, FileType } from '../../../types';
-import { cn } from '../../../lib/utils/cn';
+import React from 'react'
+import { useApp } from '../../../providers/app-provider'
+import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
+import { Tooltip } from '../../../components/ui/tooltip'
+import { formatBytes, formatDate } from '../../../lib/utils/format'
+import { FileItem, FileType } from '../../../types'
+import { cn } from '../../../lib/utils/cn'
+import {
+  Folder,
+  FileText,
+  Image as ImageIcon,
+  Video as VideoIcon,
+  Music,
+  Code,
+  File,
+  Eye,
+  Download,
+  Share2,
+  Edit3,
+  FolderInput,
+  Star,
+  Trash2,
+  Search,
+  Inbox
+} from 'lucide-react'
 
-interface FileListProps {
-  title?: string;
-  limit?: number;
-  showViewAll?: boolean;
+export interface FileListProps {
+  files?: FileItem[]
+  title?: string
+  limit?: number
+  showViewAll?: boolean
+  showHeader?: boolean
+  showCardContainer?: boolean
+  emptyMessage?: string
+  emptySubtitle?: string
+  onFileClick?: (file: FileItem) => void
+  onFolderClick?: (folderId: string) => void
 }
 
-export function FileList({ title, limit, showViewAll }: FileListProps) {
+export function FileList({
+  files: customFiles,
+  title,
+  limit,
+  showViewAll,
+  showHeader = true,
+  showCardContainer = false,
+  emptyMessage,
+  emptySubtitle,
+  onFileClick,
+  onFolderClick
+}: FileListProps) {
   const {
-    files,
+    files: globalFiles,
     currentSection,
     setCurrentSection,
     activeFolderId,
@@ -24,279 +61,297 @@ export function FileList({ title, limit, showViewAll }: FileListProps) {
     deleteFile,
     searchQuery,
     setSelectedFileId,
-    setActiveModal,
-  } = useApp();
+    setActiveModal
+  } = useApp()
 
-  // Filter files based on section & search query
-  const filteredFiles = React.useMemo(() => {
-    let result = files.filter(f => !f.deleted);
-
-    if (searchQuery) {
-      result = result.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      return result;
+  // Filter files if customFiles is not explicitly passed
+  const displayList = React.useMemo(() => {
+    if (customFiles) {
+      return limit ? customFiles.slice(0, limit) : customFiles
     }
 
-    if (currentSection === 'Dashboard') {
-      result = result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    let result = globalFiles.filter(f => !f.deleted)
+
+    if (searchQuery) {
+      result = result.filter(f =>
+        f.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      return limit ? result.slice(0, limit) : result
+    }
+
+    if (currentSection === 'Dashboard' || currentSection === 'Recent') {
+      result = result.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )
     } else if (currentSection === 'My Files') {
-      result = result.filter(f => f.parentFolderId === activeFolderId);
+      result = result.filter(f => f.parentFolderId === activeFolderId)
     } else if (currentSection === 'Starred') {
-      result = result.filter(f => f.starred);
+      result = result.filter(f => f.starred)
     } else if (currentSection === 'Shared') {
-      result = result.filter(f => f.owner !== 'Prashant' || f.sharedWith?.length);
-    } else if (currentSection === 'Recent') {
-      result = result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      result = result.filter(
+        f => f.owner !== 'Prashant' || (f.sharedWith && f.sharedWith.length > 0)
+      )
     }
 
     if (limit) {
-      result = result.slice(0, limit);
+      result = result.slice(0, limit)
     }
 
-    return result;
-  }, [files, currentSection, activeFolderId, searchQuery, limit]);
+    return result
+  }, [customFiles, globalFiles, currentSection, activeFolderId, searchQuery, limit])
 
-  const getFileIcon = (type: FileType, starred: boolean) => {
-    const baseClass = "w-9 h-9 shrink-0 flex items-center justify-center rounded-xl relative border border-card-border shadow-sm";
-    
+  const getFileIcon = (type: FileType) => {
     switch (type) {
       case 'pdf':
-        return (
-          <div className={cn(baseClass, "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400")}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full" />}
-          </div>
-        );
+        return <FileText className='w-4 h-4 text-rose-500' />
       case 'image':
-        return (
-          <div className={cn(baseClass, "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400")}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a1 1 0 011.414 0L16 17m0 0l1-1m-1 1k-3-3m-3 3h12m7-9a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full" />}
-          </div>
-        );
+        return <ImageIcon className='w-4 h-4 text-emerald-500' />
       case 'video':
-        return (
-          <div className={cn(baseClass, "bg-purple-50 dark:bg-purple-950/20 text-purple-600 dark:text-purple-400")}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full" />}
-          </div>
-        );
+        return <VideoIcon className='w-4 h-4 text-purple-500' />
       case 'folder':
-        return (
-          <div className={cn(baseClass, "bg-violet-50 dark:bg-violet-950/20 text-[#6E60EE] dark:text-violet-400")}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#6E60EE] rounded-full" />}
-          </div>
-        );
+        return <Folder className='w-4 h-4 text-[#6E60EE]' />
       case 'document':
-        return (
-          <div className={cn(baseClass, "bg-violet-50 dark:bg-violet-950/20 text-[#6E60EE] dark:text-violet-400")}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v12m0 0l-4-4m4 4l4-4" />
-            </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#6E60EE] rounded-full" />}
-          </div>
-        );
+        return <FileText className='w-4 h-4 text-[#6E60EE]' />
+      case 'audio':
+        return <Music className='w-4 h-4 text-amber-500' />
+      case 'code':
+        return <Code className='w-4 h-4 text-cyan-500' />
       default:
-        return (
-          <div className={cn(baseClass, "bg-gray-50 dark:bg-gray-900 text-gray-500")}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            {starred && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full" />}
-          </div>
-        );
+        return <File className='w-4 h-4 text-text-secondary' />
     }
-  };
+  }
 
-  const getSubpath = (file: FileItem) => {
-    if (file.parentFolderId) {
-      const parent = files.find(f => f.id === file.parentFolderId);
-      if (parent) {
-        return `My Files / ${parent.name}`;
-      }
+  const getDropdownItems = (file: FileItem): ActionMenuItem[] => [
+    {
+      label: 'Open',
+      onClick: () => {
+        if (file.type === 'folder') {
+          if (onFolderClick) onFolderClick(file.id)
+          else setActiveFolderId(file.id)
+        } else {
+          if (onFileClick) onFileClick(file)
+          else alert(`Opening ${file.name}`)
+        }
+      },
+      icon: <Eye className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Download',
+      onClick: () => alert(`Downloading ${file.name}`),
+      icon: <Download className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Share',
+      onClick: () => {
+        setSelectedFileId(file.id)
+        setActiveModal('share')
+      },
+      icon: <Share2 className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Rename',
+      onClick: () => {
+        const newName = prompt('Enter new filename:', file.name)
+        if (newName && newName.trim()) {
+          alert(`Renamed ${file.name} to ${newName.trim()}`)
+        }
+      },
+      icon: <Edit3 className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Move',
+      onClick: () => alert(`Move file "${file.name}"`),
+      icon: <FolderInput className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: file.starred ? 'Unstar' : 'Star',
+      onClick: () => toggleStar(file.id),
+      icon: <Star className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Delete',
+      onClick: () => deleteFile(file.id),
+      icon: <Trash2 className='w-4 h-4 text-rose-500' />,
+      danger: true
     }
-    
-    switch (file.type) {
-      case 'pdf':
-      case 'document':
-        return 'My Files / Documents';
-      case 'image':
-        return 'My Files / Images';
-      case 'video':
-        return 'My Files / Videos';
-      case 'folder':
-        return 'My Files / Folders';
-      default:
-        return 'My Files';
-    }
-  };
+  ]
 
-  const defaultTitle = currentSection === 'Dashboard' ? 'Recent Files' : currentSection;
+  const defaultEmptyTitle =
+    emptyMessage ||
+    (searchQuery
+      ? 'No results found'
+      : currentSection === 'Shared'
+      ? 'No files shared'
+      : currentSection === 'Starred'
+      ? 'No starred files'
+      : 'No files or folders found')
 
-  return (
-    <div className="bg-card-bg border border-card-border rounded-xl p-6 text-foreground flex flex-col gap-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-colors duration-200 flex-1 min-h-0">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-divider pb-4 shrink-0 select-none">
-        <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
-          {title || defaultTitle}
-        </h3>
-        {showViewAll && currentSection === 'Dashboard' && (
-          <button
-            onClick={() => setCurrentSection('My Files')}
-            className="text-[11px] font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors cursor-pointer"
-          >
-            View all
-          </button>
-        )}
-      </div>
+  const defaultEmptySubtitle =
+    emptySubtitle ||
+    (searchQuery
+      ? `We couldn't find any matches for "${searchQuery}". Try checking your spelling.`
+      : currentSection === 'Shared'
+      ? 'Files shared with you will appear here.'
+      : currentSection === 'Starred'
+      ? 'Files and folders you star will appear here for quick access.'
+      : 'This section does not have any items yet.')
 
-      {/* Files List Table */}
-      {filteredFiles.length === 0 ? (
-        searchQuery ? (
-          <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8">
-            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-650 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No results found</h4>
-            <p className="text-[11px] text-text-muted mt-1 max-w-[220px] leading-normal font-light">We couldn&apos;t find any matches for &ldquo;{searchQuery}&rdquo;. Try checking your spelling.</p>
+  const content = (
+    <div className='w-full flex flex-col'>
+      {/* Optional Section Title / Header Row if title passed */}
+      {title && (
+        <div className='flex items-center justify-between pb-3 select-none'>
+          <h3 className='text-sm sm:text-base font-bold text-foreground tracking-tight'>
+            {title}
+          </h3>
+          {showViewAll && currentSection === 'Dashboard' && (
+            <button
+              onClick={() => setCurrentSection('My Files')}
+              className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors cursor-pointer'
+            >
+              View all
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {displayList.length === 0 ? (
+        <div className='w-full py-12 flex flex-col items-center justify-center text-center select-none bg-card-bg border border-dashed border-card-border p-6 rounded-xl'>
+          <div className='w-10 h-10 rounded-full bg-input-bg flex items-center justify-center text-text-muted mb-2.5'>
+            {searchQuery ? (
+              <Search className='w-5 h-5' />
+            ) : (
+              <Inbox className='w-5 h-5' />
+            )}
           </div>
-        ) : (
-          <div className="w-full py-16 flex flex-col items-center justify-center text-center select-none bg-slate-50/50 dark:bg-zinc-900/30 border border-dashed border-card-border p-8 rounded-xl">
-            <svg className="w-10 h-10 text-slate-350 dark:text-zinc-650 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18" />
-            </svg>
-            <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">
-              {currentSection === 'Shared' ? 'No files shared' : currentSection === 'Starred' ? 'No starred files' : 'No files or folders'}
-            </h4>
-            <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">
-              {currentSection === 'Shared' ? 'No files shared with you yet.' : currentSection === 'Starred' ? 'Files you star will appear here.' : 'There are no items currently stored in this category.'}
-            </p>
-          </div>
-        )
+          <h4 className='text-xs sm:text-sm font-bold text-foreground'>
+            {defaultEmptyTitle}
+          </h4>
+          <p className='text-xs text-text-secondary mt-1 max-w-[260px] leading-normal font-normal'>
+            {defaultEmptySubtitle}
+          </p>
+        </div>
       ) : (
-        <div className="overflow-y-auto overflow-x-auto flex-1 min-h-0 pr-1">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-divider text-[10px] font-bold uppercase tracking-[1px] text-text-muted">
-                <th className="pb-3 font-bold">Name</th>
-                <th className="pb-3 font-bold hidden md:table-cell">Date Modified</th>
-                <th className="pb-3 font-bold hidden sm:table-cell text-right pr-6">Size</th>
-                <th className="pb-3 font-bold text-center w-12">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-divider/40">
-              {filteredFiles.map(file => {
-                const isFolder = file.type === 'folder';
+        <div className='w-full flex flex-col select-none'>
+          {/* Structured Column Header */}
+          {showHeader && (
+            <div className='flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border/80 select-none'>
+              <div className='flex-1 min-w-0 pr-4'>
+                <span>Name</span>
+              </div>
+              <div className='hidden md:block w-36 text-left pr-4'>
+                <span>Last modified</span>
+              </div>
+              <div className='hidden sm:block w-24 text-left pr-4'>
+                <span>Size</span>
+              </div>
+              <div className='w-20 text-right pr-2'>
+                <span>Actions</span>
+              </div>
+            </div>
+          )}
 
-                const dropdownItems = [
-                  {
-                    label: file.starred ? 'Unstar' : 'Star',
-                    onClick: () => toggleStar(file.id),
-                    icon: (
-                      <svg className="w-4 h-4 text-text-muted" fill={file.starred ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    label: 'Share',
-                    onClick: () => {
-                      setSelectedFileId(file.id);
-                      setActiveModal('share');
-                    },
-                    icon: (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 10.742l4.63-2.315a1.5 1.5 0 11.632.922L9.316 11.66c.03.167.044.338.044.51s-.014.343-.044.51l4.63 2.316a1.5 1.5 0 11-.632.921l-4.63-2.315a1.5 1.5 0 110-2.122z" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    label: 'Get Link',
-                    onClick: () => {
-                      setSelectedFileId(file.id);
-                      setActiveModal('get-link');
-                    },
-                    icon: (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    label: 'Delete',
-                    onClick: () => deleteFile(file.id),
-                    icon: (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    ),
-                    className: 'text-red-500 hover:bg-red-500/10',
-                  },
-                ];
+          {/* List Rows */}
+          <div className='flex flex-col divide-y divide-card-border/50'>
+            {displayList.map(file => {
+              const isFolder = file.type === 'folder'
+              const dropdownItems = getDropdownItems(file)
 
-                return (
-                  <tr
-                    key={file.id}
-                    className="hover:bg-[#F5F3F7] dark:hover:bg-[#15151F] transition-colors group cursor-pointer"
-                    onDoubleClick={() => {
-                      if (isFolder) setActiveFolderId(file.id);
-                    }}
-                  >
-                    {/* Name */}
-                    <td className="py-3.5 pr-4 flex items-center gap-3 min-w-0">
-                      {getFileIcon(file.type, file.starred)}
-                      <div className="flex flex-col min-w-0">
-                        <span 
-                          onClick={() => {
-                            if (isFolder) setActiveFolderId(file.id);
-                          }}
-                          className="text-xs font-bold text-foreground group-hover:text-[#6E60EE] line-clamp-2 break-words leading-snug"
-                        >
-                          {file.name}
-                        </span>
-                        <span className="text-[10px] font-light text-text-muted truncate mt-0.5">
-                          {getSubpath(file)}
-                        </span>
+              return (
+                <div
+                  key={file.id}
+                  onClick={() => {
+                    if (isFolder) {
+                      if (onFolderClick) onFolderClick(file.id)
+                      else setActiveFolderId(file.id)
+                    } else {
+                      if (onFileClick) onFileClick(file)
+                      else alert(`Opening ${file.name}`)
+                    }
+                  }}
+                  className='flex items-center justify-between px-3 py-2.5 sm:py-3 hover:bg-input-bg/60 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
+                >
+                  {/* Name Column */}
+                  <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
+                    <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE]/10 group-hover:text-[#6E60EE] group-hover:border-[#6E60EE]/30 transition-all duration-200'>
+                      {getFileIcon(file.type)}
+                    </div>
+                    <div className='flex flex-col min-w-0 flex-1'>
+                      <span
+                        className='text-xs sm:text-sm font-semibold text-foreground group-hover:text-[#6E60EE] truncate transition-colors duration-150'
+                        title={file.name}
+                      >
+                        {file.name}
+                      </span>
+                      {/* Mobile compact details subline */}
+                      <div className='flex items-center gap-1.5 text-[11px] sm:hidden text-text-secondary mt-0.5 truncate'>
+                        <span>{formatBytes(file.size)}</span>
+                        <span>&bull;</span>
+                        <span>{formatDate(file.updatedAt)}</span>
                       </div>
-                    </td>
+                    </div>
+                  </div>
 
-                    {/* Date modified */}
-                    <td className="py-3.5 text-xs font-light text-text-secondary hidden md:table-cell select-none">
-                      {formatDate(file.updatedAt)}
-                    </td>
+                  {/* Date Column (Tablet/Desktop) */}
+                  <div className='hidden md:block w-36 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
+                    {formatDate(file.updatedAt)}
+                  </div>
 
-                    {/* Size */}
-                    <td className="py-3.5 text-xs font-bold text-foreground text-right pr-6 hidden sm:table-cell select-none">
-                      {formatBytes(file.size)}
-                    </td>
+                  {/* Size Column (Tablet/Desktop) */}
+                  <div className='hidden sm:block w-24 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
+                    {formatBytes(file.size)}
+                  </div>
 
-                    {/* Actions Menu */}
-                    <td className="py-3.5 text-center">
-                      <ActionMenu
-                        align="right"
-                        items={dropdownItems.map(item => ({
-                          label: item.label,
-                          onClick: item.onClick,
-                          icon: item.icon,
-                          danger: item.label === 'Delete'
-                        }))}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  {/* Star & Actions Column */}
+                  <div
+                    className='flex items-center justify-end gap-1.5 w-20 shrink-0'
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <Tooltip content={file.starred ? 'Unstar' : 'Star'} side='top'>
+                      <button
+                        onClick={() => toggleStar(file.id)}
+                        className={cn(
+                          'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none hover:bg-input-bg active:scale-90',
+                          file.starred
+                            ? 'text-[#6E60EE] opacity-100'
+                            : 'text-text-muted opacity-0 group-hover:opacity-100 sm:opacity-0 hover:text-[#6E60EE]'
+                        )}
+                        aria-label={file.starred ? 'Unstar file' : 'Star file'}
+                      >
+                        <Star
+                          className={cn(
+                            'w-4 h-4 transition-transform',
+                            file.starred
+                              ? 'fill-[#6E60EE] text-[#6E60EE]'
+                              : 'text-text-muted'
+                          )}
+                        />
+                      </button>
+                    </Tooltip>
+
+                    <ActionMenu
+                      placement='bottom-right'
+                      items={dropdownItems}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
-  );
+  )
+
+  if (showCardContainer) {
+    return (
+      <div className='bg-card-bg border border-card-border rounded-xl p-4 sm:p-5 text-foreground shadow-xs transition-colors duration-200 flex-1 min-h-0'>
+        {content}
+      </div>
+    )
+  }
+
+  return content
 }

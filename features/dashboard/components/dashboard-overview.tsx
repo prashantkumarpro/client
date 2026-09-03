@@ -5,6 +5,7 @@ import { useApp } from '@/providers/app-provider'
 import { cn } from '@/lib/utils/cn'
 import { ActionMenu } from '@/components/ui/action-menu'
 import { Tooltip } from '@/components/ui/tooltip'
+import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
 import { formatBytes, formatDate } from '@/lib/utils/format'
 import {
@@ -264,8 +265,12 @@ export default function DashboardOverview() {
               ]
 
               return (
-                <div
+                <FolderCard
                   key={card.id}
+                  id={card.id}
+                  name={card.title}
+                  itemsCountText={card.itemsCountText.split('•')[0].trim()}
+                  starred={card.starred}
                   onClick={() => {
                     setCurrentSection('My Files')
                     if (card.id === 'folder-design-assets') {
@@ -274,27 +279,8 @@ export default function DashboardOverview() {
                       setActiveFolderId(card.id)
                     }
                   }}
-                  className='flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs transition-all duration-200 cursor-pointer group relative min-w-0'
-                >
-                  <div className='flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1'>
-                    <Folder className='w-6 h-6 sm:w-7 sm:h-7 text-[#6E60EE] shrink-0' />
-                    <div className='flex flex-col min-w-0 flex-1'>
-                      <span className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200' title={card.title}>
-                        {card.title}
-                      </span>
-                      <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
-                        {card.itemsCountText.split('•')[0].trim()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className='shrink-0 -mr-1' onClick={e => e.stopPropagation()}>
-                    <ActionMenu
-                      placement='bottom-right'
-                      items={dropdownItems}
-                      onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
-                    />
-                  </div>
-                </div>
+                  customActions={dropdownItems}
+                />
               )
             })}
           </div>

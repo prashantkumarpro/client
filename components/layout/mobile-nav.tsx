@@ -116,22 +116,23 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                     'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all duration-150 cursor-pointer border border-transparent font-sans',
                     isActive
                       ? 'bg-sidebar-active-bg text-[#6E60EE] font-bold'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50/80 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white font-semibold'
+                      : 'text-text-secondary hover:bg-input-bg hover:text-foreground font-semibold'
                   )}
+                  aria-label={item.label}
                 >
                   <span className='flex items-center gap-3 text-[13px]'>
                     <span
                       className={cn(
                         'transition-colors shrink-0',
                         isActive
-                          ? 'text-[#6E60EE] dark:text-white font-extrabold'
-                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                          ? 'text-[#6E60EE]'
+                          : 'text-text-muted hover:text-foreground'
                       )}
                     >
                       {item.icon}
                     </span>
                     <span className="flex items-center gap-1.5 justify-between flex-1 min-w-0">
-                      <span className="truncate">{item.name === 'Shared' ? 'Shared with me' : item.name}</span>
+                      <span className="truncate">{item.label}</span>
                     </span>
                   </span>
                 </button>

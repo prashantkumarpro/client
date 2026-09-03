@@ -110,21 +110,21 @@ export function Sidebar({ className }: SidebarProps) {
                   />
                 )}
                 {isSidebarCollapsed ? (
-                  <Tooltip content={item.name} side="right">
+                  <Tooltip content={item.label} side="right">
                     <button
                       onClick={() => setCurrentSection(item.name as SidebarSection)}
                       className={cn(
                         'w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer border border-transparent transition-colors',
                         isActive
-                          ? 'bg-sidebar-active-bg border-l-2 border-[#6E60EE] text-foreground'
+                          ? 'bg-sidebar-active-bg border-l-2 border-[#6E60EE] text-[#6E60EE]'
                           : 'text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground'
                       )}
-                      aria-label={item.name}
+                      aria-label={item.label}
                     >
                       <span
                         className={cn(
-                          'w-5 h-5 flex items-center justify-center shrink-0',
-                          isActive ? 'text-[#6E60EE] dark:text-white' : 'text-text-muted'
+                          'w-5 h-5 flex items-center justify-center shrink-0 transition-colors',
+                          isActive ? 'text-[#6E60EE]' : 'text-text-muted'
                         )}
                       >
                         {item.icon}
@@ -137,22 +137,22 @@ export function Sidebar({ className }: SidebarProps) {
                     className={cn(
                       'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-sans cursor-pointer border border-transparent select-none group transition-colors',
                       isActive
-                        ? 'bg-sidebar-active-bg text-[#6E60EE] dark:text-white font-bold'
+                        ? 'bg-sidebar-active-bg text-[#6E60EE] font-bold'
                         : 'text-text-secondary hover:bg-sidebar-active-bg/50 hover:text-foreground font-semibold'
                     )}
-                    aria-label={item.name}
+                    aria-label={item.label}
                   >
                     <span className="flex items-center gap-3 text-[13px] min-w-0">
                       <span
                         className={cn(
                           'shrink-0 flex items-center justify-center w-5 h-5 transition-colors',
-                          isActive ? 'text-[#6E60EE] dark:text-white' : 'text-text-muted group-hover:text-foreground'
+                          isActive ? 'text-[#6E60EE]' : 'text-text-muted group-hover:text-foreground'
                         )}
                       >
                         {item.icon}
                       </span>
                       <span className="whitespace-nowrap truncate">
-                        {item.name === 'Shared' ? 'Shared with me' : item.name}
+                        {item.label}
                       </span>
                     </span>
                   </button>

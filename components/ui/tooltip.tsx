@@ -20,7 +20,7 @@ export function Tooltip({
   side = 'top',
   sideOffset,
   className,
-  delayDuration = 100,
+  delayDuration = 150,
   disabled = false,
 }: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +29,8 @@ export function Tooltip({
   const triggerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const unmountTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoveredRef = useRef(false);
+  const isFocusedRef = useRef(false);
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
@@ -72,6 +74,7 @@ export function Tooltip({
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
+      if (!isHoveredRef.current && !isFocusedRef.current) return;
       updatePosition();
       setIsMounted(true);
       requestAnimationFrame(() => {
@@ -81,12 +84,27 @@ export function Tooltip({
   }, [disabled, content, delayDuration, updatePosition]);
 
   const hideTooltip = useCallback(() => {
+    isHoveredRef.current = false;
+    isFocusedRef.current = false;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsOpen(false);
+    if (unmountTimeoutRef.current) clearTimeout(unmountTimeoutRef.current);
     unmountTimeoutRef.current = setTimeout(() => {
       setIsMounted(false);
     }, 120);
   }, []);
+
+  // When disabled or content is empty/changed, immediately dismiss
+  useEffect(() => {
+    if (disabled || !content) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (unmountTimeoutRef.current) clearTimeout(unmountTimeoutRef.current);
+      setIsOpen(false);
+      setIsMounted(false);
+      isHoveredRef.current = false;
+      isFocusedRef.current = false;
+    }
+  }, [disabled, content]);
 
   useEffect(() => {
     return () => {
@@ -120,15 +138,55 @@ export function Tooltip({
     left: '-translate-x-full -translate-y-1/2',
   };
 
+  const handleMouseEnter = () => {
+    isHoveredRef.current = true;
+    showTooltip();
+  };
+
+  const handleMouseLeave = () => {
+    isHoveredRef.current = false;
+    if (!isFocusedRef.current) {
+      hideTooltip();
+    }
+  };
+
+  const handleFocus = (e: React.FocusEvent) => {
+    // Show only when focused via keyboard or focus-visible
+    try {
+      if ((e.target as HTMLElement)?.matches?.(':focus-visible')) {
+        isFocusedRef.current = true;
+        showTooltip();
+      }
+    } catch {
+      isFocusedRef.current = true;
+      showTooltip();
+    }
+  };
+
+  const handleBlur = () => {
+    isFocusedRef.current = false;
+    if (!isHoveredRef.current) {
+      hideTooltip();
+    }
+  };
+
+  const handleClick = () => {
+    // Immediately dismiss on click
+    hideTooltip();
+  };
+
   return (
     <>
       <div
         ref={triggerRef}
         className="inline-flex items-center justify-center shrink-0"
-        onMouseEnter={showTooltip}
-        onMouseLeave={hideTooltip}
-        onFocus={showTooltip}
-        onBlur={hideTooltip}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onPointerEnter={handleMouseEnter}
+        onPointerLeave={handleMouseLeave}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onClick={handleClick}
         onKeyDown={(e) => {
           if (e.key === 'Escape') hideTooltip();
         }}

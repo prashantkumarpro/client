@@ -78,7 +78,8 @@ export default function DashboardOverview() {
 
   const [folderCards, setFolderCards] = useState<FolderCardData[]>(INITIAL_FOLDER_CARDS)
   const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
-  const [fileViewMode, setFileViewMode] = useState<'grid' | 'list'>('grid')
+  const [folderViewMode, setFolderViewMode] = useState<'grid' | 'list'>('grid')
+  const [recentFilesViewMode, setRecentFilesViewMode] = useState<'grid' | 'list'>('grid')
 
   const toggleCardStar = (id: string) => {
     setFolderCards(prev =>
@@ -213,8 +214,8 @@ export default function DashboardOverview() {
           </button>
         </div>
 
-        {/* Folders Presentation (Grid View vs List View) */}
-        {fileViewMode === 'grid' ? (
+        {/* Folders Presentation */}
+        {folderViewMode === 'grid' ? (
           <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4'>
             {folderCards.map(card => {
               const dropdownItems = [
@@ -397,32 +398,32 @@ export default function DashboardOverview() {
           <div className='flex items-center bg-input-bg border border-card-border p-1 rounded-xl shrink-0 gap-1 shadow-none select-none'>
             <Tooltip content="Grid view" side="top">
               <button
-                onClick={() => setFileViewMode('grid')}
+                onClick={() => setRecentFilesViewMode('grid')}
                 className={cn(
                   'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
-                  fileViewMode === 'grid'
+                  recentFilesViewMode === 'grid'
                     ? 'bg-card-bg text-[#6E60EE] shadow-xs border border-card-border/60'
                     : 'text-text-secondary hover:text-foreground hover:bg-card-bg/50'
                 )}
                 aria-label='Grid view'
-                aria-pressed={fileViewMode === 'grid'}
+                aria-pressed={recentFilesViewMode === 'grid'}
               >
-                <LayoutGrid className='w-4 h-4' strokeWidth={fileViewMode === 'grid' ? 2.2 : 1.8} />
+                <LayoutGrid className='w-4 h-4' strokeWidth={recentFilesViewMode === 'grid' ? 2.2 : 1.8} />
               </button>
             </Tooltip>
             <Tooltip content="List view" side="top">
               <button
-                onClick={() => setFileViewMode('list')}
+                onClick={() => setRecentFilesViewMode('list')}
                 className={cn(
                   'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
-                  fileViewMode === 'list'
+                  recentFilesViewMode === 'list'
                     ? 'bg-card-bg text-[#6E60EE] shadow-xs border border-card-border/60'
                     : 'text-text-secondary hover:text-foreground hover:bg-card-bg/50'
                 )}
                 aria-label='List view'
-                aria-pressed={fileViewMode === 'list'}
+                aria-pressed={recentFilesViewMode === 'list'}
               >
-                <List className='w-4 h-4' strokeWidth={fileViewMode === 'list' ? 2.2 : 1.8} />
+                <List className='w-4 h-4' strokeWidth={recentFilesViewMode === 'list' ? 2.2 : 1.8} />
               </button>
             </Tooltip>
           </div>
@@ -438,7 +439,7 @@ export default function DashboardOverview() {
               This category does not have any items yet.
             </p>
           </div>
-        ) : fileViewMode === 'grid' ? (
+        ) : recentFilesViewMode === 'grid' ? (
           <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4'>
             {displayedFiles.map(file => {
               const fileDropdownItems = [

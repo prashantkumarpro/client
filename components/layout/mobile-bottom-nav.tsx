@@ -47,12 +47,12 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label='Mobile bottom navigation'
-      className='w-full shrink-0 md:hidden bg-card-bg border-t border-card-border select-none z-20'
+      className='w-full shrink-0 md:hidden bg-card-bg border-t border-card-border select-none z-20 px-4'
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      <div className='grid grid-cols-4 w-full h-16'>
+      <div className='flex items-center justify-between w-full h-16'>
         {navItems.map(item => {
           const isActive = currentSection === item.name
           const Icon = item.icon
@@ -61,7 +61,7 @@ export function MobileBottomNav() {
             <button
               key={item.name}
               onClick={() => handleNavClick(item.name)}
-              className='flex flex-col items-center justify-center w-full h-full py-1 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg rounded-xl group active:scale-95 transition-all duration-200'
+              className='flex flex-col items-center justify-center w-14 h-full py-1 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg rounded-xl group active:scale-95 transition-all duration-200'
               aria-current={isActive ? 'page' : undefined}
             >
               {/* Active pill background around icon */}

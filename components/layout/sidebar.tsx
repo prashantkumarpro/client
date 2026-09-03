@@ -48,12 +48,34 @@ export function Sidebar({ className }: SidebarProps) {
           )}
         >
           {isSidebarCollapsed ? (
-            <Tooltip content="Home" side="right">
-              <button
-                onClick={() => setCurrentSection('Dashboard')}
-                className="w-10 h-10 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0 rounded-xl focus:outline-none"
-                aria-label="Home"
-              >
+            <button
+              onClick={() => setCurrentSection('Dashboard')}
+              className="w-10 h-10 flex items-center justify-center cursor-pointer hover:opacity-85 select-none shrink-0 rounded-xl focus:outline-none"
+              aria-label="Home"
+            >
+              <Image
+                src="/images/cloudeLogo.png"
+                width={32}
+                height={28}
+                alt="cloudspacego logo"
+                className="w-8 h-auto object-contain shrink-0"
+                priority
+              />
+            </button>
+          ) : (
+            <div
+              onClick={() => setCurrentSection('Dashboard')}
+              className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 min-w-0 select-none"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setCurrentSection('Dashboard')
+                }
+              }}
+              aria-label="Home"
+            >
+              <div className="w-8 h-8 flex items-center justify-center shrink-0">
                 <Image
                   src="/images/cloudeLogo.png"
                   width={32}
@@ -62,37 +84,11 @@ export function Sidebar({ className }: SidebarProps) {
                   className="w-8 h-auto object-contain shrink-0"
                   priority
                 />
-              </button>
-            </Tooltip>
-          ) : (
-            <Tooltip content="Home" side="bottom">
-              <div
-                onClick={() => setCurrentSection('Dashboard')}
-                className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 min-w-0 select-none"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setCurrentSection('Dashboard')
-                  }
-                }}
-                aria-label="Home"
-              >
-                <div className="w-8 h-8 flex items-center justify-center shrink-0">
-                  <Image
-                    src="/images/cloudeLogo.png"
-                    width={32}
-                    height={28}
-                    alt="cloudspacego logo"
-                    className="w-8 h-auto object-contain shrink-0"
-                    priority
-                  />
-                </div>
-                <span className="text-xl font-bold tracking-tight font-sans truncate text-foreground flex items-center whitespace-nowrap">
-                  cloud<span className="font-extrabold text-[#6E60EE]">spacego</span>
-                </span>
               </div>
-            </Tooltip>
+              <span className="text-xl font-bold tracking-tight font-sans truncate text-foreground flex items-center whitespace-nowrap">
+                cloud<span className="font-extrabold text-[#6E60EE]">spacego</span>
+              </span>
+            </div>
           )}
         </div>
 

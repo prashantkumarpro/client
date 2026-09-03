@@ -61,13 +61,17 @@ export function ActionMenu ({ items, className, triggerClassName, align = 'right
         <button
           onClick={toggle}
           className={cn(
-            'bg-card-bg hover:bg-input-bg w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border border-card-border cursor-pointer focus:outline-none transition-colors shrink-0',
+            'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-card-bg hover:bg-input-bg active:bg-[#6E60EE]/10 border border-card-border hover:border-[#6E60EE]/40 text-text-secondary hover:text-foreground active:text-[#6E60EE] active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg shrink-0 shadow-xs',
+            isOpen && 'border-[#6E60EE]/50 text-[#6E60EE] bg-[#6E60EE]/10',
             triggerClassName
           )}
           aria-label='More actions'
+          aria-expanded={isOpen}
         >
-          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-secondary' fill='currentColor' viewBox='0 0 24 24'>
-            <path d='M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z' />
+          <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 24 24'>
+            <circle cx='12' cy='5' r='1.75' />
+            <circle cx='12' cy='12' r='1.75' />
+            <circle cx='12' cy='19' r='1.75' />
           </svg>
         </button>
       </Tooltip>

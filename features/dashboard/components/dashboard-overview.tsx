@@ -394,33 +394,35 @@ export default function DashboardOverview() {
           </h3>
 
           {/* Single View Mode Toggle Switcher */}
-          <div className='flex items-center bg-divider border border-card-border p-0.5 rounded-lg shrink-0'>
+          <div className='flex items-center bg-input-bg border border-card-border p-1 rounded-xl shrink-0 gap-1 shadow-none select-none'>
             <Tooltip content="Grid view" side="top">
               <button
                 onClick={() => setFileViewMode('grid')}
                 className={cn(
-                  'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
+                  'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
                   fileViewMode === 'grid'
-                    ? 'bg-card-border text-[#6E60EE]'
-                    : 'text-text-secondary hover:text-foreground'
+                    ? 'bg-card-bg text-[#6E60EE] shadow-xs border border-card-border/60'
+                    : 'text-text-secondary hover:text-foreground hover:bg-card-bg/50'
                 )}
                 aria-label='Grid view'
+                aria-pressed={fileViewMode === 'grid'}
               >
-                <LayoutGrid className='w-4 h-4' />
+                <LayoutGrid className='w-4 h-4' strokeWidth={fileViewMode === 'grid' ? 2.2 : 1.8} />
               </button>
             </Tooltip>
             <Tooltip content="List view" side="top">
               <button
                 onClick={() => setFileViewMode('list')}
                 className={cn(
-                  'p-1 rounded-md cursor-pointer transition-all focus:outline-none',
+                  'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
                   fileViewMode === 'list'
-                    ? 'bg-card-border text-[#6E60EE]'
-                    : 'text-text-secondary hover:text-foreground'
+                    ? 'bg-card-bg text-[#6E60EE] shadow-xs border border-card-border/60'
+                    : 'text-text-secondary hover:text-foreground hover:bg-card-bg/50'
                 )}
                 aria-label='List view'
+                aria-pressed={fileViewMode === 'list'}
               >
-                <List className='w-4 h-4' />
+                <List className='w-4 h-4' strokeWidth={fileViewMode === 'list' ? 2.2 : 1.8} />
               </button>
             </Tooltip>
           </div>

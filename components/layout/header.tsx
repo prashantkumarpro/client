@@ -129,17 +129,20 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
             align='right'
             items={profileDropdownItems}
             trigger={
-              <div className='flex items-center gap-1.5 p-1 pl-1 pr-2.5 rounded-full bg-input-bg hover:bg-input-bg/80 border border-card-border cursor-pointer select-none transition-all group relative shrink-0 h-10 shadow-none'>
-                <div className='w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-800 overflow-hidden relative shrink-0 shadow-[inset_0_0_0_1px_var(--color-card-border)]'>
+              <button
+                className='flex items-center gap-1.5 p-1 pl-1 pr-2.5 rounded-full bg-input-bg hover:bg-input-bg/80 active:bg-input-bg/60 border border-card-border hover:border-[#6E60EE]/40 active:scale-95 cursor-pointer select-none transition-all duration-200 group relative shrink-0 h-10 shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg'
+                aria-label='User account menu'
+              >
+                <div className='w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-800 overflow-hidden relative shrink-0 ring-1 ring-card-border'>
                   <img
                     src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&fit=crop'
                     alt='User Profile'
                     className='w-full h-full object-cover'
                   />
-                  <span className='absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full border border-card-bg shadow-sm pointer-events-none' />
+                  <span className='absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full border border-card-bg shadow-xs pointer-events-none' />
                 </div>
                 <svg
-                  className='w-3.5 h-3.5 text-text-secondary group-hover:text-foreground transition-transform duration-200 group-hover:translate-y-0.5'
+                  className='w-3.5 h-3.5 text-text-secondary group-hover:text-foreground transition-all duration-200 group-hover:translate-y-0.5'
                   fill='none'
                   viewBox='0 0 24 24'
                   stroke='currentColor'
@@ -149,7 +152,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
                 >
                   <path d='M19 9l-7 7-7-7' />
                 </svg>
-              </div>
+              </button>
             }
           />
         </div>

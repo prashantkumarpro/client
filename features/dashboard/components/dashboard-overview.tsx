@@ -217,7 +217,7 @@ export default function DashboardOverview() {
 
         {/* Folders Presentation */}
         {folderViewMode === 'grid' ? (
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4'>
+          <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
             {folderCards.map(card => {
               const dropdownItems = [
                 {
@@ -441,7 +441,7 @@ export default function DashboardOverview() {
             </p>
           </div>
         ) : recentFilesViewMode === 'grid' ? (
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4'>
+          <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
             {displayedFiles.map(file => {
               const fileDropdownItems = [
                 {

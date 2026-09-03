@@ -18,14 +18,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className='w-full flex flex-col gap-1.5'>
         {label && (
-          <label className='text-[11px] font-bold tracking-[1.5px] uppercase text-text-secondary'>
+          <label className='text-xs font-semibold text-text-secondary select-none'>
             {label}
           </label>
         )}
 
         <div className='relative'>
           {startIcon && (
-            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-text-muted'>
+            <span className='absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted'>
               {startIcon}
             </span>
           )}
@@ -34,26 +34,26 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             type={type}
             className={cn(
-              'w-full h-11 bg-input-bg text-foreground rounded-none px-4 py-2.5 text-[14px] font-light placeholder:text-text-muted transition-all duration-150 focus:bg-divider focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed',
-              startIcon ? 'pl-12' : '',
-              endAction ? 'pr-12' : '',
+              'w-full h-10 bg-input-bg text-foreground rounded-lg px-3.5 py-2 text-sm font-normal placeholder:text-text-muted border border-card-border transition-all duration-200 focus:bg-card-bg focus:border-[#6E60EE]/60 focus:outline-none focus:ring-2 focus:ring-[#6E60EE]/20 disabled:opacity-50 disabled:cursor-not-allowed',
+              startIcon ? 'pl-10' : '',
+              endAction ? 'pr-10' : '',
               error
-                ? 'shadow-[inset_0_0_0_1px_#ef4444] focus:shadow-[inset_0_0_0_2px_#ef4444]'
-                : 'shadow-[inset_0_0_0_1px_var(--color-card-border)] focus:shadow-[inset_0_0_0_2px_var(--foreground)]',
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                : '',
               className
             )}
             {...props}
           />
 
           {endAction && (
-            <div className='absolute right-4 top-1/2 -translate-y-1/2'>
+            <div className='absolute right-3.5 top-1/2 -translate-y-1/2'>
               {endAction}
             </div>
           )}
         </div>
 
         {error && (
-          <span className='text-[10px] font-bold uppercase tracking-[0.5px] text-red-500'>
+          <span className='text-[11px] font-medium text-red-500'>
             {error}
           </span>
         )}
@@ -63,3 +63,4 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 )
 
 Input.displayName = 'Input'
+

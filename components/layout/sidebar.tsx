@@ -179,7 +179,7 @@ export function Sidebar({ className }: SidebarProps) {
             <Tooltip content="72% used  •  2.8 GB free" side="right">
               <div
                 onClick={() => setCurrentSection('My Files')}
-                className="w-12 rounded-xl py-2 px-1 flex flex-col items-center gap-1.5 select-none cursor-pointer border bg-card-bg border-card-border hover:bg-input-bg transition-colors"
+                className="w-12 rounded-xl py-2 px-1 flex flex-col items-center gap-1.5 select-none cursor-pointer border bg-card-bg border-card-border hover:bg-input-bg transition-colors shadow-xs"
               >
                 <svg
                   className="w-5 h-5 text-[#6E60EE]"
@@ -195,18 +195,18 @@ export function Sidebar({ className }: SidebarProps) {
                   />
                 </svg>
                 <span className="text-[10px] font-bold text-foreground">72%</span>
-                <div className="w-8 h-2 overflow-hidden relative border rounded-full bg-input-bg border-card-border">
-                  <div className="h-full bg-[#6E60EE]" style={{ width: '72%' }} />
+                <div className="w-8 h-1.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border">
+                  <div className="h-full bg-[#6E60EE] rounded-full" style={{ width: '72%' }} />
                 </div>
               </div>
             </Tooltip>
           </div>
         ) : (
-          <div className="px-4 py-1.5 shrink-0">
-            <div className="w-full border rounded-2xl p-3 flex flex-col gap-2.5 select-none bg-card-bg border-card-border">
+          <div className="px-3 py-1.5 shrink-0">
+            <div className="w-full border rounded-xl p-3 flex flex-col gap-2.5 select-none bg-card-bg border-card-border shadow-xs">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-input-bg text-[#6E60EE] border border-card-border">
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -221,22 +221,22 @@ export function Sidebar({ className }: SidebarProps) {
                       />
                     </svg>
                   </div>
-                  <span className="text-[11px] font-bold text-foreground whitespace-nowrap">
+                  <span className="text-xs font-semibold text-foreground whitespace-nowrap">
                     Storage
                   </span>
                 </div>
-                <span className="text-[9px] font-bold text-[#FFFFFF] bg-[#6E60EE] px-2 py-0.5 rounded-full whitespace-nowrap">
+                <span className="text-[10px] font-bold text-white bg-[#6E60EE] px-2 py-0.5 rounded-full whitespace-nowrap">
                   72%
                 </span>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-text-secondary whitespace-nowrap">
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-normal text-text-secondary whitespace-nowrap">
                   72% used &bull; 2.8 GB free
                 </span>
-                <div className="w-full h-2.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border">
+                <div className="w-full h-1.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border">
                   <div
-                    className="h-full bg-[#6E60EE]"
+                    className="h-full bg-[#6E60EE] rounded-full"
                     style={{ width: '72%' }}
                   />
                 </div>
@@ -244,15 +244,15 @@ export function Sidebar({ className }: SidebarProps) {
 
               <button
                 onClick={() => alert('Storage upgrade options coming soon!')}
-                className="w-full flex items-center justify-between text-[10px] font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors pt-0.5 cursor-pointer group"
+                className="w-full flex items-center justify-between text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors pt-0.5 cursor-pointer group"
               >
                 <span className="whitespace-nowrap">Upgrade Storage</span>
                 <svg
-                  className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform shrink-0"
+                  className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={2.5}
+                  strokeWidth={2.2}
                 >
                   <path
                     strokeLinecap="round"
@@ -287,42 +287,40 @@ export function Sidebar({ className }: SidebarProps) {
                   aria-label="Toggle theme"
                 >
                   {theme === 'light' ? (
-                    <Moon className="w-5 h-5" />
+                    <Moon className="w-4 h-4" />
                   ) : (
-                    <Sun className="w-5 h-5 text-amber-500" />
+                    <Sun className="w-4 h-4 text-amber-500" />
                   )}
                 </button>
               </div>
             </Tooltip>
           </div>
         ) : (
-          <div className="px-4 py-1.5 shrink-0">
-            <div className="w-full p-0.5 border rounded-xl flex items-center justify-between select-none relative bg-input-bg border-card-border">
+          <div className="px-3 py-1.5 shrink-0">
+            <div className="w-full p-1 border rounded-xl flex items-center justify-between select-none relative bg-input-bg border-card-border gap-1">
               <button
                 onClick={() => theme === 'dark' && toggleTheme()}
                 className={cn(
-                  'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer focus:outline-none border border-transparent transition-colors',
+                  'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer focus:outline-none border transition-all duration-200 active:scale-95',
                   isLight
-                    ? 'bg-card-bg border-card-border text-[#6E60EE] font-bold shadow-sm'
-                    : 'text-text-secondary hover:text-foreground'
+                    ? 'bg-card-bg border-card-border/60 text-[#6E60EE] font-bold shadow-xs'
+                    : 'border-transparent text-text-secondary hover:text-foreground'
                 )}
               >
-                <Sun className="w-4 h-4 text-amber-500 shrink-0" />
+                <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 <span className="whitespace-nowrap">Light</span>
               </button>
-
-              <div className="h-4 w-[1px] bg-sidebar-border shrink-0 self-center" />
 
               <button
                 onClick={() => theme === 'light' && toggleTheme()}
                 className={cn(
-                  'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer focus:outline-none border border-transparent transition-colors',
+                  'w-1/2 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer focus:outline-none border transition-all duration-200 active:scale-95',
                   !isLight
-                    ? 'bg-card-bg border-card-border text-white font-bold shadow-sm'
-                    : 'text-text-secondary hover:text-foreground'
+                    ? 'bg-card-bg border-card-border/60 text-white font-bold shadow-xs'
+                    : 'border-transparent text-text-secondary hover:text-foreground'
                 )}
               >
-                <Moon className="w-4 h-4 text-slate-400 shrink-0" />
+                <Moon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span className="whitespace-nowrap">Dark</span>
               </button>
             </div>

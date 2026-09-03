@@ -49,7 +49,7 @@ export function Modal ({
       role='presentation'
     >
       <div
-        className={`w-full rounded-2xl border border-card-border bg-card-bg shadow-xl ${className}`}
+        className={`w-full max-w-lg rounded-xl border border-card-border bg-card-bg shadow-xl ${className}`}
         onMouseDown={event => event.stopPropagation()}
         role='dialog'
         aria-modal='true'
@@ -57,12 +57,12 @@ export function Modal ({
         aria-describedby={description ? 'modal-description' : undefined}
       >
         {(title || description || showCloseButton) && (
-          <div className='flex items-start justify-between border-b border-card-border px-6 py-5'>
+          <div className='flex items-start justify-between border-b border-card-border px-5 py-4'>
             <div className='min-w-0'>
               {title && (
                 <h2
                   id='modal-title'
-                  className='text-sm font-bold uppercase tracking-[1px] text-foreground'
+                  className='text-base font-bold text-foreground tracking-tight'
                 >
                   {title}
                 </h2>
@@ -71,7 +71,7 @@ export function Modal ({
               {description && (
                 <p
                   id='modal-description'
-                  className='mt-1 text-xs text-text-secondary'
+                  className='mt-0.5 text-xs text-text-secondary'
                 >
                   {description}
                 </p>
@@ -82,16 +82,16 @@ export function Modal ({
               <button
                 type='button'
                 onClick={onClose}
-                className='ml-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-background hover:text-foreground'
+                className='ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-input-bg hover:text-foreground active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50'
                 aria-label='Close modal'
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             )}
           </div>
         )}
 
-        <div className='p-6'>{children}</div>
+        <div className='p-5'>{children}</div>
       </div>
     </div>
   )

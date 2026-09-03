@@ -157,24 +157,24 @@ export default function DashboardOverview() {
       {/* Top Greeting, Actions & Continue Section */}
       <div className='flex flex-col items-start w-full select-none'>
         {/* Greeting headline */}
-        <h1 className='text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-1.5'>
+        <h1 className='text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2'>
           {getGreeting()}
         </h1>
 
-        {/* Subtitle (4–6px below greeting) */}
+        {/* Subtitle */}
         <p className='text-xs text-text-muted mt-1'>
           Everything you need, right where you left it.
         </p>
 
-        {/* Compact Continue where you left off row (Desktop: ~500-600px wide, left-aligned; Mobile: full-width) */}
+        {/* Compact Continue where you left off row */}
         <div
           onClick={() => {
             setCurrentSection('My Files')
             setActiveFolderId('folder-1') // Set folder to Design Assets
           }}
-          className='w-full md:w-[560px] md:max-w-[600px] mt-3.5 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-3.5 py-2 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
+          className='w-full md:w-[560px] md:max-w-[600px] mt-4 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-4 py-2.5 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-xs'
         >
-          <div className='flex items-center gap-2.5 min-w-0'>
+          <div className='flex items-center gap-3 min-w-0'>
             <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>
               <Folder className='w-3.5 h-3.5' />
             </div>
@@ -186,10 +186,10 @@ export default function DashboardOverview() {
             </span>
           </div>
           <div className='flex items-center gap-1.5 text-text-muted shrink-0 ml-2'>
-            <span className='text-[11px] text-text-muted hidden xs:inline'>
+            <span className='text-xs text-text-secondary hidden xs:inline'>
               Last opened 12 min ago
             </span>
-            <span className='text-[11px] text-text-muted xs:hidden'>
+            <span className='text-xs text-text-secondary xs:hidden'>
               12m ago
             </span>
             <ChevronRight className='w-3.5 h-3.5' />
@@ -197,8 +197,8 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Your folders Section (20–24px below Continue) */}
-      <div className='flex flex-col gap-2.5 sm:gap-3 mt-5 sm:mt-6'>
+      {/* Your folders Section */}
+      <div className='flex flex-col gap-3 mt-6 sm:mt-7'>
         <div className='flex items-center justify-between w-full'>
           <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
             Your folders
@@ -208,7 +208,7 @@ export default function DashboardOverview() {
               setCurrentSection('My Files')
               setActiveFolderId(null) // Go to files root folder
             }}
-            className='text-xs font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none'
+            className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none'
           >
             <span>View all</span>
           </button>
@@ -273,15 +273,15 @@ export default function DashboardOverview() {
                       setActiveFolderId(card.id)
                     }
                   }}
-                  className='flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 cursor-pointer group relative min-w-0'
+                  className='flex items-center justify-between p-3.5 sm:p-4 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs transition-all duration-200 cursor-pointer group relative min-w-0'
                 >
-                  <div className='flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1'>
+                  <div className='flex items-center gap-3 min-w-0 flex-1'>
                     <Folder className='w-6 h-6 sm:w-7 sm:h-7 text-[#6E60EE] shrink-0' />
                     <div className='flex flex-col min-w-0 flex-1'>
-                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                      <span className='text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                         {card.title}
                       </span>
-                      <span className='text-[10px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
+                      <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
                         {card.itemsCountText.split('•')[0].trim()}
                       </span>
                     </div>
@@ -492,7 +492,7 @@ export default function DashboardOverview() {
               return (
                 <div
                   key={file.id}
-                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
+                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs p-3.5 sm:p-4 flex flex-col gap-3 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
                   <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
@@ -504,10 +504,10 @@ export default function DashboardOverview() {
                   </div>
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
-                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
+                      <span className='text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
                         {file.name}
                       </span>
-                      <span className='text-[10px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
+                      <span className='text-xs font-normal text-text-secondary truncate mt-0.5'>
                         {formatBytes(file.size)}
                       </span>
                     </div>

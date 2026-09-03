@@ -47,7 +47,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label='Mobile bottom navigation'
-      className='w-full shrink-0 md:hidden bg-card-bg border-t border-card-border select-none z-20 px-4'
+      className='w-full shrink-0 md:hidden bg-card-bg border-t border-card-border select-none z-20 px-4 sm:px-6'
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
@@ -61,12 +61,12 @@ export function MobileBottomNav() {
             <button
               key={item.name}
               onClick={() => handleNavClick(item.name)}
-              className='flex flex-col items-center justify-center w-14 h-full py-1 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg rounded-xl group active:scale-95 transition-all duration-200'
+              className='flex flex-col items-center justify-center w-10 h-full py-1 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg rounded-xl group active:scale-95 transition-all duration-200'
               aria-current={isActive ? 'page' : undefined}
             >
               {/* Active pill background around icon */}
               <div
-                className={`w-14 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+                className={`w-10 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
                   isActive
                     ? 'bg-[#6E60EE]/15 dark:bg-[#6E60EE]/25 text-[#6E60EE]'
                     : 'text-text-muted group-hover:text-foreground group-hover:bg-input-bg/60 active:bg-[#6E60EE]/10 active:text-[#6E60EE]'
@@ -80,7 +80,7 @@ export function MobileBottomNav() {
 
               {/* Text label */}
               <span
-                className={`text-[11px] mt-0.5 tracking-tight transition-colors duration-150 ${
+                className={`text-[11px] mt-0.5 tracking-tight transition-colors duration-150 whitespace-nowrap ${
                   isActive
                     ? 'font-bold text-[#6E60EE]'
                     : 'font-medium text-text-muted group-hover:text-foreground'

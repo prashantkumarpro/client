@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../../providers/app-provider';
+import { useDirectory } from '../hooks/use-directory';
 import { Dialog } from '../../../components/ui/dialog';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
 
 export function CreateFolderModal() {
-  const { activeModal, setActiveModal, createFolder } = useApp();
+  const { activeModal, setActiveModal, activeFolderId } = useApp();
+  const { create, isCreating } = useDirectory(activeFolderId ?? undefined);
   const [folderName, setFolderName] = useState('');
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,7 +34,7 @@ export function CreateFolderModal() {
     setActiveModal(null);
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = folderName.trim();
     if (!trimmed) {
@@ -40,11 +42,16 @@ export function CreateFolderModal() {
       inputRef.current?.focus();
       return;
     }
-    createFolder(trimmed);
-    handleClose();
+    try {
+      await create({ dirname: trimmed }, activeFolderId ?? undefined);
+      handleClose();
+    } catch (err) {
+      console.error('Failed to create folder:', err);
+      setError('Failed to create folder. Please try again.');
+    }
   };
 
-  const isSubmitDisabled = !folderName.trim();
+  const isSubmitDisabled = !folderName.trim() || isCreating;
 
   return (
     <Dialog

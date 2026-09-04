@@ -3,18 +3,16 @@
 import React, { useState, useMemo } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { cn } from '@/lib/utils/cn'
-import { ActionMenu } from '@/components/ui/action-menu'
+import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { Tooltip } from '@/components/ui/tooltip'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
 import { formatBytes, formatDate } from '@/lib/utils/format'
 import {
-  Clock,
   Star,
   Folder,
   Image as ImageIcon,
   ChevronRight,
-  Users,
   FileText,
   Video,
   File as FileIcon,
@@ -26,48 +24,12 @@ import {
   Edit3,
   FolderInput,
   Trash2,
+  RefreshCw
 } from 'lucide-react'
+import { useDirectory } from '@/features/directory/hooks/use-directory'
+import type { DirectoryItem } from '@/features/directory/types'
 
-interface FolderCardData {
-  id: string;
-  title: string;
-  itemsCountText: string;
-  starred: boolean;
-  shared: boolean;
-}
-
-const INITIAL_FOLDER_CARDS: FolderCardData[] = [
-  {
-    id: 'folder-projects',
-    title: 'Projects',
-    itemsCountText: '24 files  •  120 MB',
-    starred: false,
-    shared: false
-  },
-  {
-    id: 'folder-design-assets',
-    title: 'Design Assets',
-    itemsCountText: '128 files  •  2.4 GB',
-    starred: true,
-    shared: false
-  },
-  {
-    id: 'folder-documents',
-    title: 'Documents',
-    itemsCountText: '34 files  •  45 MB',
-    starred: false,
-    shared: false
-  },
-  {
-    id: 'folder-brand-photos',
-    title: 'Brand Photos',
-    itemsCountText: '86 files  •  1.1 GB',
-    starred: false,
-    shared: false
-  }
-];
-
-export default function DashboardOverview() {
+export default function DashboardOverview () {
   const {
     files,
     setCurrentSection,
@@ -78,27 +40,49 @@ export default function DashboardOverview() {
     deleteFile
   } = useApp()
 
-  const [folderCards, setFolderCards] = useState<FolderCardData[]>(INITIAL_FOLDER_CARDS)
+  const {
+    directory,
+    isLoading: isDirectoryLoading,
+    error: directoryError,
+    create,
+    rename,
+    remove,
+    refresh
+  } = useDirectory()
+
+  const folders: DirectoryItem[] = useMemo(() => {
+    return directory?.directories ?? []
+  }, [directory])
+
   const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
   const [folderViewMode, setFolderViewMode] = useState<'grid' | 'list'>('grid')
   const [recentFilesViewMode, setRecentFilesViewMode] = useState<'grid' | 'list'>('grid')
 
-  const toggleCardStar = (id: string) => {
-    setFolderCards(prev =>
-      prev.map(c => (c.id === id ? { ...c, starred: !c.starred } : c))
-    )
+  // Folder Action Handlers connecting to useDirectory()
+  const handleCreateFolder = async (dirname = 'New Folder') => {
+    try {
+      await create({ dirname })
+    } catch (err) {
+      console.error('Failed to create directory:', err)
+    }
   }
 
-  const deleteCard = (id: string) => {
-    setFolderCards(prev => prev.filter(c => c.id !== id))
-  }
-
-  const renameCard = (id: string, currentTitle: string) => {
+  const handleRenameFolder = async (folderId: string, currentTitle: string) => {
     const newName = prompt('Enter new folder name:', currentTitle)
-    if (newName && newName.trim()) {
-      setFolderCards(prev =>
-        prev.map(c => (c.id === id ? { ...c, title: newName.trim() } : c))
-      )
+    if (newName && newName.trim() && newName.trim() !== currentTitle) {
+      try {
+        await rename(folderId, { newDirName: newName.trim() })
+      } catch (err) {
+        console.error('Failed to rename directory:', err)
+      }
+    }
+  }
+
+  const handleDeleteFolder = async (folderId: string) => {
+    try {
+      await remove(folderId)
+    } catch (err) {
+      console.error('Failed to delete directory:', err)
     }
   }
 
@@ -108,22 +92,6 @@ export default function DashboardOverview() {
     if (hour < 12) return 'Good morning, Prashant 👋'
     if (hour < 17) return 'Good afternoon, Prashant 👋'
     return 'Good evening, Prashant 👋'
-  }
-
-  // Helper to map file types to icons in mid gray color (grayscale)
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case 'pdf':
-        return <FileText className='w-5 h-5 text-text-secondary shrink-0' />
-      case 'image':
-        return <ImageIcon className='w-5 h-5 text-text-secondary shrink-0' />
-      case 'video':
-        return <Video className='w-5 h-5 text-text-secondary shrink-0' />
-      case 'document':
-        return <FileText className='w-5 h-5 text-text-secondary shrink-0' />
-      default:
-        return <FileIcon className='w-5 h-5 text-text-secondary shrink-0' />
-    }
   }
 
   // Helper to map file types to larger grid icons in mid gray color (grayscale)
@@ -150,9 +118,54 @@ export default function DashboardOverview() {
   // Get displayed files list (Recent files sorted by updated date)
   const displayedFiles = useMemo(() => {
     let result = [...allFilesOnly]
-    result = result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    result = result.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
     return result.slice(0, 4) // display up to 4 files as shown in mockup
   }, [allFilesOnly])
+
+  const recentFolder = folders[0]
+
+  const getFolderDropdownItems = (folder: DirectoryItem): ActionMenuItem[] => [
+    {
+      label: 'Open',
+      onClick: () => {
+        setCurrentSection('My Files')
+        setActiveFolderId(folder.id)
+      },
+      icon: <Eye className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Rename',
+      onClick: () => handleRenameFolder(folder.id, folder.name),
+      icon: <Edit3 className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Share',
+      onClick: () => {
+        setSelectedFileId(folder.id)
+        setActiveModal('share')
+      },
+      icon: <Share2 className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Star',
+      onClick: () => alert(`Starring folder "${folder.name}" coming soon`),
+      icon: <Star className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Move',
+      onClick: () => alert(`Move folder "${folder.name}"`),
+      icon: <FolderInput className='w-4 h-4 text-text-secondary' />
+    },
+    {
+      label: 'Delete',
+      onClick: () => handleDeleteFolder(folder.id),
+      icon: <Trash2 className='w-4 h-4 text-rose-500' />,
+      danger: true
+    }
+  ]
 
   return (
     <div className='flex flex-col w-full select-none'>
@@ -169,34 +182,36 @@ export default function DashboardOverview() {
         </p>
 
         {/* Compact Continue where you left off row */}
-        <div
-          onClick={() => {
-            setCurrentSection('My Files')
-            setActiveFolderId('folder-1') // Set folder to Design Assets
-          }}
-          className='w-full md:w-[560px] md:max-w-[600px] mt-4 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-4 py-2.5 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-xs'
-        >
-          <div className='flex items-center gap-3 min-w-0'>
-            <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>
-              <Folder className='w-3.5 h-3.5' />
+        {recentFolder && (
+          <div
+            onClick={() => {
+              setCurrentSection('My Files')
+              setActiveFolderId(recentFolder.id)
+            }}
+            className='w-full md:w-[560px] md:max-w-[600px] mt-4 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-4 py-2.5 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-xs'
+          >
+            <div className='flex items-center gap-3 min-w-0'>
+              <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>
+                <Folder className='w-3.5 h-3.5' />
+              </div>
+              <span className='font-bold uppercase tracking-wider text-[10px] text-text-muted shrink-0'>
+                CONTINUE:
+              </span>
+              <span className='font-semibold text-foreground truncate text-xs group-hover:text-[#6E60EE] transition-colors'>
+                {recentFolder.name}
+              </span>
             </div>
-            <span className='font-bold uppercase tracking-wider text-[10px] text-text-muted shrink-0'>
-              CONTINUE:
-            </span>
-            <span className='font-semibold text-foreground truncate text-xs group-hover:text-[#6E60EE] transition-colors'>
-              Design Assets
-            </span>
+            <div className='flex items-center gap-1.5 text-text-muted shrink-0 ml-2'>
+              <span className='text-xs text-text-secondary hidden xs:inline'>
+                Last opened recently
+              </span>
+              <span className='text-xs text-text-secondary xs:hidden'>
+                Recently
+              </span>
+              <ChevronRight className='w-3.5 h-3.5' />
+            </div>
           </div>
-          <div className='flex items-center gap-1.5 text-text-muted shrink-0 ml-2'>
-            <span className='text-xs text-text-secondary hidden xs:inline'>
-              Last opened 12 min ago
-            </span>
-            <span className='text-xs text-text-secondary xs:hidden'>
-              12m ago
-            </span>
-            <ChevronRight className='w-3.5 h-3.5' />
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Your folders Section */}
@@ -216,68 +231,56 @@ export default function DashboardOverview() {
           </button>
         </div>
 
-        {/* Folders Presentation */}
-        {folderViewMode === 'grid' ? (
+        {/* Folders Presentation: Loading / Error / Content */}
+        {isDirectoryLoading ? (
           <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
-            {folderCards.map(card => {
-              const dropdownItems = [
-                {
-                  label: 'Open',
-                  onClick: () => {
-                    setCurrentSection('My Files')
-                    if (card.id === 'folder-design-assets') {
-                      setActiveFolderId('folder-1')
-                    } else {
-                      setActiveFolderId(card.id)
-                    }
-                  },
-                  icon: <Eye className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Rename',
-                  onClick: () => renameCard(card.id, card.title),
-                  icon: <Edit3 className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Share',
-                  onClick: () => {
-                    setSelectedFileId(card.id)
-                    setActiveModal('share')
-                  },
-                  icon: <Share2 className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: card.starred ? 'Unstar' : 'Star',
-                  onClick: () => toggleCardStar(card.id),
-                  icon: <Star className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Move',
-                  onClick: () => alert(`Move folder "${card.title}"`),
-                  icon: <FolderInput className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Delete',
-                  onClick: () => deleteCard(card.id),
-                  icon: <Trash2 className='w-4 h-4 text-rose-500' />,
-                  danger: true
-                }
-              ]
+            {[1, 2, 3, 4].map(idx => (
+              <div
+                key={idx}
+                className='h-16 bg-card-bg/60 border border-card-border rounded-xl animate-pulse p-3 flex items-center gap-3'
+              >
+                <div className='w-7 h-7 bg-input-bg rounded-lg shrink-0' />
+                <div className='flex-1 flex flex-col gap-1.5'>
+                  <div className='h-3 bg-input-bg rounded w-3/4' />
+                  <div className='h-2 bg-input-bg rounded w-1/2' />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : directoryError ? (
+          <div className='w-full py-6 flex flex-col items-center justify-center text-center bg-card-bg border border-card-border rounded-xl p-4 gap-2'>
+            <p className='text-xs text-rose-500 font-medium'>{directoryError}</p>
+            <button
+              onClick={() => refresh()}
+              className='text-xs font-semibold text-[#6E60EE] hover:underline flex items-center gap-1 cursor-pointer'
+            >
+              <RefreshCw className='w-3 h-3' />
+              <span>Retry</span>
+            </button>
+          </div>
+        ) : folders.length === 0 ? (
+          <div className='w-full py-8 flex flex-col items-center justify-center text-center bg-card-bg border border-dashed border-card-border rounded-xl p-6'>
+            <Folder className='w-8 h-8 text-text-muted mb-2' />
+            <h4 className='text-xs font-bold text-foreground'>No folders found</h4>
+            <p className='text-[11px] text-text-secondary mt-1 max-w-[220px] leading-normal font-normal'>
+              Create your first folder to organize your files.
+            </p>
+          </div>
+        ) : folderViewMode === 'grid' ? (
+          <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
+            {folders.map(folder => {
+              const dropdownItems = getFolderDropdownItems(folder)
 
               return (
                 <FolderCard
-                  key={card.id}
-                  id={card.id}
-                  name={card.title}
-                  itemsCountText={card.itemsCountText.split('•')[0].trim()}
-                  starred={card.starred}
+                  key={folder.id}
+                  id={folder.id}
+                  name={folder.name}
+                  itemsCountText='0 files'
+                  starred={false}
                   onClick={() => {
                     setCurrentSection('My Files')
-                    if (card.id === 'folder-design-assets') {
-                      setActiveFolderId('folder-1')
-                    } else {
-                      setActiveFolderId(card.id)
-                    }
+                    setActiveFolderId(folder.id)
                   }}
                   customActions={dropdownItems}
                 />
@@ -286,61 +289,15 @@ export default function DashboardOverview() {
           </div>
         ) : (
           <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-card-border'>
-            {folderCards.map(card => {
-              const dropdownItems = [
-                {
-                  label: 'Open',
-                  onClick: () => {
-                    setCurrentSection('My Files')
-                    if (card.id === 'folder-design-assets') {
-                      setActiveFolderId('folder-1')
-                    } else {
-                      setActiveFolderId(card.id)
-                    }
-                  },
-                  icon: <Eye className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Rename',
-                  onClick: () => renameCard(card.id, card.title),
-                  icon: <Edit3 className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Share',
-                  onClick: () => {
-                    setSelectedFileId(card.id)
-                    setActiveModal('share')
-                  },
-                  icon: <Share2 className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: card.starred ? 'Unstar' : 'Star',
-                  onClick: () => toggleCardStar(card.id),
-                  icon: <Star className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Move',
-                  onClick: () => alert(`Move folder "${card.title}"`),
-                  icon: <FolderInput className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Delete',
-                  onClick: () => deleteCard(card.id),
-                  icon: <Trash2 className='w-4 h-4 text-rose-500' />,
-                  danger: true
-                }
-              ]
+            {folders.map(folder => {
+              const dropdownItems = getFolderDropdownItems(folder)
 
               return (
                 <div
-                  key={card.id}
+                  key={folder.id}
                   onClick={() => {
                     setCurrentSection('My Files')
-                    if (card.id === 'folder-design-assets') {
-                      setActiveFolderId('folder-1')
-                    } else {
-                      setActiveFolderId(card.id)
-                    }
+                    setActiveFolderId(folder.id)
                   }}
                   className='flex items-center justify-between p-3 sm:p-3.5 hover:bg-input-bg/50 transition-colors duration-200 group cursor-pointer select-none'
                 >
@@ -350,21 +307,23 @@ export default function DashboardOverview() {
                     </div>
                     <div className='flex flex-col min-w-0 flex-1'>
                       <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
-                        {card.title}
+                        {folder.name}
                       </span>
                       <span className='text-[10px] sm:text-xs text-text-secondary truncate mt-0.5'>
-                        {card.itemsCountText}
+                        0 files
                       </span>
                     </div>
                   </div>
-                  <div className='flex items-center gap-2 sm:gap-3 shrink-0' onClick={e => e.stopPropagation()}>
-                    {card.starred && (
-                      <Star className='w-4 h-4 text-[#6E60EE] fill-[#6E60EE]' />
-                    )}
+                  <div
+                    className='flex items-center gap-2 sm:gap-3 shrink-0'
+                    onClick={e => e.stopPropagation()}
+                  >
                     <ActionMenu
                       placement='bottom-right'
                       items={dropdownItems}
-                      onOpenChange={(isOpen) => setActiveCardMenuId(isOpen ? card.id : null)}
+                      onOpenChange={isOpen =>
+                        setActiveCardMenuId(isOpen ? folder.id : null)
+                      }
                     />
                   </div>
                 </div>
@@ -383,7 +342,7 @@ export default function DashboardOverview() {
 
           {/* Single View Mode Toggle Switcher */}
           <div className='flex items-center bg-input-bg border border-card-border p-1 rounded-xl shrink-0 gap-1 shadow-none select-none'>
-            <Tooltip content="Grid view" side="top">
+            <Tooltip content='Grid view' side='top'>
               <button
                 onClick={() => setRecentFilesViewMode('grid')}
                 className={cn(
@@ -395,10 +354,13 @@ export default function DashboardOverview() {
                 aria-label='Grid view'
                 aria-pressed={recentFilesViewMode === 'grid'}
               >
-                <LayoutGrid className='w-4 h-4' strokeWidth={recentFilesViewMode === 'grid' ? 2.2 : 1.8} />
+                <LayoutGrid
+                  className='w-4 h-4'
+                  strokeWidth={recentFilesViewMode === 'grid' ? 2.2 : 1.8}
+                />
               </button>
             </Tooltip>
-            <Tooltip content="List view" side="top">
+            <Tooltip content='List view' side='top'>
               <button
                 onClick={() => setRecentFilesViewMode('list')}
                 className={cn(
@@ -410,7 +372,10 @@ export default function DashboardOverview() {
                 aria-label='List view'
                 aria-pressed={recentFilesViewMode === 'list'}
               >
-                <List className='w-4 h-4' strokeWidth={recentFilesViewMode === 'list' ? 2.2 : 1.8} />
+                <List
+                  className='w-4 h-4'
+                  strokeWidth={recentFilesViewMode === 'list' ? 2.2 : 1.8}
+                />
               </button>
             </Tooltip>
           </div>
@@ -418,11 +383,11 @@ export default function DashboardOverview() {
 
         {/* Files Content (Grid View vs List View) */}
         {displayedFiles.length === 0 ? (
-          <div className="w-full py-10 flex flex-col items-center justify-center text-center select-none bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-6">
-            <h4 className="text-xs font-bold text-text-secondary">
+          <div className='w-full py-10 flex flex-col items-center justify-center text-center select-none bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-6'>
+            <h4 className='text-xs font-bold text-text-secondary'>
               No files found
             </h4>
-            <p className="text-[11px] text-text-secondary mt-1 max-w-[200px] leading-normal font-light">
+            <p className='text-[11px] text-text-secondary mt-1 max-w-[200px] leading-normal font-light'>
               This category does not have any items yet.
             </p>
           </div>
@@ -433,12 +398,12 @@ export default function DashboardOverview() {
                 {
                   label: 'Open',
                   onClick: () => alert(`Opening ${file.name}`),
-                  icon: <Eye className="w-4 h-4 text-text-secondary" />
+                  icon: <Eye className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: 'Download',
                   onClick: () => alert(`Downloading ${file.name}`),
-                  icon: <Download className="w-4 h-4 text-text-secondary" />
+                  icon: <Download className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: 'Share',
@@ -446,7 +411,7 @@ export default function DashboardOverview() {
                     setSelectedFileId(file.id)
                     setActiveModal('share')
                   },
-                  icon: <Share2 className="w-4 h-4 text-text-secondary" />
+                  icon: <Share2 className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: 'Rename',
@@ -456,22 +421,22 @@ export default function DashboardOverview() {
                       alert(`Renamed ${file.name} to ${newName.trim()}`)
                     }
                   },
-                  icon: <Edit3 className="w-4 h-4 text-text-secondary" />
+                  icon: <Edit3 className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: 'Move',
                   onClick: () => alert(`Move file "${file.name}"`),
-                  icon: <FolderInput className="w-4 h-4 text-text-secondary" />
+                  icon: <FolderInput className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: file.starred ? 'Unstar' : 'Star',
                   onClick: () => toggleStar(file.id),
-                  icon: <Star className="w-4 h-4 text-text-secondary" />
+                  icon: <Star className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: 'Delete',
                   onClick: () => deleteFile(file.id),
-                  icon: <Trash2 className="w-4 h-4 text-rose-500" />,
+                  icon: <Trash2 className='w-4 h-4 text-rose-500' />,
                   danger: true
                 }
               ]
@@ -484,21 +449,27 @@ export default function DashboardOverview() {
                   <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
                     {file.starred && (
-                      <div className="absolute top-1.5 right-1.5 bg-card-bg rounded-md p-1 border border-card-border shadow-xs">
-                        <Star className="w-3 h-3 text-[#6E60EE] fill-[#6E60EE]" />
+                      <div className='absolute top-1.5 right-1.5 bg-card-bg rounded-md p-1 border border-card-border shadow-xs'>
+                        <Star className='w-3 h-3 text-[#6E60EE] fill-[#6E60EE]' />
                       </div>
                     )}
                   </div>
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
-                      <span className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200' title={file.name}>
+                      <span
+                        className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'
+                        title={file.name}
+                      >
                         {file.name}
                       </span>
                       <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
                         {formatBytes(file.size)}
                       </span>
                     </div>
-                    <div className='shrink-0 -mr-1' onClick={e => e.stopPropagation()}>
+                    <div
+                      className='shrink-0 -mr-1'
+                      onClick={e => e.stopPropagation()}
+                    >
                       <ActionMenu
                         placement='bottom-right'
                         items={fileDropdownItems}

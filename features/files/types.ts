@@ -1,8 +1,24 @@
 export interface FileItem {
-    _id: string;
+    id: string;
+    _id?: string;
     name: string;
     extension: string;
     parentDirId: string;
     userId: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
-// Whenever I say FileItem, this is what I expect it to look like.
+
+export interface UploadFileData {
+    file: File | Blob;
+    filename?: string;
+}
+
+export interface RenameFileData {
+    newFilename: string;
+}
+
+export interface FileApiResponse {
+    message?: string;
+    error?: string;
+}

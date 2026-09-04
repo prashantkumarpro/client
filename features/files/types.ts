@@ -7,6 +7,7 @@ export interface FileItem {
     userId: string;
     createdAt?: string;
     updatedAt?: string;
+    size?: number;
 }
 
 export interface UploadFileData {

@@ -73,6 +73,11 @@ export default function DashboardOverview () {
     return directory?.directories ?? []
   }, [directory])
 
+  // Show a maximum of 4 folder cards on the Home page
+  const displayedFolders = useMemo(() => {
+    return folders.slice(0, 4)
+  }, [folders])
+
   const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
   const [folderViewMode, setFolderViewMode] = useState<'grid' | 'list'>('grid')
   const [recentFilesViewMode, setRecentFilesViewMode] = useState<'grid' | 'list'>('grid')
@@ -129,29 +134,41 @@ export default function DashboardOverview () {
     }
   }
 
-  // Use real directory files if available, otherwise mock files
-  const displayedFiles = useMemo(() => {
+  // Use real directory files if available, sorted by most recently updated/opened, otherwise mock files
+  const allRecentFiles = useMemo(() => {
     if (directory?.files && directory.files.length > 0) {
-      return directory.files.slice(0, 4).map(f => ({
-        id: f.id || f._id || '',
-        name: f.name,
-        type: deriveFileType(f.name, f.extension),
-        extension: f.extension,
-        size: 0,
-        starred: false,
-        updatedAt: f.updatedAt || f.createdAt || new Date().toISOString(),
-        raw: f
-      }))
+      const list = [...directory.files]
+      return list
+        .sort((a, b) => {
+          const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime()
+          const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime()
+          return timeB - timeA
+        })
+        .map(f => ({
+          id: f.id || f._id || '',
+          name: f.name,
+          type: deriveFileType(f.name, f.extension),
+          extension: f.extension,
+          size: typeof f.size === 'number' ? f.size : 0,
+          starred: false,
+          updatedAt: f.updatedAt || f.createdAt || new Date().toISOString(),
+          raw: f
+        }))
     }
 
     const allMock = mockFiles.filter(f => f.type !== 'folder' && !f.deleted)
-    return allMock
-      .sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )
-      .slice(0, 4)
+    return allMock.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
   }, [directory?.files, mockFiles])
+
+  // Show a maximum of 10 recent files on the Home page
+  const displayedFiles = useMemo(() => {
+    return allRecentFiles.slice(0, 10)
+  }, [allRecentFiles])
+
+  const hasMoreRecentFiles = allRecentFiles.length > 10
 
   const recentFolder = folders[0]
 
@@ -286,7 +303,7 @@ export default function DashboardOverview () {
           </div>
         ) : folderViewMode === 'grid' ? (
           <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
-            {folders.map(folder => {
+            {displayedFolders.map(folder => {
               const dropdownItems = getFolderDropdownItems(folder)
 
               return (
@@ -307,7 +324,7 @@ export default function DashboardOverview () {
           </div>
         ) : (
           <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-card-border'>
-            {folders.map(folder => {
+            {displayedFolders.map(folder => {
               const dropdownItems = getFolderDropdownItems(folder)
 
               return (
@@ -490,6 +507,22 @@ export default function DashboardOverview () {
             showHeader={true}
             showCardContainer={false}
           />
+        )}
+
+        {/* View more option if more than 10 recent files */}
+        {hasMoreRecentFiles && (
+          <div className='flex items-center justify-center pt-2 pb-1'>
+            <button
+              onClick={() => {
+                setCurrentSection('My Files')
+                setActiveFolderId(null)
+              }}
+              className='px-4 py-2 text-xs font-semibold text-[#6E60EE] bg-card-bg hover:bg-input-bg/80 border border-card-border hover:border-[#6E60EE]/40 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95'
+            >
+              <span>View more</span>
+              <ChevronRight className='w-3.5 h-3.5' />
+            </button>
+          </div>
         )}
       </div>
 

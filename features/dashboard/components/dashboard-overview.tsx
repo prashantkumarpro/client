@@ -2,42 +2,57 @@
 
 import React, { useState, useMemo } from 'react'
 import { useApp } from '@/providers/app-provider'
-import { cn } from '@/lib/utils/cn'
-import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
-import { Tooltip } from '@/components/ui/tooltip'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
+import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
+import { Tooltip } from '@/components/ui/tooltip'
 import { formatBytes, formatDate } from '@/lib/utils/format'
+import { cn } from '@/lib/utils/cn'
 import {
-  Star,
   Folder,
-  Image as ImageIcon,
   ChevronRight,
-  FileText,
-  Video,
-  File as FileIcon,
-  LayoutGrid,
-  List,
   Eye,
   Download,
   Share2,
   Edit3,
-  FolderInput,
   Trash2,
-  RefreshCw
+  Star,
+  FolderInput,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  File as FileIcon,
+  LayoutGrid,
+  List,
+  RefreshCw,
 } from 'lucide-react'
 import { useDirectory } from '@/features/directory/hooks/use-directory'
+import { useFiles } from '@/features/files/hooks/use-files'
 import type { DirectoryItem } from '@/features/directory/types'
+
+function deriveFileType(filename: string, ext?: string): string {
+  const extension = (ext || filename.split('.').pop() || '')
+    .replace('.', '')
+    .toLowerCase()
+  if (extension === 'pdf') return 'pdf'
+  if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(extension))
+    return 'image'
+  if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(extension)) return 'video'
+  if (
+    ['doc', 'docx', 'txt', 'md', 'pptx', 'xlsx', 'csv'].includes(extension)
+  )
+    return 'document'
+  return 'other'
+}
 
 export default function DashboardOverview () {
   const {
-    files,
+    files: mockFiles,
     setCurrentSection,
     setActiveModal,
     setSelectedFileId,
     setActiveFolderId,
     toggleStar,
-    deleteFile
   } = useApp()
 
   const {
@@ -45,10 +60,12 @@ export default function DashboardOverview () {
     isLoading: isDirectoryLoading,
     error: directoryError,
     create,
-    rename,
-    remove,
+    rename: renameDir,
+    remove: removeDir,
     refresh
   } = useDirectory()
+
+  const { download, rename: renameFileItem, remove: removeFileItem } = useFiles()
 
   const folders: DirectoryItem[] = useMemo(() => {
     return directory?.directories ?? []
@@ -71,7 +88,7 @@ export default function DashboardOverview () {
     const newName = prompt('Enter new folder name:', currentTitle)
     if (newName && newName.trim() && newName.trim() !== currentTitle) {
       try {
-        await rename(folderId, { newDirName: newName.trim() })
+        await renameDir(folderId, { newDirName: newName.trim() })
       } catch (err) {
         console.error('Failed to rename directory:', err)
       }
@@ -80,7 +97,7 @@ export default function DashboardOverview () {
 
   const handleDeleteFolder = async (folderId: string) => {
     try {
-      await remove(folderId)
+      await removeDir(folderId)
     } catch (err) {
       console.error('Failed to delete directory:', err)
     }
@@ -110,20 +127,28 @@ export default function DashboardOverview () {
     }
   }
 
-  // Filter out folder type to get only files
-  const allFilesOnly = useMemo(() => {
-    return files.filter(f => f.type !== 'folder' && !f.deleted)
-  }, [files])
-
-  // Get displayed files list (Recent files sorted by updated date)
+  // Use real directory files if available, otherwise mock files
   const displayedFiles = useMemo(() => {
-    let result = [...allFilesOnly]
-    result = result.sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    )
-    return result.slice(0, 4) // display up to 4 files as shown in mockup
-  }, [allFilesOnly])
+    if (directory?.files && directory.files.length > 0) {
+      return directory.files.slice(0, 4).map(f => ({
+        id: f.id || f._id || '',
+        name: f.name,
+        type: deriveFileType(f.name, f.extension),
+        size: 0,
+        starred: false,
+        updatedAt: f.updatedAt || f.createdAt || new Date().toISOString(),
+        raw: f
+      }))
+    }
+
+    const allMock = mockFiles.filter(f => f.type !== 'folder' && !f.deleted)
+    return allMock
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )
+      .slice(0, 4)
+  }, [directory?.files, mockFiles])
 
   const recentFolder = folders[0]
 
@@ -148,16 +173,6 @@ export default function DashboardOverview () {
         setActiveModal('share')
       },
       icon: <Share2 className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Star',
-      onClick: () => alert(`Starring folder "${folder.name}" coming soon`),
-      icon: <Star className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Move',
-      onClick: () => alert(`Move folder "${folder.name}"`),
-      icon: <FolderInput className='w-4 h-4 text-text-secondary' />
     },
     {
       label: 'Delete',
@@ -388,7 +403,7 @@ export default function DashboardOverview () {
               No files found
             </h4>
             <p className='text-[11px] text-text-secondary mt-1 max-w-[200px] leading-normal font-light'>
-              This category does not have any items yet.
+              Upload your first file to get started.
             </p>
           </div>
         ) : recentFilesViewMode === 'grid' ? (
@@ -396,13 +411,8 @@ export default function DashboardOverview () {
             {displayedFiles.map(file => {
               const fileDropdownItems = [
                 {
-                  label: 'Open',
-                  onClick: () => alert(`Opening ${file.name}`),
-                  icon: <Eye className='w-4 h-4 text-text-secondary' />
-                },
-                {
                   label: 'Download',
-                  onClick: () => alert(`Downloading ${file.name}`),
+                  onClick: () => download(file.id, file.name),
                   icon: <Download className='w-4 h-4 text-text-secondary' />
                 },
                 {
@@ -417,25 +427,15 @@ export default function DashboardOverview () {
                   label: 'Rename',
                   onClick: () => {
                     const newName = prompt('Enter new filename:', file.name)
-                    if (newName && newName.trim()) {
-                      alert(`Renamed ${file.name} to ${newName.trim()}`)
+                    if (newName && newName.trim() && newName.trim() !== file.name) {
+                      renameFileItem(file.id, { newFilename: newName.trim() })
                     }
                   },
                   icon: <Edit3 className='w-4 h-4 text-text-secondary' />
                 },
                 {
-                  label: 'Move',
-                  onClick: () => alert(`Move file "${file.name}"`),
-                  icon: <FolderInput className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: file.starred ? 'Unstar' : 'Star',
-                  onClick: () => toggleStar(file.id),
-                  icon: <Star className='w-4 h-4 text-text-secondary' />
-                },
-                {
                   label: 'Delete',
-                  onClick: () => deleteFile(file.id),
+                  onClick: () => removeFileItem(file.id),
                   icon: <Trash2 className='w-4 h-4 text-rose-500' />,
                   danger: true
                 }
@@ -444,15 +444,11 @@ export default function DashboardOverview () {
               return (
                 <div
                   key={file.id}
+                  onClick={() => download(file.id, file.name)}
                   className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
                   <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
-                    {file.starred && (
-                      <div className='absolute top-1.5 right-1.5 bg-card-bg rounded-md p-1 border border-card-border shadow-xs'>
-                        <Star className='w-3 h-3 text-[#6E60EE] fill-[#6E60EE]' />
-                      </div>
-                    )}
                   </div>
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
@@ -463,7 +459,7 @@ export default function DashboardOverview () {
                         {file.name}
                       </span>
                       <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
-                        {formatBytes(file.size)}
+                        {formatDate(file.updatedAt)}
                       </span>
                     </div>
                     <div
@@ -482,7 +478,7 @@ export default function DashboardOverview () {
           </div>
         ) : (
           <FileList
-            files={displayedFiles}
+            files={displayedFiles as any}
             showHeader={true}
             showCardContainer={false}
           />

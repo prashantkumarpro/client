@@ -1,3 +1,5 @@
+import type { FileItem } from "@/features/files/types";
+
 export interface Directory {    
     name: string;
     userId: string;
@@ -17,14 +19,7 @@ export interface DirectoryItem {
     updatedAt?: string;
 }
 
-export interface FileItem { 
-    name: string;
-    extension: string;
-    userId: string;
-    parentDirId: string;
-    createdAt?: string;
-    updatedAt?: string;
-}
+export type { FileItem };
 
 export interface CreateDirectoryData {
     dirname: string;

@@ -60,7 +60,10 @@ export default function MyFilesView () {
       />
 
       {/* Files block */}
-      <FileList title='Files' />
+      <FileList
+        files={directory?.files}
+        title='Files'
+      />
     </div>
   )
 }

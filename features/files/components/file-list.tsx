@@ -2,10 +2,12 @@
 
 import React from 'react'
 import { useApp } from '../../../providers/app-provider'
+import { useFiles } from '../hooks/use-files'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { Tooltip } from '../../../components/ui/tooltip'
 import { formatBytes, formatDate } from '../../../lib/utils/format'
-import { FileItem, FileType } from '../../../types'
+import { FileType } from '../../../types'
+import type { FileItem as BackendFileItem } from '../types'
 import { cn } from '../../../lib/utils/cn'
 import {
   Folder,
@@ -27,8 +29,25 @@ import {
   Inbox
 } from 'lucide-react'
 
+export type UnifiedFileItem = {
+  id?: string
+  _id?: string
+  name: string
+  extension?: string
+  type?: FileType
+  size?: number
+  parentFolderId?: string | null
+  parentDirId?: string | null
+  starred?: boolean
+  deleted?: boolean
+  createdAt?: string
+  updatedAt?: string
+  owner?: string
+  sharedWith?: string[]
+}
+
 export interface FileListProps {
-  files?: FileItem[]
+  files?: UnifiedFileItem[] | BackendFileItem[]
   title?: string
   limit?: number
   showViewAll?: boolean
@@ -36,8 +55,24 @@ export interface FileListProps {
   showCardContainer?: boolean
   emptyMessage?: string
   emptySubtitle?: string
-  onFileClick?: (file: FileItem) => void
+  onFileClick?: (file: UnifiedFileItem) => void
   onFolderClick?: (folderId: string) => void
+}
+
+function deriveFileType(file: UnifiedFileItem): FileType {
+  if (file.type) return file.type
+  const ext = (file.extension || file.name.split('.').pop() || '')
+    .replace('.', '')
+    .toLowerCase()
+  if (ext === 'pdf') return 'pdf'
+  if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) return 'image'
+  if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext)) return 'video'
+  if (['doc', 'docx', 'txt', 'md', 'pptx', 'xlsx', 'csv'].includes(ext))
+    return 'document'
+  if (['js', 'ts', 'jsx', 'tsx', 'json', 'py', 'html', 'css'].includes(ext))
+    return 'code'
+  if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) return 'audio'
+  return 'other'
 }
 
 export function FileList({
@@ -59,19 +94,22 @@ export function FileList({
     activeFolderId,
     setActiveFolderId,
     toggleStar,
-    deleteFile,
+    deleteFile: deleteMockFile,
     searchQuery,
     setSelectedFileId,
     setActiveModal
   } = useApp()
 
+  const { download, rename, remove } = useFiles()
+
   // Filter files if customFiles is not explicitly passed
   const displayList = React.useMemo(() => {
     if (customFiles) {
-      return limit ? customFiles.slice(0, limit) : customFiles
+      const list = customFiles as UnifiedFileItem[]
+      return limit ? list.slice(0, limit) : list
     }
 
-    let result = globalFiles.filter(f => !f.deleted)
+    let result = (globalFiles as UnifiedFileItem[]).filter(f => !f.deleted)
 
     if (searchQuery) {
       result = result.filter(f =>
@@ -83,10 +121,15 @@ export function FileList({
     if (currentSection === 'Dashboard' || currentSection === 'Recent') {
       result = result.sort(
         (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          new Date(b.updatedAt || 0).getTime() -
+          new Date(a.updatedAt || 0).getTime()
       )
     } else if (currentSection === 'My Files') {
-      result = result.filter(f => f.parentFolderId === activeFolderId)
+      result = result.filter(
+        f =>
+          f.parentFolderId === activeFolderId ||
+          f.parentDirId === activeFolderId
+      )
     } else if (currentSection === 'Starred') {
       result = result.filter(f => f.starred)
     } else if (currentSection === 'Shared') {
@@ -123,72 +166,113 @@ export function FileList({
     }
   }
 
-  const getLocationName = (file: FileItem) => {
-    if (file.parentFolderId) {
-      if (file.parentFolderId === 'folder-1' || file.parentFolderId === 'folder-design-assets') return 'Design Assets'
-      if (file.parentFolderId === 'folder-projects') return 'Projects'
-      if (file.parentFolderId === 'folder-documents') return 'Documents'
-      if (file.parentFolderId === 'folder-brand-photos') return 'Brand Photos'
-      const parent = globalFiles.find(f => f.id === file.parentFolderId)
+  const getLocationName = (file: UnifiedFileItem) => {
+    const parentId = file.parentFolderId || file.parentDirId
+    if (parentId) {
+      if (
+        parentId === 'folder-1' ||
+        parentId === 'folder-design-assets'
+      )
+        return 'Design Assets'
+      if (parentId === 'folder-projects') return 'Projects'
+      if (parentId === 'folder-documents') return 'Documents'
+      if (parentId === 'folder-brand-photos') return 'Brand Photos'
+      const parent = (globalFiles as UnifiedFileItem[]).find(
+        f => (f.id || f._id) === parentId
+      )
       if (parent) return parent.name
     }
     return 'My Files'
   }
 
-  const getDropdownItems = (file: FileItem): ActionMenuItem[] => [
-    {
-      label: 'Open',
-      onClick: () => {
-        if (file.type === 'folder') {
-          if (onFolderClick) onFolderClick(file.id)
-          else setActiveFolderId(file.id)
-        } else {
-          if (onFileClick) onFileClick(file)
-          else alert(`Opening ${file.name}`)
-        }
-      },
-      icon: <Eye className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Download',
-      onClick: () => alert(`Downloading ${file.name}`),
-      icon: <Download className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Share',
-      onClick: () => {
-        setSelectedFileId(file.id)
-        setActiveModal('share')
-      },
-      icon: <Share2 className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Rename',
-      onClick: () => {
-        const newName = prompt('Enter new filename:', file.name)
-        if (newName && newName.trim()) {
-          alert(`Renamed ${file.name} to ${newName.trim()}`)
-        }
-      },
-      icon: <Edit3 className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Move',
-      onClick: () => alert(`Move file "${file.name}"`),
-      icon: <FolderInput className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: file.starred ? 'Unstar' : 'Star',
-      onClick: () => toggleStar(file.id),
-      icon: <Star className='w-4 h-4 text-text-secondary' />
-    },
-    {
-      label: 'Delete',
-      onClick: () => deleteFile(file.id),
-      icon: <Trash2 className='w-4 h-4 text-rose-500' />,
-      danger: true
+  const handleDownload = async (file: UnifiedFileItem) => {
+    const fileId = file.id || file._id
+    if (fileId) {
+      try {
+        await download(fileId, file.name)
+      } catch (err) {
+        console.error('Download error:', err)
+      }
     }
-  ]
+  }
+
+  const handleRename = async (file: UnifiedFileItem) => {
+    const fileId = file.id || file._id
+    const newName = prompt('Enter new filename:', file.name)
+    if (fileId && newName && newName.trim() && newName.trim() !== file.name) {
+      try {
+        await rename(fileId, { newFilename: newName.trim() })
+      } catch (err) {
+        console.error('Rename error:', err)
+      }
+    }
+  }
+
+  const handleDelete = async (file: UnifiedFileItem) => {
+    const fileId = file.id || file._id
+    if (fileId) {
+      try {
+        await remove(fileId)
+      } catch (err) {
+        console.error('Delete error:', err)
+      }
+    }
+  }
+
+  const getDropdownItems = (file: UnifiedFileItem): ActionMenuItem[] => {
+    const fileId = file.id || file._id || ''
+    const fileType = deriveFileType(file)
+
+    return [
+      {
+        label: 'Open',
+        onClick: () => {
+          if (fileType === 'folder') {
+            if (onFolderClick) onFolderClick(fileId)
+            else setActiveFolderId(fileId)
+          } else {
+            if (onFileClick) onFileClick(file)
+            else handleDownload(file)
+          }
+        },
+        icon: <Eye className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: 'Download',
+        onClick: () => handleDownload(file),
+        icon: <Download className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: 'Share',
+        onClick: () => {
+          setSelectedFileId(fileId)
+          setActiveModal('share')
+        },
+        icon: <Share2 className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: 'Rename',
+        onClick: () => handleRename(file),
+        icon: <Edit3 className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: 'Move',
+        onClick: () => alert(`Move file "${file.name}"`),
+        icon: <FolderInput className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: file.starred ? 'Unstar' : 'Star',
+        onClick: () => toggleStar(fileId),
+        icon: <Star className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: 'Delete',
+        onClick: () => handleDelete(file),
+        icon: <Trash2 className='w-4 h-4 text-rose-500' />,
+        danger: true
+      }
+    ]
+  }
 
   const defaultEmptyTitle =
     emptyMessage ||
@@ -198,7 +282,7 @@ export function FileList({
       ? 'No files shared'
       : currentSection === 'Starred'
       ? 'No starred files'
-      : 'No files or folders found')
+      : 'No files found')
 
   const defaultEmptySubtitle =
     emptySubtitle ||
@@ -208,9 +292,10 @@ export function FileList({
       ? 'Files shared with you will appear here.'
       : currentSection === 'Starred'
       ? 'Files and folders you star will appear here for quick access.'
-      : 'This section does not have any items yet.')
+      : 'Upload a file or folder to get started.')
 
-  const isDashboardOrRecent = currentSection === 'Dashboard' || currentSection === 'Recent'
+  const isDashboardOrRecent =
+    currentSection === 'Dashboard' || currentSection === 'Recent'
 
   const content = (
     <div className='w-full flex flex-col'>
@@ -257,7 +342,9 @@ export function FileList({
                 <span>Name</span>
               </div>
               <div className='hidden md:block w-48 text-left pr-4'>
-                <span>{isDashboardOrRecent ? 'Reason suggested' : 'Last modified'}</span>
+                <span>
+                  {isDashboardOrRecent ? 'Reason suggested' : 'Last modified'}
+                </span>
               </div>
               <div className='hidden lg:block w-36 text-left pr-4'>
                 <span>Location</span>
@@ -273,22 +360,28 @@ export function FileList({
 
           {/* Structured File Rows */}
           <div className='flex flex-col divide-y divide-card-border/50'>
-            {displayList.map(file => {
-              const isFolder = file.type === 'folder'
+            {displayList.map((file, idx) => {
+              const fileId = file.id || file._id || `file-${idx}`
+              const fileType = deriveFileType(file)
+              const isFolder = fileType === 'folder'
               const dropdownItems = getDropdownItems(file)
-              const isShared = (file.sharedWith && file.sharedWith.length > 0) || file.owner !== 'Prashant'
+              const isShared =
+                (file.sharedWith && file.sharedWith.length > 0) ||
+                (file.owner && file.owner !== 'Prashant')
               const locationName = getLocationName(file)
+              const displayDate = file.updatedAt || file.createdAt || new Date().toISOString()
+              const displaySize = typeof file.size === 'number' ? formatBytes(file.size) : '—'
 
               return (
                 <div
-                  key={file.id}
+                  key={fileId}
                   onClick={() => {
                     if (isFolder) {
-                      if (onFolderClick) onFolderClick(file.id)
-                      else setActiveFolderId(file.id)
+                      if (onFolderClick) onFolderClick(fileId)
+                      else setActiveFolderId(fileId)
                     } else {
                       if (onFileClick) onFileClick(file)
-                      else alert(`Opening ${file.name}`)
+                      else handleDownload(file)
                     }
                   }}
                   className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
@@ -296,7 +389,7 @@ export function FileList({
                   {/* Name Column: Icon + Filename + Shared icon */}
                   <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
                     <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE]/10 group-hover:text-[#6E60EE] group-hover:border-[#6E60EE]/30 transition-all duration-200'>
-                      {getFileIcon(file.type)}
+                      {getFileIcon(fileType)}
                     </div>
                     <div className='flex flex-col min-w-0 flex-1'>
                       <div className='flex items-center gap-1.5 min-w-0'>
@@ -307,8 +400,8 @@ export function FileList({
                           {file.name}
                         </span>
                         {isShared && (
-                          <Tooltip content="Shared file" side="top">
-                            <span className="shrink-0 text-text-muted/80 group-hover:text-text-secondary">
+                          <Tooltip content='Shared file' side='top'>
+                            <span className='shrink-0 text-text-muted/80 group-hover:text-text-secondary'>
                               <Users className='w-3.5 h-3.5' />
                             </span>
                           </Tooltip>
@@ -317,16 +410,22 @@ export function FileList({
 
                       {/* Mobile compact details subline */}
                       <div className='flex items-center gap-1.5 text-[11px] sm:hidden text-text-secondary mt-0.5 truncate'>
-                        <span>{formatBytes(file.size)}</span>
+                        <span>{displaySize}</span>
                         <span>&bull;</span>
-                        <span>{isDashboardOrRecent ? `Opened ${formatDate(file.updatedAt)}` : formatDate(file.updatedAt)}</span>
+                        <span>
+                          {isDashboardOrRecent
+                            ? `Opened ${formatDate(displayDate)}`
+                            : formatDate(displayDate)}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Reason suggested / Activity Column (Tablet & Desktop) */}
                   <div className='hidden md:block w-48 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    {isDashboardOrRecent ? `You opened • ${formatDate(file.updatedAt)}` : formatDate(file.updatedAt)}
+                    {isDashboardOrRecent
+                      ? `You opened • ${formatDate(displayDate)}`
+                      : formatDate(displayDate)}
                   </div>
 
                   {/* Location Column (Desktop) */}
@@ -337,7 +436,7 @@ export function FileList({
 
                   {/* Size Column (Tablet only, when Location hidden) */}
                   <div className='hidden sm:block lg:hidden w-24 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    {formatBytes(file.size)}
+                    {displaySize}
                   </div>
 
                   {/* Star & Actions Column */}
@@ -345,9 +444,12 @@ export function FileList({
                     className='flex items-center justify-end gap-1 w-20 shrink-0'
                     onClick={e => e.stopPropagation()}
                   >
-                    <Tooltip content={file.starred ? 'Unstar' : 'Star'} side='top'>
+                    <Tooltip
+                      content={file.starred ? 'Unstar' : 'Star'}
+                      side='top'
+                    >
                       <button
-                        onClick={() => toggleStar(file.id)}
+                        onClick={() => toggleStar(fileId)}
                         className={cn(
                           'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none hover:bg-input-bg active:scale-90',
                           file.starred

@@ -1,116 +1,135 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../../../providers/app-provider';
+import { useFiles } from '../hooks/use-files';
+import { useDirectory } from '../../directory/hooks/use-directory';
 import { Dialog } from '../../../components/ui/dialog';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
-import { FileType } from '../../../types';
+import { Upload, FileUp } from 'lucide-react';
+import { formatBytes } from '../../../lib/utils/format';
 
 export function UploadModal() {
-  const { activeModal, setActiveModal, uploadFile, createFolder, files } = useApp();
+  const { activeModal, setActiveModal, activeFolderId } = useApp();
+  const { upload, isUploading } = useFiles();
+  const { create: createDir, isCreating: isCreatingDir } = useDirectory(activeFolderId ?? undefined);
 
-  const [fileName, setFileName] = useState('');
-  const [fileType, setFileType] = useState<FileType>('pdf');
-  const [fileSizeStr, setFileSizeStr] = useState('2.5'); // in MB
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [customFileName, setCustomFileName] = useState('');
   const [folderName, setFolderName] = useState('');
-
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFileOpen = activeModal === 'upload-file';
   const isFolderOpen = activeModal === 'upload-folder';
 
   const handleClose = () => {
-    setFileName('');
-    setFileType('pdf');
-    setFileSizeStr('2.5');
+    setSelectedFile(null);
+    setCustomFileName('');
     setFolderName('');
     setError('');
     setActiveModal(null);
   };
 
-  const handleUploadFile = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fileName.trim()) {
-      setError('File name is required');
-      return;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setCustomFileName(file.name);
+      setError('');
     }
-
-    const size = parseFloat(fileSizeStr) * 1024 * 1024; // convert MB to bytes
-    if (isNaN(size) || size <= 0) {
-      setError('Invalid file size');
-      return;
-    }
-
-    uploadFile(fileName.trim(), size, fileType);
-    handleClose();
   };
 
-  const handleUploadFolder = (e: React.FormEvent) => {
+  const handleUploadFile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile && !customFileName.trim()) {
+      setError('Please choose a file or enter a file name');
+      return;
+    }
+
+    try {
+      const fileToUpload = selectedFile || new Blob([' '], { type: 'text/plain' });
+      const filename = customFileName.trim() || (selectedFile ? selectedFile.name : 'untitled.txt');
+
+      await upload(
+        { file: fileToUpload, filename },
+        activeFolderId ?? undefined
+      );
+
+      handleClose();
+    } catch (err) {
+      console.error('Failed to upload file:', err);
+      setError('Failed to upload file. Please try again.');
+    }
+  };
+
+  const handleUploadFolder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!folderName.trim()) {
       setError('Folder name is required');
       return;
     }
 
-    // Creating folder
-    const newFolderId = createFolder(folderName.trim());
-
-    // We can simulate adding files inside this folder after creation
-    // To do this, we can search for the folder we just created and add files to it.
-    // However, our provider handles `createFolder` with `activeFolderId`.
-    // Let's add a couple of mock files directly into this new folder by manually invoking uploadFile
-    setTimeout(() => {
-      // Find the folder we just added (usually the first folder in files with that name)
-      // Since it's mock, we will just call uploadFile with that folder ID
-      uploadFile('Asset_Logo.png', 1.4 * 1024 * 1024, 'image', newFolderId);
-      uploadFile('Overview_Docs.pdf', 3.2 * 1024 * 1024, 'pdf', newFolderId);
-    }, 100);
-
-    handleClose();
+    try {
+      await createDir({ dirname: folderName.trim() }, activeFolderId ?? undefined);
+      handleClose();
+    } catch (err) {
+      console.error('Failed to create folder:', err);
+      setError('Failed to create folder. Please try again.');
+    }
   };
 
   if (isFileOpen) {
     return (
       <Dialog isOpen={isFileOpen} onClose={handleClose} title="Upload New File">
         <form onSubmit={handleUploadFile} className="flex flex-col gap-4 pt-2">
-          <Input
-            label="File Name"
-            placeholder="e.g. Q4 Presentation.pptx, logo.png"
-            value={fileName}
-            onChange={(e) => {
-              setFileName(e.target.value);
-              if (error) setError('');
-            }}
-            error={error}
-            autoFocus
+          {/* Hidden native file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
           />
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-[#7e7e7e]">
-              File Type
-            </label>
-            <select
-              value={fileType}
-              onChange={(e) => setFileType(e.target.value as FileType)}
-              className="w-full bg-input-bg text-foreground border border-card-border rounded-xl px-4 py-3 text-xs font-bold uppercase tracking-[1px] focus:outline-none focus:border-[#6E60EE] focus:ring-2 focus:ring-[#6E60EE]/10 cursor-pointer"
-            >
-              <option value="pdf">PDF Document</option>
-              <option value="document">Word Document (.docx/.pptx)</option>
-              <option value="image">Image File</option>
-              <option value="video">Video File</option>
-              <option value="other">Other Assets</option>
-            </select>
+          {/* File Drop / Selection Zone */}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full border-2 border-dashed border-card-border hover:border-[#6E60EE]/50 bg-input-bg/40 hover:bg-input-bg/70 rounded-xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors text-center group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#6E60EE]/10 text-[#6E60EE] flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Upload className="w-5 h-5" />
+            </div>
+            {selectedFile ? (
+              <div className="flex flex-col items-center">
+                <span className="text-xs font-semibold text-foreground truncate max-w-[260px]">
+                  {selectedFile.name}
+                </span>
+                <span className="text-[11px] text-text-secondary mt-0.5">
+                  {formatBytes(selectedFile.size)}
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center">
+                <span className="text-xs font-semibold text-foreground">
+                  Click to browse from your device
+                </span>
+                <span className="text-[11px] text-text-secondary mt-0.5">
+                  Any file type supported
+                </span>
+              </div>
+            )}
           </div>
 
           <Input
-            label="File Size (MB)"
-            type="number"
-            step="0.1"
-            min="0.1"
-            placeholder="e.g. 2.5, 35.6"
-            value={fileSizeStr}
-            onChange={(e) => setFileSizeStr(e.target.value)}
+            label="File Name"
+            placeholder="e.g. document.pdf, photo.png"
+            value={customFileName}
+            onChange={(e) => {
+              setCustomFileName(e.target.value);
+              if (error) setError('');
+            }}
+            error={error}
           />
 
           <div className="flex justify-end gap-3 mt-4">
@@ -127,9 +146,10 @@ export function UploadModal() {
               type="submit"
               variant="primary"
               size="sm"
-              className="h-10 text-[10px]"
+              disabled={isUploading}
+              className="h-10 text-[10px] bg-[#6E60EE] hover:bg-[#6052E6] text-white disabled:opacity-50"
             >
-              Upload File
+              {isUploading ? 'Uploading...' : 'Upload File'}
             </Button>
           </div>
         </form>
@@ -139,11 +159,11 @@ export function UploadModal() {
 
   if (isFolderOpen) {
     return (
-      <Dialog isOpen={isFolderOpen} onClose={handleClose} title="Upload Local Folder">
-        <form onSubmit={handleUploadFolder} className="flex flex-col gap-5 pt-2">
+      <Dialog isOpen={isFolderOpen} onClose={handleClose} title="Create New Folder">
+        <form onSubmit={handleUploadFolder} className="flex flex-col gap-4 pt-2">
           <Input
             label="Folder Name"
-            placeholder="e.g. Marketing Collaterals, Code"
+            placeholder="e.g. Marketing, Projects, Invoices"
             value={folderName}
             onChange={(e) => {
               setFolderName(e.target.value);
@@ -152,12 +172,6 @@ export function UploadModal() {
             error={error}
             autoFocus
           />
-
-          <div className="bg-[#0d0d0d] border border-[#262626] p-4 text-[11px] text-[#bbbbbb] leading-normal font-light">
-            <span className="font-bold text-white uppercase tracking-[0.5px]">Simulation Notice:</span>
-            <br />
-            Uploading a folder will create a directory in your current workspace and automatically bundle two starter files inside it (`Asset_Logo.png` and `Overview_Docs.pdf`) to demonstrate folder depth navigation.
-          </div>
 
           <div className="flex justify-end gap-3 mt-2">
             <Button
@@ -173,9 +187,10 @@ export function UploadModal() {
               type="submit"
               variant="primary"
               size="sm"
-              className="h-10 text-[10px]"
+              disabled={isCreatingDir}
+              className="h-10 text-[10px] bg-[#6E60EE] hover:bg-[#6052E6] text-white disabled:opacity-50"
             >
-              Upload Folder
+              {isCreatingDir ? 'Creating...' : 'Create Folder'}
             </Button>
           </div>
         </form>

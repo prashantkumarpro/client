@@ -2,17 +2,9 @@
 
 import React, { useRef, useCallback } from 'react'
 import { useApp } from '@/providers/app-provider'
+import { useFiles } from '@/features/files/hooks/use-files'
+import { useDirectory } from '@/features/directory/hooks/use-directory'
 import { FolderPlus, FileUp, FolderUp, LucideIcon } from 'lucide-react'
-import { FileType } from '@/types'
-
-function getFileTypeFromName(name: string): FileType {
-  const ext = name.split('.').pop()?.toLowerCase() || ''
-  if (ext === 'pdf') return 'pdf'
-  if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) return 'image'
-  if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext)) return 'video'
-  if (['doc', 'docx', 'txt', 'md', 'pptx', 'xlsx'].includes(ext)) return 'document'
-  return 'other'
-}
 
 export interface PlusActionItem {
   id: 'create-folder' | 'upload-file' | 'upload-folder'
@@ -22,7 +14,9 @@ export interface PlusActionItem {
 }
 
 export function usePlusActions(onActionExecuted?: () => void) {
-  const { setActiveModal, uploadFile, createFolder, activeFolderId } = useApp()
+  const { setActiveModal, activeFolderId } = useApp()
+  const { upload } = useFiles()
+  const { create: createDir } = useDirectory(activeFolderId ?? undefined)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const folderInputRef = useRef<HTMLInputElement>(null)
 
@@ -52,37 +46,49 @@ export function usePlusActions(onActionExecuted?: () => void) {
   }, [setActiveModal, onActionExecuted])
 
   const handleFileInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const selectedFiles = e.target.files
       if (!selectedFiles || selectedFiles.length === 0) return
 
-      Array.from(selectedFiles).forEach(file => {
-        const type = getFileTypeFromName(file.name)
-        uploadFile(file.name, file.size, type, activeFolderId)
-      })
+      for (const file of Array.from(selectedFiles)) {
+        try {
+          await upload(
+            { file, filename: file.name },
+            activeFolderId ?? undefined
+          )
+        } catch (err) {
+          console.error(`Failed to upload ${file.name}:`, err)
+        }
+      }
     },
-    [uploadFile, activeFolderId]
+    [upload, activeFolderId]
   )
 
   const handleFolderInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const selectedFiles = e.target.files
       if (!selectedFiles || selectedFiles.length === 0) return
 
-      // Derive root folder name from the first file's webkitRelativePath
+      // Derive folder name from first file's webkitRelativePath
       const firstFile = selectedFiles[0]
       const relativePath = (firstFile as unknown as { webkitRelativePath?: string })
         .webkitRelativePath || ''
       const folderName = relativePath ? relativePath.split('/')[0] : 'New Folder'
 
-      const newFolderId = createFolder(folderName, activeFolderId)
+      try {
+        await createDir({ dirname: folderName }, activeFolderId ?? undefined)
 
-      Array.from(selectedFiles).forEach(file => {
-        const type = getFileTypeFromName(file.name)
-        uploadFile(file.name, file.size, type, newFolderId)
-      })
+        for (const file of Array.from(selectedFiles)) {
+          await upload(
+            { file, filename: file.name },
+            activeFolderId ?? undefined
+          )
+        }
+      } catch (err) {
+        console.error('Failed to create folder / upload contents:', err)
+      }
     },
-    [createFolder, uploadFile, activeFolderId]
+    [createDir, upload, activeFolderId]
   )
 
   const actions: PlusActionItem[] = [

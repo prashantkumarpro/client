@@ -1,4 +1,4 @@
-export type FileType = 'pdf' | 'image' | 'document' | 'video' | 'folder' | 'other';
+export type FileType = 'pdf' | 'image' | 'document' | 'video' | 'folder' | 'audio' | 'code' | 'other';
 
 export interface FileItem {
   id: string;

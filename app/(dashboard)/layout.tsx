@@ -7,6 +7,8 @@ import { MobileNav } from '@/components/layout/mobile-nav'
 import { MobilePlusButton } from '@/components/layout/mobile-plus-button'
 import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav'
 import { AuthGuard } from '@/components/auth/auth-gaurd'
+import { PAGE_HORIZONTAL_PADDING } from '@/lib/constants/layout'
+import { cn } from '@/lib/utils/cn'
 
 export default function DashboardLayout({
   children
@@ -31,7 +33,10 @@ export default function DashboardLayout({
 
           {/* Dashboard Inner Scrollable Body */}
           <main 
-            className='flex-1 overflow-y-auto px-4 py-5 pb-28 sm:px-6 sm:py-6 md:px-8 md:py-6 flex flex-col rounded-l-none'
+            className={cn(
+              'flex-1 overflow-y-auto py-5 pb-28 sm:py-6 md:py-6 flex flex-col rounded-l-none',
+              PAGE_HORIZONTAL_PADDING
+            )}
             style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
           >
             {children}

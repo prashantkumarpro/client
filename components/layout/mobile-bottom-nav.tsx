@@ -5,6 +5,9 @@ import { useApp } from '@/providers/app-provider'
 import { SidebarSection } from '@/types'
 import { Home, Star, Users, Folder } from 'lucide-react'
 
+import { PAGE_HORIZONTAL_PADDING } from '@/lib/constants/layout'
+import { cn } from '@/lib/utils/cn'
+
 interface BottomNavItem {
   name: SidebarSection
   label: string
@@ -47,7 +50,10 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label='Mobile bottom navigation'
-      className='w-full shrink-0 md:hidden bg-card-bg border-t border-card-border select-none z-20 px-4 sm:px-6'
+      className={cn(
+        'w-full shrink-0 md:hidden bg-card-bg border-t border-card-border select-none z-20',
+        PAGE_HORIZONTAL_PADDING
+      )}
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}

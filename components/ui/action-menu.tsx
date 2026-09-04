@@ -16,7 +16,7 @@ interface ActionMenuProps {
   className?: string
   triggerClassName?: string
   align?: 'left' | 'right'
-  placement?: 'top' | 'bottom' | 'right' | 'bottom-right'
+  placement?: 'top' | 'bottom' | 'right' | 'bottom-right' | 'bottom-left'
   onOpenChange?: (isOpen: boolean) => void
 }
 

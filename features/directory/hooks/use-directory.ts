@@ -61,10 +61,20 @@ export function useDirectory(id?: string): UseDirectoryReturn {
       setError(null);
 
       const data = await getDirectory(id);
-
       setDirectory(data);
-    } catch (error) {
-      console.error("Failed to fetch directory:", error);
+    } catch (err: unknown) {
+      // If a subfolder query returns 404 (e.g. folder deleted), fall back to root directory
+      const axiosError = err as { response?: { status?: number } };
+      if (id && axiosError?.response?.status === 404) {
+        try {
+          const rootData = await getDirectory();
+          setDirectory(rootData);
+          return;
+        } catch (fallbackErr) {
+          console.error("Failed to load root fallback directory:", fallbackErr);
+        }
+      }
+      console.error("Failed to fetch directory:", err);
       setError("Failed to load directory.");
     } finally {
       setIsLoading(false);
@@ -83,10 +93,10 @@ export function useDirectory(id?: string): UseDirectoryReturn {
         await createDirectory(data, parentDirId);
 
         notifyDirectoryChanged();
-      } catch (error) {
-        console.error("Failed to create directory:", error);
+      } catch (err) {
+        console.error("Failed to create directory:", err);
         setError("Failed to create directory.");
-        throw error;
+        throw err;
       } finally {
         setIsCreating(false);
       }
@@ -106,10 +116,10 @@ export function useDirectory(id?: string): UseDirectoryReturn {
         await renameDirectory(directoryId, data);
 
         notifyDirectoryChanged();
-      } catch (error) {
-        console.error("Failed to rename directory:", error);
+      } catch (err) {
+        console.error("Failed to rename directory:", err);
         setError("Failed to rename directory.");
-        throw error;
+        throw err;
       } finally {
         setIsRenaming(false);
       }
@@ -126,10 +136,10 @@ export function useDirectory(id?: string): UseDirectoryReturn {
         await deleteDirectory(directoryId);
 
         notifyDirectoryChanged();
-      } catch (error) {
-        console.error("Failed to delete directory:", error);
+      } catch (err) {
+        console.error("Failed to delete directory:", err);
         setError("Failed to delete directory.");
-        throw error;
+        throw err;
       } finally {
         setIsDeleting(false);
       }

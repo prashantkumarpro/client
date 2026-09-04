@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils/cn'
 import {
   Folder,
   ChevronRight,
+  ArrowRight,
   Eye,
   Download,
   Share2,
@@ -260,9 +261,10 @@ export default function DashboardOverview () {
               setCurrentSection('My Files')
               setActiveFolderId(null) // Go to files root folder
             }}
-            className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none'
+            className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none group'
           >
             <span>View all</span>
+            <ArrowRight className='w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5' />
           </button>
         </div>
 
@@ -511,16 +513,16 @@ export default function DashboardOverview () {
 
         {/* View more option if more than 10 recent files */}
         {hasMoreRecentFiles && (
-          <div className='flex items-center justify-center pt-2 pb-1'>
+          <div className='flex items-center justify-center pt-3 pb-1'>
             <button
               onClick={() => {
                 setCurrentSection('My Files')
                 setActiveFolderId(null)
               }}
-              className='px-4 py-2 text-xs font-semibold text-[#6E60EE] bg-card-bg hover:bg-input-bg/80 border border-card-border hover:border-[#6E60EE]/40 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95'
+              className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none group'
             >
               <span>View more</span>
-              <ChevronRight className='w-3.5 h-3.5' />
+              <ArrowRight className='w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5' />
             </button>
           </div>
         )}

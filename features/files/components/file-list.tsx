@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useApp } from '../../../providers/app-provider'
 import { useFiles } from '../hooks/use-files'
+import { FilePreviewModal } from './file-preview-modal'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { Tooltip } from '../../../components/ui/tooltip'
 import { formatBytes, formatDate } from '../../../lib/utils/format'
@@ -101,6 +102,7 @@ export function FileList({
   } = useApp()
 
   const { download, rename, remove } = useFiles()
+  const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
 
   // Filter files if customFiles is not explicitly passed
   const displayList = React.useMemo(() => {
@@ -185,6 +187,22 @@ export function FileList({
     return 'My Files'
   }
 
+  const handleOpenFile = (file: UnifiedFileItem) => {
+    const fileType = deriveFileType(file)
+    const fileId = file.id || file._id || ''
+
+    if (fileType === 'folder') {
+      if (onFolderClick) onFolderClick(fileId)
+      else setActiveFolderId(fileId)
+    } else {
+      if (onFileClick) {
+        onFileClick(file)
+      } else {
+        setPreviewFile(file)
+      }
+    }
+  }
+
   const handleDownload = async (file: UnifiedFileItem) => {
     const fileId = file.id || file._id
     if (fileId) {
@@ -221,20 +239,11 @@ export function FileList({
 
   const getDropdownItems = (file: UnifiedFileItem): ActionMenuItem[] => {
     const fileId = file.id || file._id || ''
-    const fileType = deriveFileType(file)
 
     return [
       {
         label: 'Open',
-        onClick: () => {
-          if (fileType === 'folder') {
-            if (onFolderClick) onFolderClick(fileId)
-            else setActiveFolderId(fileId)
-          } else {
-            if (onFileClick) onFileClick(file)
-            else handleDownload(file)
-          }
-        },
+        onClick: () => handleOpenFile(file),
         icon: <Eye className='w-4 h-4 text-text-secondary' />
       },
       {
@@ -363,27 +372,18 @@ export function FileList({
             {displayList.map((file, idx) => {
               const fileId = file.id || file._id || `file-${idx}`
               const fileType = deriveFileType(file)
-              const isFolder = fileType === 'folder'
               const dropdownItems = getDropdownItems(file)
               const isShared =
                 (file.sharedWith && file.sharedWith.length > 0) ||
                 (file.owner && file.owner !== 'Prashant')
               const locationName = getLocationName(file)
               const displayDate = file.updatedAt || file.createdAt || new Date().toISOString()
-              const displaySize = typeof file.size === 'number' ? formatBytes(file.size) : '—'
+              const displaySize = typeof file.size === 'number' && file.size > 0 ? formatBytes(file.size) : '—'
 
               return (
                 <div
                   key={fileId}
-                  onClick={() => {
-                    if (isFolder) {
-                      if (onFolderClick) onFolderClick(fileId)
-                      else setActiveFolderId(fileId)
-                    } else {
-                      if (onFileClick) onFileClick(file)
-                      else handleDownload(file)
-                    }
-                  }}
+                  onClick={() => handleOpenFile(file)}
                   className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
                 >
                   {/* Name Column: Icon + Filename + Shared icon */}
@@ -480,6 +480,13 @@ export function FileList({
           </div>
         </div>
       )}
+
+      {/* In-App File Preview Modal */}
+      <FilePreviewModal
+        isOpen={Boolean(previewFile)}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+      />
     </div>
   )
 

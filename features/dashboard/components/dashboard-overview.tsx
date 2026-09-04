@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
+import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
 import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { Tooltip } from '@/components/ui/tooltip'
 import { formatBytes, formatDate } from '@/lib/utils/format'
@@ -66,6 +67,7 @@ export default function DashboardOverview () {
   } = useDirectory()
 
   const { download, rename: renameFileItem, remove: removeFileItem } = useFiles()
+  const [previewFile, setPreviewFile] = useState<{ id?: string; _id?: string; name: string; extension?: string; size?: number } | null>(null)
 
   const folders: DirectoryItem[] = useMemo(() => {
     return directory?.directories ?? []
@@ -134,6 +136,7 @@ export default function DashboardOverview () {
         id: f.id || f._id || '',
         name: f.name,
         type: deriveFileType(f.name, f.extension),
+        extension: f.extension,
         size: 0,
         starred: false,
         updatedAt: f.updatedAt || f.createdAt || new Date().toISOString(),
@@ -411,6 +414,11 @@ export default function DashboardOverview () {
             {displayedFiles.map(file => {
               const fileDropdownItems = [
                 {
+                  label: 'Open',
+                  onClick: () => setPreviewFile(file),
+                  icon: <Eye className='w-4 h-4 text-text-secondary' />
+                },
+                {
                   label: 'Download',
                   onClick: () => download(file.id, file.name),
                   icon: <Download className='w-4 h-4 text-text-secondary' />
@@ -444,7 +452,7 @@ export default function DashboardOverview () {
               return (
                 <div
                   key={file.id}
-                  onClick={() => download(file.id, file.name)}
+                  onClick={() => setPreviewFile(file)}
                   className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
                   <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
@@ -484,6 +492,13 @@ export default function DashboardOverview () {
           />
         )}
       </div>
+
+      {/* In-App File Preview Modal */}
+      <FilePreviewModal
+        isOpen={Boolean(previewFile)}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+      />
     </div>
   )
 }

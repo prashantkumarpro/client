@@ -74,7 +74,7 @@ export function FolderCard({
     <div
       onClick={onClick}
       className={cn(
-        'flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs transition-all duration-200 cursor-pointer group relative min-w-0 select-none',
+        'flex items-center justify-between p-3 sm:p-3.5 bg-card-bg rounded-xl border border-card-border hover:bg-input-bg/40 shadow-xs transition-all duration-200 cursor-pointer group relative min-w-0 select-none',
         className
       )}
     >

@@ -222,11 +222,11 @@ export default function DashboardOverview () {
               setCurrentSection('My Files')
               setActiveFolderId(recentFolder.id)
             }}
-            className='w-full md:w-[560px] md:max-w-[600px] mt-4 bg-card-bg hover:bg-input-bg/70 border border-card-border hover:border-[#6E60EE]/40 rounded-xl px-4 py-2.5 flex items-center justify-between transition-colors cursor-pointer group focus:outline-none select-none text-xs shadow-xs'
+            className='w-full md:w-[560px] md:max-w-[600px] mt-3.5 bg-card-bg hover:bg-input-bg/50 border border-card-border rounded-xl px-3.5 sm:px-4 py-2.5 flex items-center justify-between transition-all duration-200 cursor-pointer group focus:outline-none select-none text-xs shadow-xs'
           >
-            <div className='flex items-center gap-3 min-w-0'>
-              <div className='w-6 h-6 rounded-md bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0'>
-                <Folder className='w-3.5 h-3.5' />
+            <div className='flex items-center gap-2.5 sm:gap-3 min-w-0'>
+              <div className='w-7 h-7 rounded-lg bg-input-bg border border-card-border flex items-center justify-center text-[#6E60EE] shrink-0'>
+                <Folder className='w-4 h-4' />
               </div>
               <span className='font-bold uppercase tracking-wider text-[10px] text-text-muted shrink-0'>
                 CONTINUE:
@@ -249,7 +249,7 @@ export default function DashboardOverview () {
       </div>
 
       {/* Your folders Section */}
-      <div className='flex flex-col gap-3 mt-6 sm:mt-7'>
+      <div className='flex flex-col gap-3 mt-7 sm:mt-8'>
         <div className='flex items-center justify-between w-full'>
           <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
             Your folders
@@ -367,7 +367,7 @@ export default function DashboardOverview () {
       </div>
 
       {/* Recently Opened Section */}
-      <div className='flex flex-col gap-2.5 sm:gap-3 w-full mt-5 sm:mt-6'>
+      <div className='flex flex-col gap-3 w-full mt-7 sm:mt-8'>
         <div className='flex items-center justify-between select-none'>
           <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
             Recently Opened
@@ -468,9 +468,9 @@ export default function DashboardOverview () {
                 <div
                   key={file.id}
                   onClick={() => setPreviewFile(file)}
-                  className='bg-card-bg rounded-xl border border-card-border hover:border-[#6E60EE]/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
+                  className='bg-card-bg rounded-xl border border-card-border hover:bg-input-bg/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
-                  <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-[#6E60EE]/5 group-hover:border-[#6E60EE]/20 transition-all duration-200'>
+                  <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-input-bg/80 transition-all duration-200'>
                     {getFileIconGrid(file.type)}
                   </div>
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
@@ -509,7 +509,7 @@ export default function DashboardOverview () {
 
         {/* View more action aligned to the left below file content */}
         {hasMoreRecentFiles && (
-          <div className='flex items-center justify-start pt-2 sm:pt-2.5'>
+          <div className='flex items-center justify-start pt-3 sm:pt-3.5'>
             <SectionAction
               onClick={() => {
                 setCurrentSection('My Files')

@@ -6,20 +6,18 @@ import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
 import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
 import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
+import { SectionAction } from '@/components/ui/section-action'
 import { Tooltip } from '@/components/ui/tooltip'
 import { formatBytes, formatDate } from '@/lib/utils/format'
 import { cn } from '@/lib/utils/cn'
 import {
   Folder,
   ChevronRight,
-  ArrowRight,
   Eye,
   Download,
   Share2,
   Edit3,
   Trash2,
-  Star,
-  FolderInput,
   FileText,
   Image as ImageIcon,
   Video,
@@ -164,12 +162,12 @@ export default function DashboardOverview () {
     )
   }, [directory?.files, mockFiles])
 
-  // Show a maximum of 10 recent files on the Home page
+  // Show a maximum of 8 recent files on the Home page
   const displayedFiles = useMemo(() => {
-    return allRecentFiles.slice(0, 10)
+    return allRecentFiles.slice(0, 8)
   }, [allRecentFiles])
 
-  const hasMoreRecentFiles = allRecentFiles.length > 10
+  const hasMoreRecentFiles = allRecentFiles.length > 8
 
   const recentFolder = folders[0]
 
@@ -256,16 +254,14 @@ export default function DashboardOverview () {
           <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
             Your folders
           </h3>
-          <button
+          <SectionAction
             onClick={() => {
               setCurrentSection('My Files')
               setActiveFolderId(null) // Go to files root folder
             }}
-            className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none group'
           >
-            <span>View all</span>
-            <ArrowRight className='w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5' />
-          </button>
+            View all
+          </SectionAction>
         </div>
 
         {/* Folders Presentation: Loading / Error / Content */}
@@ -511,19 +507,17 @@ export default function DashboardOverview () {
           />
         )}
 
-        {/* View more option if more than 10 recent files */}
+        {/* View more action aligned to the left below file content */}
         {hasMoreRecentFiles && (
-          <div className='flex items-center justify-center pt-3 pb-1'>
-            <button
+          <div className='flex items-center justify-start pt-2 sm:pt-2.5'>
+            <SectionAction
               onClick={() => {
                 setCurrentSection('My Files')
                 setActiveFolderId(null)
               }}
-              className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none group'
             >
-              <span>View more</span>
-              <ArrowRight className='w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5' />
-            </button>
+              View more
+            </SectionAction>
           </div>
         )}
       </div>

@@ -5,6 +5,7 @@ import { useApp } from '../../../providers/app-provider'
 import { useFiles } from '../hooks/use-files'
 import { FilePreviewModal } from './file-preview-modal'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
+import { SectionAction } from '../../../components/ui/section-action'
 import { Tooltip } from '../../../components/ui/tooltip'
 import { formatBytes, formatDate } from '../../../lib/utils/format'
 import { FileType } from '../../../types'
@@ -316,13 +317,11 @@ export function FileList({
             {title}
           </h3>
           {showViewAll && currentSection === 'Dashboard' && (
-            <button
+            <SectionAction
               onClick={() => setCurrentSection('My Files')}
-              className='text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none group'
             >
-              <span>View all</span>
-              <ArrowRight className='w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5' />
-            </button>
+              View all
+            </SectionAction>
           )}
         </div>
       )}

@@ -48,32 +48,34 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
         <div className={cn('w-full flex items-center justify-between', PAGE_HORIZONTAL_PADDING)}>
           {/* Left Side: Hamburger & Search Bar */}
           <div className='flex items-center gap-3 z-10 min-w-0'>
-          {/* Hamburger Menu Toggle Button (visible on mobile only) */}
-          <Tooltip content="Open sidebar" side="bottom">
-            <button
-              onClick={onMenuToggle}
-              className='flex md:hidden w-10 h-10 bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg active:bg-[#6E60EE]/10 active:text-[#6E60EE] rounded-xl items-center justify-center cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg'
-              aria-label='Open navigation menu'
-            >
-              <svg
-                className='w-5.5 h-5.5'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                strokeWidth={2.2}
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              >
-                <path d='M4 8h16M4 16h10' />
-              </svg>
-            </button>
-          </Tooltip>
+            {/* Hamburger Menu Toggle Button (visible on mobile only) */}
+            <div className='md:hidden shrink-0'>
+              <Tooltip content="Open sidebar" side="bottom">
+                <button
+                  onClick={onMenuToggle}
+                  className='flex w-10 h-10 bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg active:bg-[#6E60EE]/10 active:text-[#6E60EE] rounded-xl items-center justify-center cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg'
+                  aria-label='Open navigation menu'
+                >
+                  <svg
+                    className='w-5.5 h-5.5'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    strokeWidth={2.2}
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  >
+                    <path d='M4 8h16M4 16h10' />
+                  </svg>
+                </button>
+              </Tooltip>
+            </div>
 
-          {/* Search Bar - responsive, fluid */}
-          <div className='flex items-center shrink-0'>
-            <SearchBar />
+            {/* Search Bar - responsive, fluid */}
+            <div className='flex items-center shrink-0'>
+              <SearchBar />
+            </div>
           </div>
-        </div>
 
         {/* Header Actions cluster */}
         <div className='flex items-center gap-2 md:gap-3 ml-auto shrink-0 z-10'>

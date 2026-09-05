@@ -40,7 +40,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'h-16 w-full bg-card-bg border-b border-card-border flex items-center text-foreground select-none relative transition-all duration-200 shrink-0 z-20 rounded-l-none',
+          'h-16 w-full bg-card-bg border-b border-[#F0EEF5] dark:border-card-border flex items-center text-foreground select-none relative transition-all duration-200 shrink-0 z-20 rounded-l-none shadow-none',
           className
         )}
         style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
@@ -53,7 +53,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
               <Tooltip content="Open sidebar" side="bottom">
                 <button
                   onClick={onMenuToggle}
-                  className='flex w-10 h-10 bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg active:bg-[#6E60EE]/10 active:text-[#6E60EE] rounded-xl items-center justify-center cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg'
+                  className='flex w-10 h-10 bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg active:bg-[#6E60EE]/10 active:text-[#6E60EE] rounded-full items-center justify-center cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg'
                   aria-label='Open navigation menu'
                 >
                   <svg

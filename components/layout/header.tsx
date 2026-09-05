@@ -40,7 +40,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'h-16 w-full bg-card-bg border-b border-[#F0EEF5] dark:border-card-border flex items-center text-foreground select-none relative transition-all duration-200 shrink-0 z-20 rounded-l-none shadow-none',
+          'h-16 w-full bg-card-bg border-b border-card-border flex items-center text-foreground select-none relative transition-all duration-200 shrink-0 z-20 rounded-l-none shadow-none',
           className
         )}
         style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}

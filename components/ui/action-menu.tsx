@@ -61,8 +61,8 @@ export function ActionMenu ({ items, className, triggerClassName, align = 'right
         <button
           onClick={toggle}
           className={cn(
-            'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-card-bg hover:bg-input-bg active:bg-[#6E60EE]/10 border border-card-border hover:border-[#6E60EE]/40 text-text-secondary hover:text-foreground active:text-[#6E60EE] active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg shrink-0 shadow-xs',
-            isOpen && 'border-[#6E60EE]/50 text-[#6E60EE] bg-[#6E60EE]/10',
+            'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-card-bg hover:bg-input-bg active:bg-[#6E60EE]/10 border border-card-border text-text-secondary hover:text-foreground active:text-[#6E60EE] active:border-[#6E60EE]/30 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-card-bg shrink-0 shadow-xs',
+            isOpen && 'border-[#6E60EE]/40 text-[#6E60EE] bg-[#6E60EE]/10',
             triggerClassName
           )}
           aria-label='More actions'

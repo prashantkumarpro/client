@@ -27,17 +27,18 @@
 
 :root {
   /* Soft off-white and muted lavender light mode */
-  --background: #FAF9F6;
+  --background: #FAF9F7;
   /* clean, soft warm off-white canvas */
   --foreground: #1E1B24;
   /* soft deep charcoal text */
   --card-bg: #FFFFFF;
   /* pure white containers */
-  --card-border: #E8E6ED;
-  /* faint lavender-gray border */
-  --sidebar-bg: #FCFBF9;
-  /* warm off-white sidebar */
-  --sidebar-border: #E8E6ED;
+  --card-border: #ECEAF0;
+  /* subtle neutral border */
+  --sidebar-bg: #FFFFFF;
+  /* pure white sidebar */
+  --sidebar-border: #ECEAF0;
+  /* subtle neutral sidebar border */
   --sidebar-active-bg: #F2EFFF;
   /* calm soft lavender active pill */
   --sidebar-active-text: #6E60EE;
@@ -46,9 +47,9 @@
   /* slate-gray-muted text */
   --text-secondary: #585361;
   /* deep slate-gray text */
-  --input-bg: #F5F3F7;
-  /* soft input background */
-  --divider: #EBE9F0;
+  --input-bg: #F8F7FB;
+  /* soft small controls background */
+  --divider: #ECEAF0;
 }
 
 .dark {

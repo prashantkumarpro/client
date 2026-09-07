@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/providers/app-provider';
-import { FileItem } from '@/types';
+import { useSearch } from '../hooks/use-search';
+import type { UnifiedSearchResult } from '../types';
 import { FilePreview } from '@/features/files/components/file-preview';
 import { FilePreviewModal } from '@/features/files/components/file-preview-modal';
-import { UnifiedFileItem } from '@/features/files/components/file-list';
+import type { UnifiedFileItem } from '@/features/files/components/file-list';
 import { formatBytes, formatDate } from '@/lib/utils/format';
-import { Search, X, Folder, ArrowRight } from 'lucide-react';
+import { Search, X, Folder, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 // Helper to highlight matching text in query
@@ -35,9 +36,8 @@ export function SearchModal() {
   const {
     activeModal,
     setActiveModal,
-    files,
     setActiveFolderId,
-    setCurrentSection
+    setCurrentSection,
   } = useApp();
 
   const [localQuery, setLocalQuery] = useState('');
@@ -49,19 +49,8 @@ export function SearchModal() {
   const isOpen = activeModal === 'search';
   const hasQuery = localQuery.trim().length > 0;
 
-  // Filter files strictly based on search query when typing
-  const searchResults = useMemo(() => {
-    const query = localQuery.trim().toLowerCase();
-    if (!query) return [];
-
-    const activeFiles = files.filter(f => !f.deleted);
-    return activeFiles.filter(file => {
-      const nameMatch = file.name.toLowerCase().includes(query);
-      const ownerMatch = file.owner?.toLowerCase().includes(query);
-      const typeMatch = file.type?.toLowerCase().includes(query);
-      return nameMatch || ownerMatch || typeMatch;
-    });
-  }, [files, localQuery]);
+  // Real backend search hook connected to database API
+  const { results: searchResults, isLoading, error, refresh } = useSearch(localQuery);
 
   // Reset query and focus input on open
   useEffect(() => {
@@ -76,10 +65,10 @@ export function SearchModal() {
     }
   }, [isOpen]);
 
-  // Reset selected index when search query changes
+  // Reset selected index when search query or results change
   useEffect(() => {
     setSelectedIndex(0);
-  }, [localQuery]);
+  }, [localQuery, searchResults.length]);
 
   // Scroll active item into view
   useEffect(() => {
@@ -121,29 +110,32 @@ export function SearchModal() {
     };
   }, [isOpen, searchResults, selectedIndex]);
 
-  const getLocationName = (file: FileItem) => {
-    if (!file.parentFolderId) return 'My Files';
-    const parent = files.find(f => f.id === file.parentFolderId);
-    return parent ? `My Files / ${parent.name}` : 'My Files';
-  };
-
-  const handleResultClick = (file: FileItem) => {
-    if (file.type === 'folder') {
-      setActiveFolderId(file.id);
+  const handleResultClick = (item: UnifiedSearchResult) => {
+    if (item.type === 'folder') {
+      setActiveFolderId(item.id);
       setCurrentSection('My Files');
       setActiveModal(null);
     } else {
-      // Open in-app preview for instant access
-      setPreviewFile(file as UnifiedFileItem);
+      // Open in-app preview for instant access to real backend file
+      setPreviewFile({
+        id: item.id,
+        _id: item._id || item.id,
+        name: item.name,
+        extension: item.extension,
+        size: item.size,
+        parentDirId: item.parentDirId,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      });
     }
   };
 
-  const handleGoToLocation = (file: FileItem, e: React.MouseEvent) => {
+  const handleGoToLocation = (item: UnifiedSearchResult, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (file.type === 'folder') {
-      setActiveFolderId(file.id);
+    if (item.type === 'folder') {
+      setActiveFolderId(item.id);
     } else {
-      setActiveFolderId(file.parentFolderId || null);
+      setActiveFolderId(item.parentDirId || null);
     }
     setCurrentSection('My Files');
     setActiveModal(null);
@@ -188,7 +180,35 @@ export function SearchModal() {
           {/* Results Area — ONLY displayed when user types a query */}
           {hasQuery && (
             <div className="border-t border-card-border/60 flex flex-col">
-              {searchResults.length === 0 ? (
+              {isLoading ? (
+                /* Loading State */
+                <div className="py-12 flex flex-col items-center justify-center text-center select-none px-4 gap-2.5">
+                  <Loader2 className="w-6 h-6 text-[#6E60EE] animate-spin" />
+                  <span className="text-xs text-text-secondary font-medium">
+                    Searching your files and folders...
+                  </span>
+                </div>
+              ) : error ? (
+                /* Error State */
+                <div className="py-10 flex flex-col items-center justify-center text-center select-none px-4 gap-2">
+                  <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500 mb-1">
+                    <AlertCircle className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-bold text-foreground">
+                    Search encountered an issue
+                  </h4>
+                  <p className="text-xs text-text-secondary max-w-[280px]">
+                    {error}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => refresh()}
+                    className="mt-1 text-xs font-semibold text-[#6E60EE] hover:underline cursor-pointer"
+                  >
+                    Retry search
+                  </button>
+                </div>
+              ) : searchResults.length === 0 ? (
                 /* Clean No Results State */
                 <div className="py-12 flex flex-col items-center justify-center text-center select-none px-4">
                   <div className="w-10 h-10 rounded-full bg-input-bg flex items-center justify-center text-text-muted mb-2.5">
@@ -202,28 +222,27 @@ export function SearchModal() {
                   </p>
                 </div>
               ) : (
-                /* Matching Results List */
+                /* Matching Real Results List */
                 <div
                   ref={listRef}
                   className="w-full max-h-[360px] overflow-y-auto flex flex-col divide-y divide-card-border/40 p-1.5"
                 >
-                  {searchResults.map((file, idx) => {
+                  {searchResults.map((item, idx) => {
                     const isSelected = idx === selectedIndex;
-                    const isFolder = file.type === 'folder';
-                    const locationPath = getLocationName(file);
-                    const displayDate = formatDate(file.updatedAt || file.createdAt);
-                    const displaySize = !isFolder && typeof file.size === 'number' && file.size > 0
-                      ? formatBytes(file.size)
+                    const isFolder = item.type === 'folder';
+                    const displayDate = formatDate(item.updatedAt || item.createdAt || new Date().toISOString());
+                    const displaySize = !isFolder && typeof item.size === 'number' && item.size > 0
+                      ? formatBytes(item.size)
                       : null;
 
                     const snippetMetadata = isFolder
-                      ? `Folder • in ${locationPath}`
-                      : `${file.type.toUpperCase()}${displaySize ? ` • ${displaySize}` : ''} • in ${locationPath}`;
+                      ? `Folder • in ${item.locationName}`
+                      : `${(item.extension || item.type).toUpperCase()}${displaySize ? ` • ${displaySize}` : ''} • in ${item.locationName}`;
 
                     return (
                       <div
-                        key={file.id}
-                        onClick={() => handleResultClick(file)}
+                        key={item.id}
+                        onClick={() => handleResultClick(item)}
                         onMouseEnter={() => setSelectedIndex(idx)}
                         className={cn(
                           "flex items-center justify-between px-3.5 py-2.5 rounded-xl cursor-pointer transition-all duration-150 group relative select-none",
@@ -239,13 +258,23 @@ export function SearchModal() {
                               <Folder className="w-4.5 h-4.5" />
                             </div>
                           ) : (
-                            <FilePreview file={file as UnifiedFileItem} variant="compact" />
+                            <FilePreview
+                              file={{
+                                id: item.id,
+                                _id: item._id,
+                                name: item.name,
+                                extension: item.extension,
+                                type: item.type,
+                                size: item.size,
+                              }}
+                              variant="compact"
+                            />
                           )}
 
                           {/* Middle: Title + Metadata Snippet */}
                           <div className="flex flex-col min-w-0 flex-1 justify-center">
                             <span className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors leading-snug">
-                              {highlightMatch(file.name, localQuery)}
+                              {highlightMatch(item.name, localQuery)}
                             </span>
                             <span className="text-[11px] text-text-secondary truncate mt-0.5">
                               {snippetMetadata}
@@ -260,7 +289,7 @@ export function SearchModal() {
                           </span>
                           <button
                             type="button"
-                            onClick={(e) => handleGoToLocation(file, e)}
+                            onClick={(e) => handleGoToLocation(item, e)}
                             title="Go to location"
                             className="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:text-[#6E60EE] hover:bg-[#6E60EE]/10 transition-colors opacity-0 group-hover:opacity-100"
                           >
@@ -283,7 +312,20 @@ export function SearchModal() {
           isOpen={Boolean(previewFile)}
           onClose={() => setPreviewFile(null)}
           file={previewFile}
-          files={searchResults.filter(f => f.type !== 'folder') as UnifiedFileItem[]}
+          files={
+            searchResults
+              .filter(r => r.type !== 'folder')
+              .map(r => ({
+                id: r.id,
+                _id: r._id || r.id,
+                name: r.name,
+                extension: r.extension,
+                size: r.size,
+                parentDirId: r.parentDirId,
+                createdAt: r.createdAt,
+                updatedAt: r.updatedAt,
+              })) as UnifiedFileItem[]
+          }
           onNavigate={(f) => setPreviewFile(f as UnifiedFileItem)}
         />
       )}

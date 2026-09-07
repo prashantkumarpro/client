@@ -3,10 +3,11 @@
 import React, { useState } from 'react'
 import { useApp } from '../../../providers/app-provider'
 import { FileGrid } from '@/features/files/components/file-grid'
+import { FileTable } from '@/features/files/components/file-table'
 import { FilePreview } from '@/features/files/components/file-preview'
 import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
 import { ViewToggle } from '@/components/ui/view-toggle'
-import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
+import { ActionMenuItem } from '@/components/ui/action-menu'
 import { formatBytes, formatDate } from '../../../lib/utils/format'
 import { UnifiedFileItem } from '@/features/files/components/file-list'
 import { RotateCcw, Trash, Trash2, Search } from 'lucide-react'
@@ -37,6 +38,23 @@ export function TrashView() {
     ) {
       deletePermanently(fileId)
     }
+  }
+
+  const getTrashDropdownItems = (file: UnifiedFileItem): ActionMenuItem[] => {
+    const fileId = file.id || file._id || ''
+    return [
+      {
+        label: 'Restore',
+        onClick: () => handleRestore(fileId),
+        icon: <RotateCcw className='w-4 h-4 text-text-secondary' />
+      },
+      {
+        label: 'Delete Forever',
+        onClick: () => handleDeletePermanently(file),
+        icon: <Trash className='w-4 h-4 text-rose-500' />,
+        danger: true
+      }
+    ]
   }
 
   if (deletedFiles.length === 0) {
@@ -99,90 +117,17 @@ export function TrashView() {
           onDeletePermanently={handleDeletePermanently}
         />
       ) : (
-        <div className='w-full flex flex-col select-none bg-card-bg border border-card-border rounded-xl overflow-hidden shadow-xs'>
-          {/* Column Header Row */}
-          <div className='flex items-center justify-between px-3 sm:px-4 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border bg-input-bg/40 select-none'>
-            <div className='flex-1 min-w-0 pr-4'>
-              <span>Name</span>
-            </div>
-            <div className='hidden md:block w-48 text-left pr-4'>
-              <span>Deleted Date</span>
-            </div>
-            <div className='hidden sm:block w-28 text-right pr-6'>
-              <span>Size</span>
-            </div>
-            <div className='w-16 text-right pr-2'>
-              <span>Actions</span>
-            </div>
-          </div>
-
-          {/* Deleted Item Rows */}
-          <div className='flex flex-col divide-y divide-card-border/50'>
-            {deletedFiles.map((file, idx) => {
-              const fileId = file.id || file._id || `trash-${idx}`
-              const dropdownItems: ActionMenuItem[] = [
-                {
-                  label: 'Restore',
-                  onClick: () => handleRestore(fileId),
-                  icon: <RotateCcw className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Delete Forever',
-                  onClick: () => handleDeletePermanently(file),
-                  icon: <Trash className='w-4 h-4 text-rose-500' />,
-                  danger: true
-                }
-              ]
-
-              return (
-                <div
-                  key={fileId}
-                  onClick={() => setPreviewFile(file)}
-                  className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0'
-                >
-                  {/* Name Column with Thumbnail */}
-                  <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
-                    <FilePreview file={file} variant='list' />
-                    <div className='flex flex-col min-w-0 flex-1'>
-                      <span
-                        className='text-xs sm:text-sm font-semibold text-foreground group-hover:text-[#6E60EE] truncate transition-colors duration-150'
-                        title={file.name}
-                      >
-                        {file.name}
-                      </span>
-                      <div className='flex items-center gap-1.5 text-[11px] sm:hidden text-text-secondary mt-0.5 truncate'>
-                        <span>{formatBytes(file.size || 0)}</span>
-                        <span>&bull;</span>
-                        <span>Deleted {formatDate(file.updatedAt || '')}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Date Column */}
-                  <div className='hidden md:block w-48 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    {formatDate(file.updatedAt || file.createdAt || '')}
-                  </div>
-
-                  {/* Size Column */}
-                  <div className='hidden sm:block w-28 text-xs font-semibold text-text-secondary text-right pr-6 shrink-0'>
-                    {formatBytes(file.size || 0)}
-                  </div>
-
-                  {/* Actions Menu */}
-                  <div
-                    className='flex items-center justify-end w-16 shrink-0'
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <ActionMenu
-                      placement='bottom-right'
-                      items={dropdownItems}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        /* REFINED TRASH LIST / TABLE VIEW (Clean, unboxed workspace table using reusable FileTable) */
+        <FileTable
+          files={deletedFiles}
+          onFileClick={file => setPreviewFile(file)}
+          customActions={getTrashDropdownItems}
+          showLocation={false}
+          showDate={true}
+          showSize={true}
+          dateLabel='Deleted Date'
+          allFiles={files as UnifiedFileItem[]}
+        />
       )}
 
       {/* Preview Modal */}

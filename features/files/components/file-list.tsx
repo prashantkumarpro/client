@@ -6,6 +6,7 @@ import { useFiles } from '../hooks/use-files'
 import { FilePreview } from './file-preview'
 import { FilePreviewModal } from './file-preview-modal'
 import { FileGrid } from './file-grid'
+import { FileTable } from './file-table'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { SectionAction } from '../../../components/ui/section-action'
 import { ViewToggle } from '../../../components/ui/view-toggle'
@@ -31,7 +32,8 @@ import {
   Trash2,
   Users,
   Search,
-  Inbox
+  Inbox,
+  ArrowUp
 } from 'lucide-react'
 
 export type UnifiedFileItem = {
@@ -313,7 +315,7 @@ export function FileList({
     currentSection === 'Dashboard' || currentSection === 'Recent'
 
   const content = (
-    <div className='w-full flex flex-col gap-3.5'>
+    <div className='w-full flex flex-col gap-3'>
       {/* Section Header Row with Title + ViewToggle */}
       {(title || showViewToggle) && (
         <div className='flex items-center justify-between gap-3 select-none'>
@@ -375,151 +377,16 @@ export function FileList({
           onDelete={handleDelete}
         />
       ) : (
-        /* LIST VIEW */
-        <div className='w-full flex flex-col select-none bg-card-bg border border-card-border rounded-xl overflow-hidden shadow-xs'>
-          {/* Structured Column Header Row */}
-          {showHeader && (
-            <div className='flex items-center justify-between px-3 sm:px-4 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border bg-input-bg/40 select-none'>
-              <div className='flex-1 min-w-0 pr-4'>
-                <span>Name</span>
-              </div>
-              <div className='hidden md:block w-48 text-left pr-4'>
-                <span>
-                  {isDashboardOrRecent ? 'Reason suggested' : 'Last modified'}
-                </span>
-              </div>
-              <div className='hidden lg:block w-36 text-left pr-4'>
-                <span>Location</span>
-              </div>
-              <div className='hidden sm:block lg:hidden w-24 text-left pr-4'>
-                <span>Size</span>
-              </div>
-              <div className='w-20 text-right pr-2'>
-                <span>Actions</span>
-              </div>
-            </div>
-          )}
-
-          {/* Structured File Rows */}
-          <div className='flex flex-col divide-y divide-card-border/50'>
-            {displayList.map((file, idx) => {
-              const fileId = file.id || file._id || `file-${idx}`
-              const fileType = deriveFileType(file)
-              const dropdownItems = getDropdownItems(file)
-              const isShared =
-                (file.sharedWith && file.sharedWith.length > 0) ||
-                (file.owner && file.owner !== 'Prashant')
-              const locationName = getLocationName(file)
-              const displayDate =
-                file.updatedAt || file.createdAt || new Date().toISOString()
-              const displaySize =
-                typeof file.size === 'number' && file.size > 0
-                  ? formatBytes(file.size)
-                  : '—'
-
-              return (
-                <div
-                  key={fileId}
-                  onClick={() => handleOpenFile(file)}
-                  className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0'
-                >
-                  {/* Name Column: Icon/Thumbnail + Filename + Shared icon */}
-                  <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
-                    {fileType === 'folder' ? (
-                      <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-[#6E60EE] group-hover:bg-[#6E60EE]/10 group-hover:border-[#6E60EE]/30 transition-all duration-200'>
-                        <Folder className='w-4 h-4 text-[#6E60EE]' />
-                      </div>
-                    ) : (
-                      <FilePreview file={file} variant='list' />
-                    )}
-                    <div className='flex flex-col min-w-0 flex-1'>
-                      <div className='flex items-center gap-1.5 min-w-0'>
-                        <span
-                          className='text-xs sm:text-sm font-semibold text-foreground group-hover:text-[#6E60EE] truncate transition-colors duration-150'
-                          title={file.name}
-                        >
-                          {file.name}
-                        </span>
-                        {isShared && (
-                          <Tooltip content='Shared file' side='top'>
-                            <span className='shrink-0 text-text-muted/80 group-hover:text-text-secondary'>
-                              <Users className='w-3.5 h-3.5' />
-                            </span>
-                          </Tooltip>
-                        )}
-                      </div>
-
-                      {/* Mobile compact details subline */}
-                      <div className='flex items-center gap-1.5 text-[11px] sm:hidden text-text-secondary mt-0.5 truncate'>
-                        <span>{displaySize}</span>
-                        <span>&bull;</span>
-                        <span>
-                          {isDashboardOrRecent
-                            ? `Opened ${formatDate(displayDate)}`
-                            : formatDate(displayDate)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Reason suggested / Activity Column (Tablet & Desktop) */}
-                  <div className='hidden md:block w-48 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    {isDashboardOrRecent
-                      ? `You opened • ${formatDate(displayDate)}`
-                      : formatDate(displayDate)}
-                  </div>
-
-                  {/* Location Column (Desktop) */}
-                  <div className='hidden lg:flex items-center gap-1.5 w-36 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    <Folder className='w-3.5 h-3.5 text-text-muted shrink-0' />
-                    <span className='truncate'>{locationName}</span>
-                  </div>
-
-                  {/* Size Column (Tablet only, when Location hidden) */}
-                  <div className='hidden sm:block lg:hidden w-24 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
-                    {displaySize}
-                  </div>
-
-                  {/* Star & Actions Column */}
-                  <div
-                    className='flex items-center justify-end gap-1 w-20 shrink-0'
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <Tooltip
-                      content={file.starred ? 'Unstar' : 'Star'}
-                      side='top'
-                    >
-                      <button
-                        onClick={() => toggleStar(fileId)}
-                        className={cn(
-                          'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
-                          file.starred
-                            ? 'opacity-100'
-                            : 'opacity-0 group-hover:opacity-100 hover:bg-input-bg'
-                        )}
-                        aria-label={file.starred ? 'Unstar file' : 'Star file'}
-                      >
-                        <Star
-                          className={cn(
-                            'w-4 h-4',
-                            file.starred
-                              ? 'fill-[#6E60EE] text-[#6E60EE]'
-                              : 'text-text-muted'
-                          )}
-                        />
-                      </button>
-                    </Tooltip>
-
-                    <ActionMenu
-                      placement='bottom-right'
-                      items={dropdownItems}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        /* REFINED LIST / TABLE VIEW (Clean, unboxed workspace table using reusable FileTable) */
+        <FileTable
+          files={displayList}
+          onFileClick={handleOpenFile}
+          onFolderClick={onFolderClick ? onFolderClick : setActiveFolderId}
+          onToggleStar={fileId => toggleStar(fileId)}
+          customActions={getDropdownItems}
+          showHeader={showHeader}
+          allFiles={globalFiles as UnifiedFileItem[]}
+        />
       )}
 
       {/* In-App File Preview Modal */}

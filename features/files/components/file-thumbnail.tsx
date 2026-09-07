@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import { useFileThumbnail } from '../hooks/use-file-thumbnail'
-import { getFileTypeInfo, FileCategory } from '../utils/file-preview'
 import { cn } from '@/lib/utils/cn'
 import {
   FileText,
@@ -15,38 +14,34 @@ import {
   Play
 } from 'lucide-react'
 
-export interface PreviewFileData {
-  id?: string
-  _id?: string
-  name: string
-  extension?: string
-  type?: string
-  size?: number
-  url?: string
-  thumbnailUrl?: string
-}
-
-export interface FilePreviewProps {
-  file: PreviewFileData
-  variant?: 'grid' | 'list' | 'compact' | 'large'
+export interface FileThumbnailProps {
+  file: {
+    id?: string
+    _id?: string
+    name: string
+    extension?: string
+    type?: string
+    size?: number
+    url?: string
+    thumbnailUrl?: string
+  }
+  variant?: 'card' | 'list' | 'compact' | 'large'
+  aspectRatio?: string
   className?: string
   imageClassName?: string
   fallbackClassName?: string
-  showPlayBadge?: boolean
-  showBadge?: boolean
   alt?: string
 }
 
-export function FilePreview({
+export function FileThumbnail({
   file,
-  variant = 'grid',
+  variant = 'card',
+  aspectRatio = 'aspect-[16/10]',
   className,
   imageClassName,
   fallbackClassName,
-  showPlayBadge = true,
-  showBadge = false,
   alt
-}: FilePreviewProps) {
+}: FileThumbnailProps) {
   const { url, isLoading, hasError, category, typeInfo } = useFileThumbnail({
     id: file.id,
     _id: file._id,
@@ -60,12 +55,12 @@ export function FilePreview({
 
   const hasDirectVisual = Boolean(url && !hasError && !imgLoadError)
 
-  // Render Category Fallback Icon
+  // Render category fallback icon
   const renderFallbackIcon = (size: 'sm' | 'md' | 'lg' = 'md') => {
     const iconClass = cn(
       size === 'sm' && 'w-4 h-4',
-      size === 'md' && 'w-5 h-5',
-      size === 'lg' && 'w-8 h-8',
+      size === 'md' && 'w-6 h-6',
+      size === 'lg' && 'w-10 h-10',
       'shrink-0 transition-transform duration-200'
     )
 
@@ -79,7 +74,7 @@ export function FilePreview({
       case 'audio':
         return <Music className={cn(iconClass, 'text-amber-500 dark:text-amber-400')} />
       case 'document':
-        return <FileText className={cn(iconClass, typeInfo.colorClass)} />
+        return <FileText className={cn(iconClass, typeInfo.colorClass || 'text-blue-500 dark:text-blue-400')} />
       case 'code':
         return <Code className={cn(iconClass, 'text-cyan-600 dark:text-cyan-400')} />
       case 'archive':
@@ -119,11 +114,9 @@ export function FilePreview({
               className='w-full h-full object-cover'
               loading='lazy'
             />
-            {showPlayBadge && (
-              <div className='absolute inset-0 flex items-center justify-center bg-black/25'>
-                <Play className='w-3 h-3 text-white fill-white' />
-              </div>
-            )}
+            <div className='absolute inset-0 flex items-center justify-center bg-black/25'>
+              <Play className='w-3 h-3 text-white fill-white' />
+            </div>
           </div>
         ) : (
           <div className={cn('flex items-center justify-center', fallbackClassName)}>
@@ -134,7 +127,7 @@ export function FilePreview({
     )
   }
 
-  // VARIANT: COMPACT (Extra small ~28-32px for search/dropdowns)
+  // VARIANT: COMPACT (Extra small ~28-32px)
   if (variant === 'compact') {
     return (
       <div
@@ -163,50 +156,12 @@ export function FilePreview({
     )
   }
 
-  // VARIANT: LARGE (Modal/details viewer)
-  if (variant === 'large') {
-    return (
-      <div
-        className={cn(
-          'w-full min-h-[220px] bg-input-bg/40 border border-card-border rounded-xl flex items-center justify-center relative overflow-hidden select-none',
-          className
-        )}
-      >
-        {isLoading ? (
-          <div className='w-full h-56 bg-input-bg animate-pulse' />
-        ) : hasDirectVisual && category === 'image' ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={url!}
-            alt={alt || file.name}
-            onError={() => setImgLoadError(true)}
-            className={cn('max-h-[60vh] max-w-full object-contain rounded-lg', imageClassName)}
-          />
-        ) : hasDirectVisual && category === 'video' ? (
-          <video
-            src={url!}
-            controls
-            className='max-h-[60vh] max-w-full rounded-lg'
-          />
-        ) : (
-          <div className='flex flex-col items-center justify-center gap-2 p-8 text-center'>
-            <div className='w-16 h-16 rounded-2xl bg-input-bg border border-card-border flex items-center justify-center shadow-xs'>
-              {renderFallbackIcon('lg')}
-            </div>
-            <span className='text-xs font-semibold text-text-secondary mt-1'>
-              {file.name}
-            </span>
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  // DEFAULT VARIANT: GRID (Card preview box aspect-[16/10])
+  // DEFAULT VARIANT: CARD (Clean, uncluttered, focused image/video/icon preview without badge pills)
   return (
     <div
       className={cn(
-        'w-full aspect-[16/10] bg-input-bg/70 rounded-lg flex items-center justify-center border border-card-border/60 relative overflow-hidden shrink-0 group-hover:border-card-border transition-all duration-200 select-none',
+        'w-full bg-input-bg/70 rounded-lg flex items-center justify-center border border-card-border/60 relative overflow-hidden shrink-0 transition-all duration-200 select-none group-hover:border-card-border',
+        aspectRatio,
         className
       )}
     >
@@ -239,11 +194,9 @@ export function FilePreview({
             )}
             loading='lazy'
           />
-          {showPlayBadge && (
-            <div className='absolute w-8 h-8 rounded-full bg-black/50 text-white backdrop-blur-xs flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-[#6E60EE] transition-all duration-200'>
-              <Play className='w-3.5 h-3.5 ml-0.5 fill-white' />
-            </div>
-          )}
+          <div className='absolute w-8 h-8 rounded-full bg-black/50 text-white backdrop-blur-xs flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-[#6E60EE] transition-all duration-200'>
+            <Play className='w-3.5 h-3.5 ml-0.5 fill-white' />
+          </div>
         </div>
       ) : (
         <div className={cn('w-full h-full flex items-center justify-center bg-input-bg/40 group-hover:bg-input-bg/60 transition-colors', fallbackClassName)}>

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { FilePreview } from './file-preview'
+import { FileThumbnail } from './file-thumbnail'
 import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { formatBytes, formatDate } from '@/lib/utils/format'
 import { Eye, Download, Share2, Edit3, Star, Trash2, RotateCcw, Trash } from 'lucide-react'
@@ -23,6 +23,27 @@ export interface FileCardProps {
   className?: string
 }
 
+// Helper to format clean, useful metadata string (e.g. "PNG • 2.4 MB" or "PDF • 1.2 MB")
+function getFileMetadata(file: UnifiedFileItem): string {
+  const ext = (file.extension || file.name.split('.').pop() || file.type || 'FILE')
+    .replace('.', '')
+    .toUpperCase()
+
+  const hasSize = typeof file.size === 'number' && file.size > 0
+  const sizeFormatted = hasSize ? formatBytes(file.size!) : null
+  const dateFormatted = file.updatedAt || file.createdAt ? formatDate(file.updatedAt || file.createdAt!) : null
+
+  if (sizeFormatted) {
+    return `${ext} • ${sizeFormatted}`
+  }
+
+  if (dateFormatted) {
+    return `${ext} • ${dateFormatted}`
+  }
+
+  return ext
+}
+
 export function FileCard({
   file,
   onClick,
@@ -37,8 +58,7 @@ export function FileCard({
   customActions,
   className
 }: FileCardProps) {
-  const displayDate = file.updatedAt || file.createdAt
-  const displaySize = typeof file.size === 'number' && file.size > 0 ? formatBytes(file.size) : undefined
+  const metadataText = getFileMetadata(file)
 
   // Default actions for standard file vs trash file
   const defaultActions: ActionMenuItem[] = isTrash
@@ -127,28 +147,28 @@ export function FileCard({
     <div
       onClick={onClick}
       className={cn(
-        'bg-card-bg rounded-xl border border-card-border hover:bg-input-bg/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0',
+        'bg-card-bg rounded-xl border border-card-border hover:border-card-border/80 hover:bg-input-bg/40 shadow-xs p-2.5 sm:p-3 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0',
         className
       )}
     >
-      {/* Real File Preview thumbnail */}
-      <FilePreview file={file} variant='grid' showBadge />
+      {/* Main Focus: Consistent, uncluttered file thumbnail */}
+      <FileThumbnail file={file} variant='card' />
 
-      {/* File Info + Actions Row */}
-      <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
+      {/* File Info + Actions Row: Filename -> Metadata -> 3-dot menu */}
+      <div className='flex items-center justify-between gap-1.5 w-full min-w-0 pt-0.5'>
         <div className='flex flex-col min-w-0 flex-1 text-left'>
           <span
-            className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'
+            className='text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-150'
             title={file.name}
           >
             {file.name}
           </span>
-          <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
-            {displayDate ? formatDate(displayDate) : displaySize || '—'}
+          <span className='text-[11px] font-medium text-text-secondary truncate mt-0.5'>
+            {metadataText}
           </span>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons: Star + 3-dot Menu */}
         <div
           className='flex items-center gap-1 shrink-0 -mr-1'
           onClick={e => e.stopPropagation()}

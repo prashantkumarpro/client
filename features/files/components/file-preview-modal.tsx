@@ -519,13 +519,13 @@ export function FilePreviewModal({
             </div>
           ) : (
             <>
-              {/* 1. IMAGE PREVIEW WITH SMOOTH FADE + SCALE TRANSITIONS (~10-15% larger content size) */}
+              {/* 1. IMAGE PREVIEW WITH SMOOTH FADE + SCALE TRANSITIONS */}
               {category === 'image' && blobUrl && (
                 <div
                   key={`img-container-${fileId || currentFile.name}`}
                   className="w-full h-full flex flex-col items-center justify-center relative select-none animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
                 >
-                  <div className="relative max-h-[84vh] sm:max-h-[88vh] max-w-[92vw] flex items-center justify-center">
+                  <div className="relative max-h-[78vh] sm:max-h-[82vh] max-w-[88vw] flex items-center justify-center">
                     {/* Placeholder Spinner while Image Loads */}
                     {!isImageLoaded && (
                       <div className="absolute inset-0 flex items-center justify-center text-[#6E60EE]">
@@ -544,7 +544,7 @@ export function FilePreviewModal({
                         opacity: isImageLoaded ? 1 : 0,
                         transition: 'opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1)'
                       }}
-                      className="max-h-[82vh] sm:max-h-[86vh] max-w-[90vw] object-contain rounded-lg shadow-xl select-none will-change-transform"
+                      className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] object-contain rounded-lg shadow-xl select-none will-change-transform"
                     />
                   </div>
 
@@ -599,21 +599,21 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 2. PDF PREVIEW WITH SMOOTH TRANSITION (~10-15% larger) */}
+              {/* 2. PDF PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'pdf' && blobUrl && (
                 <div
                   key={`pdf-${fileId || currentFile.name}`}
-                  className="w-full h-full max-w-6xl flex items-center justify-center animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                  className="w-full h-full max-w-5xl flex items-center justify-center animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
                 >
                   <iframe
                     src={blobUrl}
                     title={currentFile.name}
-                    className="w-full h-[82vh] sm:h-[86vh] border-0 rounded-xl shadow-xl bg-white"
+                    className="w-full h-[76vh] sm:h-[80vh] border-0 rounded-xl shadow-xl bg-white"
                   />
                 </div>
               )}
 
-              {/* 3. VIDEO PREVIEW WITH SMOOTH TRANSITION (~10-15% larger) */}
+              {/* 3. VIDEO PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'video' && blobUrl && (
                 <div
                   key={`video-${fileId || currentFile.name}`}
@@ -624,7 +624,7 @@ export function FilePreviewModal({
                     controls
                     autoPlay={false}
                     playsInline
-                    className="max-h-[82vh] sm:max-h-[86vh] max-w-[90vw] rounded-xl shadow-xl bg-black border border-card-border"
+                    className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] rounded-xl shadow-xl bg-black border border-card-border"
                   >
                     Your browser does not support HTML5 video.
                   </video>
@@ -676,11 +676,11 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 5. CODE / TEXT / JSON PREVIEW WITH SMOOTH TRANSITION (~10-15% larger) */}
+              {/* 5. CODE / TEXT / JSON PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'code' && (
                 <div
                   key={`code-${fileId || currentFile.name}`}
-                  className="w-full max-w-5xl max-h-[82vh] sm:max-h-[86vh] bg-card-bg border border-card-border rounded-xl shadow-xl flex flex-col overflow-hidden text-left transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                  className="w-full max-w-4xl max-h-[76vh] sm:max-h-[80vh] bg-card-bg border border-card-border rounded-xl shadow-xl flex flex-col overflow-hidden text-left transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
                 >
                   {/* Code Editor Header */}
                   <div className="h-10 px-4 bg-input-bg border-b border-card-border flex items-center justify-between shrink-0 select-none">

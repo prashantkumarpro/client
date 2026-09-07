@@ -5,8 +5,10 @@ import { useApp } from '../../../providers/app-provider'
 import { useFiles } from '../hooks/use-files'
 import { FilePreview } from './file-preview'
 import { FilePreviewModal } from './file-preview-modal'
+import { FileGrid } from './file-grid'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { SectionAction } from '../../../components/ui/section-action'
+import { ViewToggle } from '../../../components/ui/view-toggle'
 import { Tooltip } from '../../../components/ui/tooltip'
 import { formatBytes, formatDate } from '../../../lib/utils/format'
 import { FileType } from '../../../types'
@@ -29,8 +31,7 @@ import {
   Trash2,
   Users,
   Search,
-  Inbox,
-  ArrowRight
+  Inbox
 } from 'lucide-react'
 
 export type UnifiedFileItem = {
@@ -57,6 +58,9 @@ export interface FileListProps {
   showViewAll?: boolean
   showHeader?: boolean
   showCardContainer?: boolean
+  showViewToggle?: boolean
+  viewMode?: 'grid' | 'list'
+  defaultViewMode?: 'grid' | 'list'
   emptyMessage?: string
   emptySubtitle?: string
   onFileClick?: (file: UnifiedFileItem) => void
@@ -86,6 +90,9 @@ export function FileList({
   showViewAll,
   showHeader = true,
   showCardContainer = false,
+  showViewToggle = true,
+  viewMode: propViewMode,
+  defaultViewMode,
   emptyMessage,
   emptySubtitle,
   onFileClick,
@@ -98,14 +105,31 @@ export function FileList({
     activeFolderId,
     setActiveFolderId,
     toggleStar,
-    deleteFile: deleteMockFile,
     searchQuery,
     setSelectedFileId,
-    setActiveModal
+    setActiveModal,
+    viewMode: globalViewMode,
+    setViewMode: setGlobalViewMode
   } = useApp()
 
   const { download, rename, remove } = useFiles()
   const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
+
+  // Local view mode override if defaultViewMode is passed, otherwise global
+  const [localViewMode, setLocalViewMode] = useState<'grid' | 'list' | null>(
+    defaultViewMode ?? null
+  )
+
+  const activeViewMode: 'grid' | 'list' =
+    propViewMode ?? localViewMode ?? globalViewMode
+
+  const handleViewModeChange = (mode: 'grid' | 'list') => {
+    if (defaultViewMode) {
+      setLocalViewMode(mode)
+    } else {
+      setGlobalViewMode(mode)
+    }
+  }
 
   // Filter files if customFiles is not explicitly passed
   const displayList = React.useMemo(() => {
@@ -149,27 +173,6 @@ export function FileList({
 
     return result
   }, [customFiles, globalFiles, currentSection, activeFolderId, searchQuery, limit])
-
-  const getFileIcon = (type: FileType) => {
-    switch (type) {
-      case 'pdf':
-        return <FileText className='w-4 h-4 text-rose-500' />
-      case 'image':
-        return <ImageIcon className='w-4 h-4 text-emerald-500' />
-      case 'video':
-        return <VideoIcon className='w-4 h-4 text-purple-500' />
-      case 'folder':
-        return <Folder className='w-4 h-4 text-[#6E60EE]' />
-      case 'document':
-        return <FileText className='w-4 h-4 text-[#6E60EE]' />
-      case 'audio':
-        return <Music className='w-4 h-4 text-amber-500' />
-      case 'code':
-        return <Code className='w-4 h-4 text-cyan-500' />
-      default:
-        return <File className='w-4 h-4 text-text-secondary' />
-    }
-  }
 
   const getLocationName = (file: UnifiedFileItem) => {
     const parentId = file.parentFolderId || file.parentDirId
@@ -310,20 +313,32 @@ export function FileList({
     currentSection === 'Dashboard' || currentSection === 'Recent'
 
   const content = (
-    <div className='w-full flex flex-col'>
-      {/* Optional Section Title / Header Row if title passed */}
-      {title && (
-        <div className='flex items-center justify-between pb-3 select-none'>
-          <h3 className='text-sm sm:text-base font-bold text-foreground tracking-tight'>
-            {title}
-          </h3>
-          {showViewAll && currentSection === 'Dashboard' && (
-            <SectionAction
-              onClick={() => setCurrentSection('My Files')}
-            >
-              View all
-            </SectionAction>
+    <div className='w-full flex flex-col gap-3.5'>
+      {/* Section Header Row with Title + ViewToggle */}
+      {(title || showViewToggle) && (
+        <div className='flex items-center justify-between gap-3 select-none'>
+          {title ? (
+            <h3 className='text-sm sm:text-base font-bold text-foreground tracking-tight'>
+              {title}
+            </h3>
+          ) : (
+            <div />
           )}
+
+          <div className='flex items-center gap-2 shrink-0'>
+            {showViewAll && currentSection === 'Dashboard' && (
+              <SectionAction onClick={() => setCurrentSection('My Files')}>
+                View all
+              </SectionAction>
+            )}
+
+            {showViewToggle && displayList.length > 0 && (
+              <ViewToggle
+                viewMode={activeViewMode}
+                onViewModeChange={handleViewModeChange}
+              />
+            )}
+          </div>
         </div>
       )}
 
@@ -344,11 +359,27 @@ export function FileList({
             {defaultEmptySubtitle}
           </p>
         </div>
+      ) : activeViewMode === 'grid' ? (
+        /* GRID VIEW */
+        <FileGrid
+          files={displayList}
+          onFileClick={handleOpenFile}
+          onDownload={handleDownload}
+          onShare={file => {
+            const fId = file.id || file._id || ''
+            setSelectedFileId(fId)
+            setActiveModal('share')
+          }}
+          onRename={handleRename}
+          onToggleStar={fileId => toggleStar(fileId)}
+          onDelete={handleDelete}
+        />
       ) : (
-        <div className='w-full flex flex-col select-none'>
+        /* LIST VIEW */
+        <div className='w-full flex flex-col select-none bg-card-bg border border-card-border rounded-xl overflow-hidden shadow-xs'>
           {/* Structured Column Header Row */}
           {showHeader && (
-            <div className='flex items-center justify-between px-3 sm:px-4 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border/80 select-none'>
+            <div className='flex items-center justify-between px-3 sm:px-4 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border bg-input-bg/40 select-none'>
               <div className='flex-1 min-w-0 pr-4'>
                 <span>Name</span>
               </div>
@@ -379,14 +410,18 @@ export function FileList({
                 (file.sharedWith && file.sharedWith.length > 0) ||
                 (file.owner && file.owner !== 'Prashant')
               const locationName = getLocationName(file)
-              const displayDate = file.updatedAt || file.createdAt || new Date().toISOString()
-              const displaySize = typeof file.size === 'number' && file.size > 0 ? formatBytes(file.size) : '—'
+              const displayDate =
+                file.updatedAt || file.createdAt || new Date().toISOString()
+              const displaySize =
+                typeof file.size === 'number' && file.size > 0
+                  ? formatBytes(file.size)
+                  : '—'
 
               return (
                 <div
                   key={fileId}
                   onClick={() => handleOpenFile(file)}
-                  className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
+                  className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0'
                 >
                   {/* Name Column: Icon/Thumbnail + Filename + Shared icon */}
                   <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
@@ -457,16 +492,16 @@ export function FileList({
                       <button
                         onClick={() => toggleStar(fileId)}
                         className={cn(
-                          'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none hover:bg-input-bg active:scale-90',
+                          'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
                           file.starred
-                            ? 'text-[#6E60EE] opacity-100'
-                            : 'text-text-muted opacity-0 group-hover:opacity-100 sm:opacity-0 hover:text-[#6E60EE]'
+                            ? 'opacity-100'
+                            : 'opacity-0 group-hover:opacity-100 hover:bg-input-bg'
                         )}
                         aria-label={file.starred ? 'Unstar file' : 'Star file'}
                       >
                         <Star
                           className={cn(
-                            'w-4 h-4 transition-transform',
+                            'w-4 h-4',
                             file.starred
                               ? 'fill-[#6E60EE] text-[#6E60EE]'
                               : 'text-text-muted'

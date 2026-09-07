@@ -1,145 +1,198 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { useApp } from '../../../providers/app-provider';
-import { Dropdown } from '../../../components/ui/dropdown';
-import { formatBytes, formatDate } from '../../../lib/utils/format';
-import { FileItem } from '../../../types';
+import React, { useState } from 'react'
+import { useApp } from '../../../providers/app-provider'
+import { FileGrid } from '@/features/files/components/file-grid'
+import { FilePreview } from '@/features/files/components/file-preview'
+import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
+import { ViewToggle } from '@/components/ui/view-toggle'
+import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
+import { formatBytes, formatDate } from '../../../lib/utils/format'
+import { UnifiedFileItem } from '@/features/files/components/file-list'
+import { RotateCcw, Trash, Trash2, Search } from 'lucide-react'
 
 export function TrashView() {
-  const { files, restoreFile, deletePermanently, searchQuery } = useApp();
+  const { files, restoreFile, deletePermanently, searchQuery } = useApp()
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+  const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
 
   const deletedFiles = React.useMemo(() => {
-    return files.filter(
+    return (files as UnifiedFileItem[]).filter(
       f =>
         f.deleted &&
         f.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [files, searchQuery]);
+    )
+  }, [files, searchQuery])
+
+  const handleRestore = (fileId: string) => {
+    restoreFile(fileId)
+  }
+
+  const handleDeletePermanently = (file: UnifiedFileItem) => {
+    const fileId = file.id || file._id || ''
+    if (
+      confirm(
+        `Are you sure you want to permanently delete "${file.name}"? This action cannot be undone.`
+      )
+    ) {
+      deletePermanently(fileId)
+    }
+  }
 
   if (deletedFiles.length === 0) {
     if (searchQuery) {
       return (
-        <div className="bg-card-bg border border-card-border rounded-none p-16 flex flex-col items-center justify-center text-center select-none shadow-sm">
-          <svg className="w-10 h-10 text-slate-350 dark:text-zinc-655 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">No results found</h4>
-          <p className="text-[11px] text-text-muted mt-1 max-w-[220px] leading-normal font-light">We couldn&apos;t find any matches in trash for &ldquo;{searchQuery}&rdquo;.</p>
+        <div className='bg-card-bg border border-card-border rounded-xl p-16 flex flex-col items-center justify-center text-center select-none shadow-xs'>
+          <div className='w-10 h-10 rounded-full bg-input-bg flex items-center justify-center text-text-muted mb-2.5'>
+            <Search className='w-5 h-5' />
+          </div>
+          <h4 className='text-xs sm:text-sm font-bold text-foreground'>
+            No results found
+          </h4>
+          <p className='text-xs text-text-secondary mt-1 max-w-[240px] leading-normal font-normal'>
+            We couldn&apos;t find any matches in trash for &ldquo;{searchQuery}&rdquo;.
+          </p>
         </div>
-      );
+      )
     }
     return (
-      <div className="bg-card-bg border border-card-border rounded-none p-16 flex flex-col items-center justify-center text-center select-none shadow-sm">
-        <svg className="w-10 h-10 text-slate-350 dark:text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
-        <h4 className="text-xs font-bold uppercase tracking-[1px] text-text-secondary">Trash is empty</h4>
-        <p className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-normal font-light">Deleted files and folders will appear here until they are permanently removed.</p>
+      <div className='bg-card-bg border border-card-border rounded-xl p-16 flex flex-col items-center justify-center text-center select-none shadow-xs'>
+        <div className='w-12 h-12 rounded-full bg-input-bg flex items-center justify-center text-text-muted mb-3'>
+          <Trash2 className='w-6 h-6 text-text-secondary' />
+        </div>
+        <h4 className='text-xs sm:text-sm font-bold text-foreground'>
+          Trash is empty
+        </h4>
+        <p className='text-xs text-text-secondary mt-1 max-w-[240px] leading-normal font-normal'>
+          Deleted files and folders will appear here until they are permanently removed.
+        </p>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="bg-card-bg border border-card-border rounded-2xl p-6 text-foreground flex flex-col gap-4 shadow-sm transition-colors duration-200 flex-1 min-h-0">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-divider pb-4 shrink-0 select-none">
-        <h3 className="text-xs font-bold uppercase tracking-[1px] text-text-muted">
-          Trash Bin
-        </h3>
-        <span className="text-[10px] font-bold uppercase tracking-[0.5px] text-text-secondary">
-          {deletedFiles.length} item(s)
-        </span>
+    <div className='w-full flex flex-col gap-3.5'>
+      {/* Header Row with Title + Count + ViewToggle */}
+      <div className='flex items-center justify-between gap-3 select-none'>
+        <div className='flex items-center gap-2'>
+          <h3 className='text-sm sm:text-base font-bold text-foreground tracking-tight'>
+            Trash Bin
+          </h3>
+          <span className='text-xs font-semibold text-text-muted bg-input-bg border border-card-border px-2 py-0.5 rounded-full'>
+            {deletedFiles.length} {deletedFiles.length === 1 ? 'item' : 'items'}
+          </span>
+        </div>
+
+        <ViewToggle
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        />
       </div>
 
-      {/* Deleted Files Table */}
-      <div className="overflow-y-auto overflow-x-auto flex-1 min-h-0 pr-1">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-divider text-[10px] font-bold uppercase tracking-[1px] text-text-muted">
-              <th className="pb-3 font-bold">Name</th>
-              <th className="pb-3 font-bold hidden md:table-cell">Deleted Date</th>
-              <th className="pb-3 font-bold hidden sm:table-cell text-right pr-6">Size</th>
-              <th className="pb-3 font-bold text-center w-12">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-divider/40">
-            {deletedFiles.map(file => {
-              const dropdownItems = [
+      {/* View Content (Grid vs List) */}
+      {viewMode === 'grid' ? (
+        <FileGrid
+          files={deletedFiles}
+          isTrash
+          onFileClick={file => setPreviewFile(file)}
+          onRestore={file => handleRestore(file.id || file._id || '')}
+          onDeletePermanently={handleDeletePermanently}
+        />
+      ) : (
+        <div className='w-full flex flex-col select-none bg-card-bg border border-card-border rounded-xl overflow-hidden shadow-xs'>
+          {/* Column Header Row */}
+          <div className='flex items-center justify-between px-3 sm:px-4 py-2 text-[11px] font-semibold text-text-secondary/70 border-b border-card-border bg-input-bg/40 select-none'>
+            <div className='flex-1 min-w-0 pr-4'>
+              <span>Name</span>
+            </div>
+            <div className='hidden md:block w-48 text-left pr-4'>
+              <span>Deleted Date</span>
+            </div>
+            <div className='hidden sm:block w-28 text-right pr-6'>
+              <span>Size</span>
+            </div>
+            <div className='w-16 text-right pr-2'>
+              <span>Actions</span>
+            </div>
+          </div>
+
+          {/* Deleted Item Rows */}
+          <div className='flex flex-col divide-y divide-card-border/50'>
+            {deletedFiles.map((file, idx) => {
+              const fileId = file.id || file._id || `trash-${idx}`
+              const dropdownItems: ActionMenuItem[] = [
                 {
                   label: 'Restore',
-                  onClick: () => restoreFile(file.id),
-                  icon: (
-                    <svg className="w-4 h-4 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6.071L19 9" />
-                    </svg>
-                  ),
+                  onClick: () => handleRestore(fileId),
+                  icon: <RotateCcw className='w-4 h-4 text-text-secondary' />
                 },
                 {
                   label: 'Delete Forever',
-                  onClick: () => {
-                    if (confirm(`Are you sure you want to permanently delete "${file.name}"? This action cannot be undone.`)) {
-                      deletePermanently(file.id);
-                    }
-                  },
-                  icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  ),
-                  className: 'text-red-500 hover:bg-red-500/10',
-                },
-              ];
+                  onClick: () => handleDeletePermanently(file),
+                  icon: <Trash className='w-4 h-4 text-rose-500' />,
+                  danger: true
+                }
+              ]
 
               return (
-                <tr key={file.id} className="hover:bg-divider/30 transition-colors group">
-                  {/* Name */}
-                  <td className="py-3.5 pr-4 flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-900 text-text-secondary border border-card-border shadow-sm">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-semibold text-text-secondary group-hover:text-foreground truncate uppercase tracking-[0.5px]">
+                <div
+                  key={fileId}
+                  onClick={() => setPreviewFile(file)}
+                  className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0'
+                >
+                  {/* Name Column with Thumbnail */}
+                  <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
+                    <FilePreview file={file} variant='list' />
+                    <div className='flex flex-col min-w-0 flex-1'>
+                      <span
+                        className='text-xs sm:text-sm font-semibold text-foreground group-hover:text-[#6E60EE] truncate transition-colors duration-150'
+                        title={file.name}
+                      >
                         {file.name}
                       </span>
-                      <span className="text-[10px] font-light text-text-muted truncate mt-0.5">
-                        Originally: {file.type === 'folder' ? 'Folder' : file.type.toUpperCase()}
-                      </span>
+                      <div className='flex items-center gap-1.5 text-[11px] sm:hidden text-text-secondary mt-0.5 truncate'>
+                        <span>{formatBytes(file.size || 0)}</span>
+                        <span>&bull;</span>
+                        <span>Deleted {formatDate(file.updatedAt || '')}</span>
+                      </div>
                     </div>
-                  </td>
+                  </div>
 
-                  {/* Date modified (deletion timestamp) */}
-                  <td className="py-3.5 text-xs font-light text-text-secondary hidden md:table-cell select-none">
-                    {formatDate(file.updatedAt)}
-                  </td>
+                  {/* Date Column */}
+                  <div className='hidden md:block w-48 text-xs text-text-secondary truncate pr-4 text-left shrink-0'>
+                    {formatDate(file.updatedAt || file.createdAt || '')}
+                  </div>
 
-                  {/* Size */}
-                  <td className="py-3.5 text-xs font-bold text-foreground text-right pr-6 hidden sm:table-cell select-none">
-                    {formatBytes(file.size)}
-                  </td>
+                  {/* Size Column */}
+                  <div className='hidden sm:block w-28 text-xs font-semibold text-text-secondary text-right pr-6 shrink-0'>
+                    {formatBytes(file.size || 0)}
+                  </div>
 
                   {/* Actions Menu */}
-                  <td className="py-3.5 text-center">
-                    <Dropdown
-                      align="right"
+                  <div
+                    className='flex items-center justify-end w-16 shrink-0'
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <ActionMenu
+                      placement='bottom-right'
                       items={dropdownItems}
-                      trigger={
-                        <button className="w-8 h-8 rounded-full inline-flex items-center justify-center text-text-muted hover:text-foreground hover:bg-divider border border-transparent hover:border-card-border transition-all focus:outline-none cursor-pointer">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 10a2 2 0 11-2 2 2 2 0 012-2zm0-6a2 2 0 11-2 2 2 2 0 012-2zm0 12a2 2 0 11-2 2 2 2 0 012-2z" />
-                          </svg>
-                        </button>
-                      }
                     />
-                  </td>
-                </tr>
-              );
+                  </div>
+                </div>
+              )
             })}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      <FilePreviewModal
+        isOpen={Boolean(previewFile)}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+        files={deletedFiles}
+        onNavigate={file => setPreviewFile(file as UnifiedFileItem)}
+      />
     </div>
-  );
+  )
 }

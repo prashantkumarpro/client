@@ -35,6 +35,8 @@ interface AppContextType {
   toggleTheme: () => void;
   isSidebarCollapsed: boolean;
   toggleSidebar: () => void;
+  viewMode: 'grid' | 'list';
+  setViewMode: (mode: 'grid' | 'list') => void;
 
   // Helpers
   currentFolderBreadcrumbs: { id: string | null; name: string }[];
@@ -48,6 +50,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [files, setFiles] = useState<FileItem[]>(INITIAL_FILES);
   const [activities, setActivities] = useState<ActivityItem[]>(INITIAL_ACTIVITIES);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Theme & Sidebar states
   const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Light theme by default
@@ -294,6 +297,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     toggleTheme,
     isSidebarCollapsed,
     toggleSidebar,
+    viewMode,
+    setViewMode,
     currentFolderBreadcrumbs,
   }), [
     currentSection,
@@ -320,6 +325,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     toggleTheme,
     isSidebarCollapsed,
     toggleSidebar,
+    viewMode,
+    setViewMode,
     currentFolderBreadcrumbs,
   ]);
 

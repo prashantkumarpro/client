@@ -1,35 +1,14 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
-import { FilePreview } from '@/features/files/components/file-preview'
-import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
-import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { SectionAction } from '@/components/ui/section-action'
-import { Tooltip } from '@/components/ui/tooltip'
-import { formatBytes, formatDate } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
-import {
-  Folder,
-  ChevronRight,
-  Eye,
-  Download,
-  Share2,
-  Edit3,
-  Trash2,
-  FileText,
-  Image as ImageIcon,
-  Video,
-  File as FileIcon,
-  LayoutGrid,
-  List,
-  RefreshCw,
-} from 'lucide-react'
+import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2 } from 'lucide-react'
 import { useDirectory } from '@/features/directory/hooks/use-directory'
-import { useFiles } from '@/features/files/hooks/use-files'
 import type { DirectoryItem } from '@/features/directory/types'
+import { ActionMenuItem } from '@/components/ui/action-menu'
 
 function deriveFileType(filename: string, ext?: string): string {
   const extension = (ext || filename.split('.').pop() || '')
@@ -53,21 +32,16 @@ export default function DashboardOverview () {
     setActiveModal,
     setSelectedFileId,
     setActiveFolderId,
-    toggleStar,
   } = useApp()
 
   const {
     directory,
     isLoading: isDirectoryLoading,
     error: directoryError,
-    create,
     rename: renameDir,
     remove: removeDir,
     refresh
   } = useDirectory()
-
-  const { download, rename: renameFileItem, remove: removeFileItem } = useFiles()
-  const [previewFile, setPreviewFile] = useState<{ id?: string; _id?: string; name: string; extension?: string; size?: number } | null>(null)
 
   const folders: DirectoryItem[] = useMemo(() => {
     return directory?.directories ?? []
@@ -77,19 +51,6 @@ export default function DashboardOverview () {
   const displayedFolders = useMemo(() => {
     return folders.slice(0, 4)
   }, [folders])
-
-  const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null)
-  const [folderViewMode, setFolderViewMode] = useState<'grid' | 'list'>('grid')
-  const [recentFilesViewMode, setRecentFilesViewMode] = useState<'grid' | 'list'>('grid')
-
-  // Folder Action Handlers connecting to useDirectory()
-  const handleCreateFolder = async (dirname = 'New Folder') => {
-    try {
-      await create({ dirname })
-    } catch (err) {
-      console.error('Failed to create directory:', err)
-    }
-  }
 
   const handleRenameFolder = async (folderId: string, currentTitle: string) => {
     const newName = prompt('Enter new folder name:', currentTitle)
@@ -131,7 +92,7 @@ export default function DashboardOverview () {
         .map(f => ({
           id: f.id || f._id || '',
           name: f.name,
-          type: deriveFileType(f.name, f.extension),
+          type: deriveFileType(f.name, f.extension) as any,
           extension: f.extension,
           size: typeof f.size === 'number' ? f.size : 0,
           starred: false,
@@ -151,8 +112,6 @@ export default function DashboardOverview () {
   const displayedFiles = useMemo(() => {
     return allRecentFiles.slice(0, 8)
   }, [allRecentFiles])
-
-  const hasMoreRecentFiles = allRecentFiles.length > 8
 
   const recentFolder = folders[0]
 
@@ -272,8 +231,7 @@ export default function DashboardOverview () {
               onClick={() => refresh()}
               className='text-xs font-semibold text-[#6E60EE] hover:underline flex items-center gap-1 cursor-pointer'
             >
-              <RefreshCw className='w-3 h-3' />
-              <span>Retry</span>
+              Retry
             </button>
           </div>
         ) : folders.length === 0 ? (
@@ -284,7 +242,7 @@ export default function DashboardOverview () {
               Create your first folder to organize your files.
             </p>
           </div>
-        ) : folderViewMode === 'grid' ? (
+        ) : (
           <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
             {displayedFolders.map(folder => {
               const dropdownItems = getFolderDropdownItems(folder)
@@ -305,214 +263,21 @@ export default function DashboardOverview () {
               )
             })}
           </div>
-        ) : (
-          <div className='bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-card-border'>
-            {displayedFolders.map(folder => {
-              const dropdownItems = getFolderDropdownItems(folder)
-
-              return (
-                <div
-                  key={folder.id}
-                  onClick={() => {
-                    setCurrentSection('My Files')
-                    setActiveFolderId(folder.id)
-                  }}
-                  className='flex items-center justify-between p-3 sm:p-3.5 hover:bg-input-bg/50 transition-colors duration-200 group cursor-pointer select-none'
-                >
-                  <div className='flex items-center gap-3 min-w-0 flex-1'>
-                    <div className='w-9 h-9 rounded-lg bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0 group-hover:bg-[#6E60EE] group-hover:text-white transition-all duration-200'>
-                      <Folder className='w-5 h-5' />
-                    </div>
-                    <div className='flex flex-col min-w-0 flex-1'>
-                      <span className='text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'>
-                        {folder.name}
-                      </span>
-                      <span className='text-[10px] sm:text-xs text-text-secondary truncate mt-0.5'>
-                        0 files
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    className='flex items-center gap-2 sm:gap-3 shrink-0'
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <ActionMenu
-                      placement='bottom-right'
-                      items={dropdownItems}
-                      onOpenChange={isOpen =>
-                        setActiveCardMenuId(isOpen ? folder.id : null)
-                      }
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
         )}
       </div>
 
-      {/* Recently Opened Section */}
-      <div className='flex flex-col gap-3 w-full mt-7 sm:mt-8'>
-        <div className='flex items-center justify-between select-none'>
-          <h3 className='text-base sm:text-lg font-bold text-foreground tracking-tight'>
-            Recently Opened
-          </h3>
-
-          {/* Single View Mode Toggle Switcher */}
-          <div className='flex items-center bg-input-bg border border-card-border p-1 rounded-xl shrink-0 gap-1 shadow-none select-none'>
-            <Tooltip content='Grid view' side='top'>
-              <button
-                onClick={() => setRecentFilesViewMode('grid')}
-                className={cn(
-                  'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
-                  recentFilesViewMode === 'grid'
-                    ? 'bg-card-bg text-[#6E60EE] shadow-xs border border-card-border/60'
-                    : 'text-text-secondary hover:text-foreground hover:bg-card-bg/50'
-                )}
-                aria-label='Grid view'
-                aria-pressed={recentFilesViewMode === 'grid'}
-              >
-                <LayoutGrid
-                  className='w-4 h-4'
-                  strokeWidth={recentFilesViewMode === 'grid' ? 2.2 : 1.8}
-                />
-              </button>
-            </Tooltip>
-            <Tooltip content='List view' side='top'>
-              <button
-                onClick={() => setRecentFilesViewMode('list')}
-                className={cn(
-                  'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50 active:scale-95',
-                  recentFilesViewMode === 'list'
-                    ? 'bg-card-bg text-[#6E60EE] shadow-xs border border-card-border/60'
-                    : 'text-text-secondary hover:text-foreground hover:bg-card-bg/50'
-                )}
-                aria-label='List view'
-                aria-pressed={recentFilesViewMode === 'list'}
-              >
-                <List
-                  className='w-4 h-4'
-                  strokeWidth={recentFilesViewMode === 'list' ? 2.2 : 1.8}
-                />
-              </button>
-            </Tooltip>
-          </div>
-        </div>
-
-        {/* Files Content (Grid View vs List View) */}
-        {displayedFiles.length === 0 ? (
-          <div className='w-full py-10 flex flex-col items-center justify-center text-center select-none bg-card-bg border border-card-border rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-6'>
-            <h4 className='text-xs font-bold text-text-secondary'>
-              No files found
-            </h4>
-            <p className='text-[11px] text-text-secondary mt-1 max-w-[200px] leading-normal font-light'>
-              Upload your first file to get started.
-            </p>
-          </div>
-        ) : recentFilesViewMode === 'grid' ? (
-          <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
-            {displayedFiles.map(file => {
-              const fileDropdownItems = [
-                {
-                  label: 'Open',
-                  onClick: () => setPreviewFile(file),
-                  icon: <Eye className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Download',
-                  onClick: () => download(file.id, file.name),
-                  icon: <Download className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Share',
-                  onClick: () => {
-                    setSelectedFileId(file.id)
-                    setActiveModal('share')
-                  },
-                  icon: <Share2 className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Rename',
-                  onClick: () => {
-                    const newName = prompt('Enter new filename:', file.name)
-                    if (newName && newName.trim() && newName.trim() !== file.name) {
-                      renameFileItem(file.id, { newFilename: newName.trim() })
-                    }
-                  },
-                  icon: <Edit3 className='w-4 h-4 text-text-secondary' />
-                },
-                {
-                  label: 'Delete',
-                  onClick: () => removeFileItem(file.id),
-                  icon: <Trash2 className='w-4 h-4 text-rose-500' />,
-                  danger: true
-                }
-              ]
-
-              return (
-                <div
-                  key={file.id}
-                  onClick={() => setPreviewFile(file)}
-                  className='bg-card-bg rounded-xl border border-card-border hover:bg-input-bg/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
-                >
-                  <FilePreview file={file} variant='grid' />
-                  <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
-                    <div className='flex flex-col min-w-0 flex-1 text-left'>
-                      <span
-                        className='text-[13px] sm:text-sm font-semibold text-foreground truncate group-hover:text-[#6E60EE] transition-colors duration-200'
-                        title={file.name}
-                      >
-                        {file.name}
-                      </span>
-                      <span className='text-[11px] sm:text-xs font-normal text-text-secondary truncate mt-0.5'>
-                        {formatDate(file.updatedAt)}
-                      </span>
-                    </div>
-                    <div
-                      className='shrink-0 -mr-1'
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <ActionMenu
-                        placement='bottom-right'
-                        items={fileDropdownItems}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <FileList
-            files={displayedFiles as any}
-            showHeader={true}
-            showCardContainer={false}
-          />
-        )}
-
-        {/* View more action aligned to the left below file content */}
-        {hasMoreRecentFiles && (
-          <div className='flex items-center justify-start pt-3 sm:pt-3.5'>
-            <SectionAction
-              onClick={() => {
-                setCurrentSection('My Files')
-                setActiveFolderId(null)
-              }}
-            >
-              View more
-            </SectionAction>
-          </div>
-        )}
+      {/* Recently Opened Section - Standardized with FileList (supporting Grid & List views) */}
+      <div className='mt-7 sm:mt-8'>
+        <FileList
+          files={displayedFiles}
+          title='Recently Opened'
+          showViewToggle={true}
+          showViewAll={allRecentFiles.length > 8}
+          limit={8}
+          emptyMessage='No files found'
+          emptySubtitle='Upload your first file to get started.'
+        />
       </div>
-
-      {/* In-App File Preview Modal */}
-      <FilePreviewModal
-        isOpen={Boolean(previewFile)}
-        onClose={() => setPreviewFile(null)}
-        file={previewFile}
-        files={displayedFiles}
-        onNavigate={file => setPreviewFile(file)}
-      />
     </div>
   )
 }

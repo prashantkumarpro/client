@@ -348,12 +348,6 @@ export function FileList({
           )}
 
           <div className='flex items-center gap-2 shrink-0'>
-            {showViewAll && currentSection === 'Dashboard' && (
-              <SectionAction onClick={() => setCurrentSection('My Files')}>
-                View all
-              </SectionAction>
-            )}
-
             {showViewToggle && displayList.length > 0 && (
               <ViewToggle
                 viewMode={activeViewMode}
@@ -409,6 +403,15 @@ export function FileList({
           showHeader={showHeader}
           allFiles={globalFiles as UnifiedFileItem[]}
         />
+      )}
+
+      {/* Bottom View all action reusing SectionAction */}
+      {showViewAll && currentSection === 'Dashboard' && displayList.length > 0 && (
+        <div className='flex justify-start pt-1'>
+          <SectionAction onClick={() => setCurrentSection('My Files')}>
+            View all
+          </SectionAction>
+        </div>
       )}
 
       {/* In-App File Preview Modal */}

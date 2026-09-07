@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import useEmblaCarousel from 'embla-carousel-react'
 import { useFiles } from '@/features/files/hooks/use-files'
 import { formatBytes } from '@/lib/utils/format'
 import { getFileTypeInfo, FileCategory } from '../utils/file-preview'
@@ -56,8 +57,395 @@ const isValidObjectId = (id?: string | null): boolean => {
   return Boolean(id && typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id))
 }
 
-// Sample fallback URLs for mock files during development/testing
 const MOCK_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1600&q=85'
+
+interface PreviewSlideProps {
+  file: PreviewableFile
+  isActive: boolean
+  isAdjacent: boolean
+  getBlob: (fileId: string) => Promise<Blob>
+  zoomLevel: number
+  rotation: number
+  onDownload: () => void
+  onOpenInNewTab: (url: string) => void
+  onCopyText: (text: string) => void
+  isCopied: boolean
+  onActiveBlobUrlChange?: (url: string | null) => void
+}
+
+function PreviewSlide({
+  file,
+  isActive,
+  isAdjacent,
+  getBlob,
+  zoomLevel,
+  rotation,
+  onDownload,
+  onOpenInNewTab,
+  onCopyText,
+  isCopied,
+  onActiveBlobUrlChange
+}: PreviewSlideProps) {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null)
+  const [textContent, setTextContent] = useState<string | null>(null)
+  const [blobType, setBlobType] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isImageLoaded, setIsImageLoaded] = useState<boolean>(false)
+
+  const fileId = file.id || file._id
+  const typeInfo = useMemo(() => {
+    return getFileTypeInfo(file.name, file.extension, blobType || file.mimeType)
+  }, [file, blobType])
+
+  const category: FileCategory = typeInfo.category
+
+  // Sync active blob URL up to parent for floating zoom pill or header actions
+  useEffect(() => {
+    if (isActive && onActiveBlobUrlChange) {
+      onActiveBlobUrlChange(blobUrl)
+    }
+  }, [isActive, blobUrl, onActiveBlobUrlChange])
+
+  // Load content when active or adjacent
+  useEffect(() => {
+    if (!isActive && !isAdjacent) return
+    if (blobUrl || textContent || error) return
+
+    let isSubscribed = true
+    let createdUrl: string | null = null
+
+    const resolvedTypeInfo = getFileTypeInfo(file.name, file.extension, file.mimeType)
+    const explicitUrl = file.url || file.thumbnailUrl
+
+    if (explicitUrl) {
+      setBlobUrl(explicitUrl)
+      setBlobType(file.mimeType || '')
+      setIsLoading(false)
+      setError(null)
+      return
+    }
+
+    if (!fileId || !isValidObjectId(fileId)) {
+      if (resolvedTypeInfo.category === 'image') {
+        setBlobUrl(MOCK_IMAGE_FALLBACK)
+      } else if (resolvedTypeInfo.category === 'code' || resolvedTypeInfo.category === 'document') {
+        setTextContent(`// Sample Preview for ${file.name}\n// Size: ${formatBytes(file.size || 1024)}\n\nfunction samplePreview() {\n  console.log("Viewing ${file.name}");\n}\n\nexport default samplePreview;`)
+      }
+      setIsLoading(false)
+      setError(null)
+      return
+    }
+
+    const loadContent = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        const blob = await getBlob(fileId)
+        if (!isSubscribed) return
+
+        setBlobType(blob.type)
+        createdUrl = URL.createObjectURL(blob)
+        setBlobUrl(createdUrl)
+
+        const cat = getFileTypeInfo(file.name, file.extension, blob.type).category
+        if (cat === 'code' || blob.type.startsWith('text/') || blob.type === 'application/json') {
+          const text = await blob.text()
+          if (isSubscribed) {
+            setTextContent(text)
+          }
+        }
+      } catch (err) {
+        if (isSubscribed) {
+          console.error('[PreviewSlide] Failed to load content:', err)
+          setError('Unable to load file content for preview.')
+        }
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadContent()
+
+    return () => {
+      isSubscribed = false
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl)
+      }
+    }
+  }, [isActive, isAdjacent, file, fileId, blobUrl, textContent, error, getBlob])
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 p-8 text-white/80 dark:text-white/80 animate-in fade-in duration-200">
+        <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 animate-spin text-[#6E60EE]" />
+        <span className="text-xs sm:text-sm font-semibold tracking-wide text-white drop-shadow-sm">
+          Loading preview...
+        </span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8 text-center max-w-md bg-card-bg border border-card-border rounded-2xl shadow-xl animate-in fade-in zoom-in-[0.98] duration-250 ease-out">
+        <div className="w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center">
+          <AlertCircle className="w-6 h-6" />
+        </div>
+        <div>
+          <h3 className="text-sm sm:text-base font-bold text-foreground">Preview unavailable</h3>
+          <p className="text-xs text-text-secondary mt-1">{error}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onDownload}
+          className="mt-2 px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
+        >
+          <Download className="w-3.5 h-3.5" />
+          Download file to view
+        </button>
+      </div>
+    )
+  }
+
+  switch (category) {
+    case 'image':
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center relative select-none">
+          <div className="relative max-h-[78vh] sm:max-h-[82vh] max-w-[88vw] flex items-center justify-center">
+            {!isImageLoaded && blobUrl && (
+              <div className="absolute inset-0 flex items-center justify-center text-[#6E60EE]">
+                <Loader2 className="w-8 h-8 animate-spin" />
+              </div>
+            )}
+            {blobUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={blobUrl}
+                alt={file.name}
+                onLoad={() => setIsImageLoaded(true)}
+                style={{
+                  transform: `scale(${zoomLevel * (isImageLoaded ? 1 : 0.98)}) rotate(${rotation}deg)`,
+                  opacity: isImageLoaded ? 1 : 0,
+                  transition: 'opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+                className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] object-contain rounded-lg shadow-xl select-none will-change-transform"
+              />
+            )}
+          </div>
+        </div>
+      )
+
+    case 'pdf':
+      return blobUrl ? (
+        <div className="w-full h-full max-w-5xl flex items-center justify-center">
+          <iframe
+            src={blobUrl}
+            title={file.name}
+            className="w-full h-[76vh] sm:h-[80vh] border-0 rounded-xl shadow-xl bg-white"
+          />
+        </div>
+      ) : null
+
+    case 'video':
+      return blobUrl ? (
+        <div className="w-full h-full flex items-center justify-center p-2">
+          <video
+            src={blobUrl}
+            controls={isActive}
+            autoPlay={false}
+            playsInline
+            className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] rounded-xl shadow-xl bg-black border border-card-border"
+          >
+            Your browser does not support HTML5 video.
+          </video>
+        </div>
+      ) : null
+
+    case 'audio':
+      return (
+        <div className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#6E60EE]/10 border-2 border-[#6E60EE]/30 flex items-center justify-center text-[#6E60EE] shadow-[0_0_30px_rgba(110,96,238,0.2)] mb-4 relative group">
+            <Music className="w-9 h-9 sm:w-10 sm:h-10" />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[280px]">
+            {file.name}
+          </h3>
+          <div className="flex items-center gap-2 mt-1.5 text-xs text-text-secondary">
+            <span className="uppercase font-semibold tracking-wider text-[#6E60EE]">
+              {typeInfo.extension || 'AUDIO'}
+            </span>
+            {typeof file.size === 'number' && (
+              <>
+                <span>•</span>
+                <span>{formatBytes(file.size)}</span>
+              </>
+            )}
+          </div>
+
+          {blobUrl ? (
+            <audio
+              src={blobUrl}
+              controls={isActive}
+              className="w-full mt-6 accent-[#6E60EE] rounded-lg"
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={onDownload}
+              className="mt-6 px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 transition-all active:scale-95"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download to play
+            </button>
+          )}
+        </div>
+      )
+
+    case 'code':
+      return (
+        <div className="w-full max-w-4xl max-h-[76vh] sm:max-h-[80vh] bg-card-bg border border-card-border rounded-xl shadow-xl flex flex-col overflow-hidden text-left transition-colors">
+          <div className="h-10 px-4 bg-input-bg border-b border-card-border flex items-center justify-between shrink-0 select-none">
+            <div className="flex items-center gap-2">
+              <Code className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <span className="text-xs font-mono font-semibold text-foreground">
+                {file.name}
+              </span>
+              <span className="text-[10px] font-mono uppercase bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 px-1.5 py-0.5 rounded font-bold">
+                {typeInfo.extension || 'TXT'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => textContent && onCopyText(textContent)}
+              className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-foreground px-2.5 py-1 rounded bg-card-bg hover:bg-card-border/60 border border-card-border transition-colors cursor-pointer"
+              title="Copy code to clipboard"
+            >
+              {isCopied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-emerald-500 font-semibold">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-auto p-4 sm:p-5 text-xs font-mono text-foreground leading-relaxed select-text bg-input-bg/30">
+            <pre className="whitespace-pre-wrap break-words font-mono">
+              <code>{textContent ?? 'Loading text contents...'}</code>
+            </pre>
+          </div>
+        </div>
+      )
+
+    case 'document':
+      return (
+        <div className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors">
+          <div className={cn('w-20 h-20 rounded-2xl flex items-center justify-center shadow-xs mb-4', typeInfo.bgClass, typeInfo.colorClass)}>
+            {typeInfo.docType === 'sheet' ? (
+              <FileSpreadsheet className="w-10 h-10" />
+            ) : typeInfo.docType === 'slide' ? (
+              <Presentation className="w-10 h-10" />
+            ) : (
+              <FileText className="w-10 h-10" />
+            )}
+          </div>
+
+          <h3 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[280px]">
+            {file.name}
+          </h3>
+
+          <div className="flex items-center gap-2 mt-1.5 text-xs text-text-secondary">
+            <span className="uppercase font-semibold tracking-wider text-[#6E60EE]">
+              {typeInfo.extension?.toUpperCase() || 'DOCUMENT'}
+            </span>
+            {typeof file.size === 'number' && (
+              <>
+                <span>•</span>
+                <span>{formatBytes(file.size)}</span>
+              </>
+            )}
+          </div>
+
+          <p className="text-xs text-text-secondary mt-3 max-w-[280px] leading-relaxed font-normal">
+            This document format is ready to download or open with your local application.
+          </p>
+
+          <div className="flex items-center gap-3 mt-6">
+            {blobUrl && (
+              <button
+                type="button"
+                onClick={() => onOpenInNewTab(blobUrl)}
+                className="px-3.5 py-2 rounded-lg text-xs font-semibold text-foreground hover:bg-input-bg bg-card-bg border border-card-border transition-colors cursor-pointer"
+              >
+                Open in tab
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onDownload}
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download document
+            </button>
+          </div>
+        </div>
+      )
+
+    default:
+      return (
+        <div className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors">
+          <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-input-bg border border-card-border flex items-center justify-center text-text-secondary shadow-xs mb-4">
+            {category === 'archive' ? (
+              <Archive className="w-9 h-9 text-amber-500" />
+            ) : (
+              <FileQuestion className="w-9 h-9 text-text-muted" />
+            )}
+          </div>
+
+          <h3 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[280px]">
+            {file.name}
+          </h3>
+
+          <div className="flex items-center gap-2 mt-1.5 text-xs text-text-secondary">
+            <span className="uppercase font-semibold tracking-wider text-[#6E60EE]">
+              {typeInfo.extension?.toUpperCase() || 'FILE'}
+            </span>
+            {typeof file.size === 'number' && (
+              <>
+                <span>•</span>
+                <span>{formatBytes(file.size)}</span>
+              </>
+            )}
+          </div>
+
+          <p className="text-xs text-text-secondary mt-3 max-w-[300px] leading-relaxed font-normal">
+            Preview is not available for this file type in the browser. You can download the file to open it with your local software.
+          </p>
+
+          <button
+            type="button"
+            onClick={onDownload}
+            className="mt-6 px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download file ({typeInfo.extension?.toUpperCase() || 'FILE'})
+          </button>
+        </div>
+      )
+  }
+}
 
 export function FilePreviewModal({
   isOpen,
@@ -68,71 +456,93 @@ export function FilePreviewModal({
 }: FilePreviewModalProps) {
   const { getBlob, download } = useFiles()
 
-  const [activeFile, setActiveFile] = useState<PreviewableFile | null>(file)
-  const [blobUrl, setBlobUrl] = useState<string | null>(null)
-  const [textContent, setTextContent] = useState<string | null>(null)
-  const [blobType, setBlobType] = useState<string>('')
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
+  const [activeBlobUrl, setActiveBlobUrl] = useState<string | null>(null)
   const [isCopied, setIsCopied] = useState<boolean>(false)
-  const [isImageLoaded, setIsImageLoaded] = useState<boolean>(false)
 
   // Image viewer transform controls
   const [zoomLevel, setZoomLevel] = useState<number>(1)
   const [rotation, setRotation] = useState<number>(0)
 
-  // Sync active file with prop
-  useEffect(() => {
-    setActiveFile(file)
-    setZoomLevel(1)
-    setRotation(0)
-    setIsImageLoaded(false)
-  }, [file])
-
-  const currentFile = activeFile || file
-  const fileId = currentFile?.id || currentFile?._id
-
-  // Determine collection navigation bounds
+  // Collection navigation bounds
   const fileCollection = useMemo(() => {
-    if (!files || files.length === 0) return []
-    // Filter out folder items if any
-    return files.filter(f => f.type !== 'folder' && !f.name.endsWith('/'))
-  }, [files])
+    if (!files || files.length === 0) {
+      return file ? [file] : []
+    }
+    const nonFolders = files.filter(f => f.type !== 'folder' && !f.name.endsWith('/'))
+    return nonFolders.length > 0 ? nonFolders : (file ? [file] : [])
+  }, [files, file])
 
-  const currentIndex = useMemo(() => {
-    if (!currentFile || fileCollection.length === 0) return -1
-    return fileCollection.findIndex(
-      f => (f.id || f._id) === (currentFile.id || currentFile._id) || f.name === currentFile.name
+  const initialIndex = useMemo(() => {
+    if (!file || fileCollection.length === 0) return 0
+    const idx = fileCollection.findIndex(
+      f => (f.id || f._id) === (file.id || file._id) || f.name === file.name
     )
-  }, [currentFile, fileCollection])
+    return idx >= 0 ? idx : 0
+  }, [file, fileCollection])
 
+  const [selectedIndex, setSelectedIndex] = useState<number>(initialIndex)
   const hasMultipleFiles = fileCollection.length > 1
 
-  const handlePrev = useCallback(() => {
-    if (!hasMultipleFiles) return
-    const prevIdx = currentIndex > 0 ? currentIndex - 1 : fileCollection.length - 1
-    const nextFile = fileCollection[prevIdx]
-    if (nextFile) {
-      setIsImageLoaded(false)
-      setActiveFile(nextFile)
-      setZoomLevel(1)
-      setRotation(0)
-      if (onNavigate) onNavigate(nextFile)
+  // Embla Carousel hook
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: hasMultipleFiles,
+    duration: 25,
+    skipSnaps: false
+  })
+
+  // Handle slide select
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return
+    const newIdx = emblaApi.selectedScrollSnap()
+    setSelectedIndex(newIdx)
+    setZoomLevel(1)
+    setRotation(0)
+    const current = fileCollection[newIdx]
+    if (current && onNavigate) {
+      onNavigate(current)
     }
-  }, [hasMultipleFiles, currentIndex, fileCollection, onNavigate])
+  }, [emblaApi, fileCollection, onNavigate])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    emblaApi.on('select', onSelect)
+    emblaApi.on('reInit', onSelect)
+    return () => {
+      emblaApi.off('select', onSelect)
+      emblaApi.off('reInit', onSelect)
+    }
+  }, [emblaApi, onSelect])
+
+  // Sync initial or changed file with Embla
+  useEffect(() => {
+    if (isOpen && emblaApi && file) {
+      const idx = fileCollection.findIndex(
+        f => (f.id || f._id) === (file.id || file._id) || f.name === file.name
+      )
+      if (idx >= 0) {
+        emblaApi.scrollTo(idx, true)
+        setSelectedIndex(idx)
+        setZoomLevel(1)
+        setRotation(0)
+      }
+    }
+  }, [isOpen, emblaApi, file, fileCollection])
+
+  const currentFile = fileCollection[selectedIndex] || file
+  const currentTypeInfo = useMemo(() => {
+    if (!currentFile) return getFileTypeInfo('')
+    return getFileTypeInfo(currentFile.name, currentFile.extension, currentFile.mimeType)
+  }, [currentFile])
+
+  const currentCategory: FileCategory = currentTypeInfo.category
+
+  const handlePrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev()
+  }, [emblaApi])
 
   const handleNext = useCallback(() => {
-    if (!hasMultipleFiles) return
-    const nextIdx = currentIndex < fileCollection.length - 1 ? currentIndex + 1 : 0
-    const nextFile = fileCollection[nextIdx]
-    if (nextFile) {
-      setIsImageLoaded(false)
-      setActiveFile(nextFile)
-      setZoomLevel(1)
-      setRotation(0)
-      if (onNavigate) onNavigate(nextFile)
-    }
-  }, [hasMultipleFiles, currentIndex, fileCollection, onNavigate])
+    if (emblaApi) emblaApi.scrollNext()
+  }, [emblaApi])
 
   // Lock body scroll when open
   useEffect(() => {
@@ -151,7 +561,6 @@ export function FilePreviewModal({
     if (!isOpen) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if typing in an input
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
         return
       }
@@ -173,129 +582,27 @@ export function FilePreviewModal({
     }
   }, [isOpen, onClose, handlePrev, handleNext])
 
-  // Fetch or resolve file blob / content
-  useEffect(() => {
-    if (!isOpen || !currentFile) {
-      setBlobUrl(prev => {
-        if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev)
-        return null
-      })
-      setTextContent(null)
-      setError(null)
-      setIsLoading(false)
-      setIsImageLoaded(false)
-      return
-    }
-
-    let isSubscribed = true
-    let createdUrl: string | null = null
-
-    const typeInfo = getFileTypeInfo(currentFile.name, currentFile.extension, currentFile.mimeType)
-
-    // Reset image loaded flag on file change
-    setIsImageLoaded(false)
-
-    // If file already has a direct URL or thumbnailUrl
-    const explicitUrl = currentFile.url || currentFile.thumbnailUrl
-    if (explicitUrl) {
-      setBlobUrl(explicitUrl)
-      setBlobType(currentFile.mimeType || '')
-      setIsLoading(false)
-      setError(null)
-      return
-    }
-
-    // If not a valid ObjectId (e.g. mock file during dev/demo)
-    if (!fileId || !isValidObjectId(fileId)) {
-      if (typeInfo.category === 'image') {
-        setBlobUrl(MOCK_IMAGE_FALLBACK)
-      } else if (typeInfo.category === 'code' || typeInfo.category === 'document') {
-        setTextContent(`// Sample Preview for ${currentFile.name}\n// Size: ${formatBytes(currentFile.size || 1024)}\n\nfunction samplePreview() {\n  console.log("Viewing ${currentFile.name}");\n}\n\nexport default samplePreview;`)
-      }
-      setIsLoading(false)
-      setError(null)
-      return
-    }
-
-    const loadContent = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        setTextContent(null)
-
-        const blob = await getBlob(fileId)
-        if (!isSubscribed) return
-
-        setBlobType(blob.type)
-        createdUrl = URL.createObjectURL(blob)
-        setBlobUrl(createdUrl)
-
-        const category = getFileTypeInfo(currentFile.name, currentFile.extension, blob.type).category
-        if (category === 'code' || blob.type.startsWith('text/') || blob.type === 'application/json') {
-          const text = await blob.text()
-          if (isSubscribed) {
-            setTextContent(text)
-          }
-        }
-      } catch (err) {
-        if (isSubscribed) {
-          console.error('[FilePreviewModal] Failed to load file preview:', err)
-          setError('Unable to load file content for preview.')
-        }
-      } finally {
-        if (isSubscribed) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    loadContent()
-
-    return () => {
-      isSubscribed = false
-      if (createdUrl) {
-        URL.revokeObjectURL(createdUrl)
-      }
-    }
-  }, [isOpen, fileId, currentFile, getBlob])
-
-  const typeInfo = useMemo(() => {
-    if (!currentFile) return getFileTypeInfo('')
-    return getFileTypeInfo(currentFile.name, currentFile.extension, blobType || currentFile.mimeType)
-  }, [currentFile, blobType])
-
-  const category: FileCategory = typeInfo.category
-
-  const handleDownload = () => {
-    if (fileId && currentFile) {
-      if (isValidObjectId(fileId)) {
-        download(fileId, currentFile.name)
-      } else if (blobUrl) {
-        const link = document.createElement('a')
-        link.href = blobUrl
-        link.download = currentFile.name
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      }
+  const handleDownloadFile = (targetFile: PreviewableFile) => {
+    const fId = targetFile.id || targetFile._id
+    if (fId && isValidObjectId(fId)) {
+      download(fId, targetFile.name)
+    } else if (activeBlobUrl) {
+      const link = document.createElement('a')
+      link.href = activeBlobUrl
+      link.download = targetFile.name
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 
-  const handleOpenInNewTab = () => {
-    if (blobUrl) {
-      window.open(blobUrl, '_blank', 'noopener,noreferrer')
-    }
-  }
-
-  const handleCopyText = async () => {
-    if (textContent) {
-      try {
-        await navigator.clipboard.writeText(textContent)
-        setIsCopied(true)
-        setTimeout(() => setIsCopied(false), 2000)
-      } catch (err) {
-        console.error('Failed to copy text:', err)
-      }
+  const handleCopyText = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy text:', err)
     }
   }
 
@@ -304,7 +611,7 @@ export function FilePreviewModal({
   // Render Header Category Icon matching CloudSpaceGo's design language
   const renderHeaderIcon = () => {
     const iconClass = 'w-4 h-4 shrink-0'
-    switch (category) {
+    switch (currentCategory) {
       case 'image':
         return (
           <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -330,14 +637,14 @@ export function FilePreviewModal({
           </div>
         )
       case 'document':
-        if (typeInfo.docType === 'sheet') {
+        if (currentTypeInfo.docType === 'sheet') {
           return (
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
               <FileSpreadsheet className={iconClass} />
             </div>
           )
         }
-        if (typeInfo.docType === 'slide') {
+        if (currentTypeInfo.docType === 'slide') {
           return (
             <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
               <Presentation className={iconClass} />
@@ -393,9 +700,9 @@ export function FilePreviewModal({
               {currentFile.name}
             </h2>
 
-            {hasMultipleFiles && currentIndex !== -1 && (
+            {hasMultipleFiles && selectedIndex !== -1 && (
               <span className="text-xs font-semibold text-text-muted bg-input-bg/70 border border-card-border/40 px-2.5 py-0.5 rounded-full shrink-0 tracking-wide transition-all duration-200">
-                {currentIndex + 1} of {fileCollection.length}
+                {selectedIndex + 1} of {fileCollection.length}
               </span>
             )}
 
@@ -409,10 +716,10 @@ export function FilePreviewModal({
 
         {/* Right: Actions (Open in tab, Download, Close) */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {blobUrl && (
+          {activeBlobUrl && (
             <button
               type="button"
-              onClick={handleOpenInNewTab}
+              onClick={() => window.open(activeBlobUrl, '_blank', 'noopener,noreferrer')}
               className="h-9 px-3 sm:px-3.5 rounded-lg text-xs font-semibold bg-input-bg/70 hover:bg-input-bg text-foreground border border-card-border/40 flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50"
               title="Open in new tab"
               aria-label="Open in new tab"
@@ -424,7 +731,7 @@ export function FilePreviewModal({
 
           <button
             type="button"
-            onClick={handleDownload}
+            onClick={() => handleDownloadFile(currentFile)}
             className="h-9 px-3.5 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-1.5 shadow-xs transition-all duration-150 active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50"
             title="Download file"
             aria-label="Download file"
@@ -447,9 +754,8 @@ export function FilePreviewModal({
 
       {/* Main Preview Canvas Area - Subtle light/neutral backdrop so CloudSpaceGo UI remains subtly recognizable */}
       <main
-        className="flex-1 w-full h-[calc(100vh-4rem)] flex items-center justify-center p-2 sm:p-4 md:p-6 relative overflow-hidden select-none bg-black/25 dark:bg-black/45 animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+        className="flex-1 w-full h-[calc(100vh-4rem)] flex items-center justify-center p-2 sm:p-4 md:p-6 relative overflow-hidden select-none bg-black/25 dark:bg-black/45"
         onClick={e => {
-          // If clicking background backdrop, close modal
           if (e.target === e.currentTarget) {
             onClose()
           }
@@ -487,347 +793,96 @@ export function FilePreviewModal({
           </button>
         )}
 
-        {/* Content Viewer based on File Category */}
+        {/* Embla Carousel Viewport */}
         <div
-          className="w-full h-full flex items-center justify-center relative overflow-hidden"
+          ref={emblaRef}
+          className="w-full h-full overflow-hidden flex items-center justify-center"
           onClick={e => e.stopPropagation()}
         >
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center gap-3 p-8 text-white/80 dark:text-white/80 animate-in fade-in duration-200">
-              <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 animate-spin text-[#6E60EE]" />
-              <span className="text-xs sm:text-sm font-semibold tracking-wide text-white drop-shadow-sm">
-                Loading preview...
-              </span>
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center gap-4 p-8 text-center max-w-md bg-card-bg border border-card-border rounded-2xl shadow-xl animate-in fade-in zoom-in-[0.98] duration-250 ease-out">
-              <div className="w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center">
-                <AlertCircle className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-sm sm:text-base font-bold text-foreground">Preview unavailable</h3>
-                <p className="text-xs text-text-secondary mt-1">{error}</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleDownload}
-                className="mt-2 px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5" />
-                Download file to view
-              </button>
-            </div>
-          ) : (
-            <>
-              {/* 1. IMAGE PREVIEW WITH SMOOTH FADE + SCALE TRANSITIONS */}
-              {category === 'image' && blobUrl && (
+          {/* Embla Carousel Slides Container Track */}
+          <div className="flex w-full h-full touch-pan-y">
+            {fileCollection.map((itemFile, idx) => {
+              const isActive = idx === selectedIndex
+              const isAdjacent =
+                Math.abs(idx - selectedIndex) <= 1 ||
+                (hasMultipleFiles &&
+                  ((selectedIndex === 0 && idx === fileCollection.length - 1) ||
+                    (selectedIndex === fileCollection.length - 1 && idx === 0)))
+
+              return (
                 <div
-                  key={`img-container-${fileId || currentFile.name}`}
-                  className="w-full h-full flex flex-col items-center justify-center relative select-none animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                  key={itemFile.id || itemFile._id || `${itemFile.name}-${idx}`}
+                  className="flex-[0_0_100%] min-w-0 w-full h-full flex items-center justify-center relative select-none"
                 >
-                  <div className="relative max-h-[78vh] sm:max-h-[82vh] max-w-[88vw] flex items-center justify-center">
-                    {/* Placeholder Spinner while Image Loads */}
-                    {!isImageLoaded && (
-                      <div className="absolute inset-0 flex items-center justify-center text-[#6E60EE]">
-                        <Loader2 className="w-8 h-8 animate-spin" />
-                      </div>
-                    )}
-
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      key={`img-${fileId || currentFile.name}`}
-                      src={blobUrl}
-                      alt={currentFile.name}
-                      onLoad={() => setIsImageLoaded(true)}
-                      style={{
-                        transform: `scale(${zoomLevel * (isImageLoaded ? 1 : 0.98)}) rotate(${rotation}deg)`,
-                        opacity: isImageLoaded ? 1 : 0,
-                        transition: 'opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1)'
-                      }}
-                      className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] object-contain rounded-lg shadow-xl select-none will-change-transform"
-                    />
-                  </div>
-
-                  {/* Softened Integrated Floating Zoom Controls Pill */}
-                  <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-card-bg/85 dark:bg-card-bg/75 hover:bg-card-bg/95 dark:hover:bg-card-bg/90 backdrop-blur-md border border-card-border/60 dark:border-white/10 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md text-text-secondary select-none transition-all duration-200 animate-in fade-in zoom-in-[0.98]">
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel(z => Math.max(0.5, z - 0.25))}
-                      disabled={zoomLevel <= 0.5}
-                      className="w-7 h-7 rounded-full flex items-center justify-center hover:text-foreground hover:bg-input-bg/70 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary active:scale-95 transition-all cursor-pointer"
-                      title="Zoom out"
-                      aria-label="Zoom out"
-                    >
-                      <ZoomOut className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="text-xs font-mono font-medium text-foreground px-1 min-w-[38px] text-center select-none">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel(z => Math.min(3, z + 0.25))}
-                      disabled={zoomLevel >= 3}
-                      className="w-7 h-7 rounded-full flex items-center justify-center hover:text-foreground hover:bg-input-bg/70 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary active:scale-95 transition-all cursor-pointer"
-                      title="Zoom in"
-                      aria-label="Zoom in"
-                    >
-                      <ZoomIn className="w-3.5 h-3.5" />
-                    </button>
-                    <div className="w-[1px] h-3.5 bg-card-border/70 dark:bg-white/10 mx-0.5" />
-                    <button
-                      type="button"
-                      onClick={() => setRotation(r => (r + 90) % 360)}
-                      className="w-7 h-7 rounded-full flex items-center justify-center hover:text-foreground hover:bg-input-bg/70 active:scale-95 transition-all cursor-pointer"
-                      title="Rotate 90°"
-                      aria-label="Rotate"
-                    >
-                      <RotateCw className="w-3.5 h-3.5" />
-                    </button>
-                    {(zoomLevel !== 1 || rotation !== 0) && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setZoomLevel(1)
-                          setRotation(0)
-                        }}
-                        className="text-[11px] font-semibold text-[#6E60EE] dark:text-[#8E82F8] hover:bg-[#6E60EE]/10 active:scale-95 px-2 py-0.5 rounded-full transition-all cursor-pointer ml-0.5"
-                      >
-                        Reset
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* 2. PDF PREVIEW WITH SMOOTH TRANSITION */}
-              {category === 'pdf' && blobUrl && (
-                <div
-                  key={`pdf-${fileId || currentFile.name}`}
-                  className="w-full h-full max-w-5xl flex items-center justify-center animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
-                >
-                  <iframe
-                    src={blobUrl}
-                    title={currentFile.name}
-                    className="w-full h-[76vh] sm:h-[80vh] border-0 rounded-xl shadow-xl bg-white"
+                  <PreviewSlide
+                    file={itemFile}
+                    isActive={isActive}
+                    isAdjacent={isAdjacent}
+                    getBlob={getBlob}
+                    zoomLevel={isActive ? zoomLevel : 1}
+                    rotation={isActive ? rotation : 0}
+                    onDownload={() => handleDownloadFile(itemFile)}
+                    onOpenInNewTab={url => window.open(url, '_blank', 'noopener,noreferrer')}
+                    onCopyText={handleCopyText}
+                    isCopied={isCopied}
+                    onActiveBlobUrlChange={isActive ? setActiveBlobUrl : undefined}
                   />
                 </div>
-              )}
-
-              {/* 3. VIDEO PREVIEW WITH SMOOTH TRANSITION */}
-              {category === 'video' && blobUrl && (
-                <div
-                  key={`video-${fileId || currentFile.name}`}
-                  className="w-full h-full flex items-center justify-center p-2 animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
-                >
-                  <video
-                    src={blobUrl}
-                    controls
-                    autoPlay={false}
-                    playsInline
-                    className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] rounded-xl shadow-xl bg-black border border-card-border"
-                  >
-                    Your browser does not support HTML5 video.
-                  </video>
-                </div>
-              )}
-
-              {/* 4. AUDIO PREVIEW WITH SMOOTH TRANSITION */}
-              {category === 'audio' && (
-                <div
-                  key={`audio-${fileId || currentFile.name}`}
-                  className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
-                >
-                  {/* Glowing Animated Waveform Circle */}
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#6E60EE]/10 border-2 border-[#6E60EE]/30 flex items-center justify-center text-[#6E60EE] shadow-[0_0_30px_rgba(110,96,238,0.2)] mb-4 relative group">
-                    <Music className="w-9 h-9 sm:w-10 sm:h-10" />
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[280px]">
-                    {currentFile.name}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1.5 text-xs text-text-secondary">
-                    <span className="uppercase font-semibold tracking-wider text-[#6E60EE]">
-                      {typeInfo.extension || 'AUDIO'}
-                    </span>
-                    {typeof currentFile.size === 'number' && (
-                      <>
-                        <span>•</span>
-                        <span>{formatBytes(currentFile.size)}</span>
-                      </>
-                    )}
-                  </div>
-
-                  {blobUrl ? (
-                    <audio
-                      src={blobUrl}
-                      controls
-                      className="w-full mt-6 accent-[#6E60EE] rounded-lg"
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleDownload}
-                      className="mt-6 px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 transition-all active:scale-95"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Download to play
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* 5. CODE / TEXT / JSON PREVIEW WITH SMOOTH TRANSITION */}
-              {category === 'code' && (
-                <div
-                  key={`code-${fileId || currentFile.name}`}
-                  className="w-full max-w-4xl max-h-[76vh] sm:max-h-[80vh] bg-card-bg border border-card-border rounded-xl shadow-xl flex flex-col overflow-hidden text-left transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
-                >
-                  {/* Code Editor Header */}
-                  <div className="h-10 px-4 bg-input-bg border-b border-card-border flex items-center justify-between shrink-0 select-none">
-                    <div className="flex items-center gap-2">
-                      <Code className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                      <span className="text-xs font-mono font-semibold text-foreground">
-                        {currentFile.name}
-                      </span>
-                      <span className="text-[10px] font-mono uppercase bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 px-1.5 py-0.5 rounded font-bold">
-                        {typeInfo.extension || 'TXT'}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleCopyText}
-                      className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-foreground px-2.5 py-1 rounded bg-card-bg hover:bg-card-border/60 border border-card-border transition-colors cursor-pointer"
-                      title="Copy code to clipboard"
-                    >
-                      {isCopied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
-                          <span className="text-emerald-500 font-semibold">Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Monospace Code Body */}
-                  <div className="flex-1 overflow-auto p-4 sm:p-5 text-xs font-mono text-foreground leading-relaxed select-text bg-input-bg/30">
-                    <pre className="whitespace-pre-wrap break-words font-mono">
-                      <code>{textContent ?? 'Loading text contents...'}</code>
-                    </pre>
-                  </div>
-                </div>
-              )}
-
-              {/* 6. DOCUMENT PREVIEW WITH SMOOTH TRANSITION */}
-              {category === 'document' && (
-                <div
-                  key={`doc-${fileId || currentFile.name}`}
-                  className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
-                >
-                  <div className={cn('w-20 h-20 rounded-2xl flex items-center justify-center shadow-xs mb-4', typeInfo.bgClass, typeInfo.colorClass)}>
-                    {typeInfo.docType === 'sheet' ? (
-                      <FileSpreadsheet className="w-10 h-10" />
-                    ) : typeInfo.docType === 'slide' ? (
-                      <Presentation className="w-10 h-10" />
-                    ) : (
-                      <FileText className="w-10 h-10" />
-                    )}
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[280px]">
-                    {currentFile.name}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mt-1.5 text-xs text-text-secondary">
-                    <span className="uppercase font-semibold tracking-wider text-[#6E60EE]">
-                      {typeInfo.extension?.toUpperCase() || 'DOCUMENT'}
-                    </span>
-                    {typeof currentFile.size === 'number' && (
-                      <>
-                        <span>•</span>
-                        <span>{formatBytes(currentFile.size)}</span>
-                      </>
-                    )}
-                  </div>
-
-                  <p className="text-xs text-text-secondary mt-3 max-w-[280px] leading-relaxed font-normal">
-                    This document format is ready to download or open with your local application.
-                  </p>
-
-                  <div className="flex items-center gap-3 mt-6">
-                    {blobUrl && (
-                      <button
-                        type="button"
-                        onClick={handleOpenInNewTab}
-                        className="px-3.5 py-2 rounded-lg text-xs font-semibold text-foreground hover:bg-input-bg bg-card-bg border border-card-border transition-colors cursor-pointer"
-                      >
-                        Open in tab
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={handleDownload}
-                      className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Download document
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* 7. ARCHIVE & UNSUPPORTED BINARY FORMATS WITH SMOOTH TRANSITION */}
-              {(category === 'archive' || category === 'other') && (
-                <div
-                  key={`other-${fileId || currentFile.name}`}
-                  className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
-                >
-                  <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-input-bg border border-card-border flex items-center justify-center text-text-secondary shadow-xs mb-4">
-                    {category === 'archive' ? (
-                      <Archive className="w-9 h-9 text-amber-500" />
-                    ) : (
-                      <FileQuestion className="w-9 h-9 text-text-muted" />
-                    )}
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[280px]">
-                    {currentFile.name}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mt-1.5 text-xs text-text-secondary">
-                    <span className="uppercase font-semibold tracking-wider text-[#6E60EE]">
-                      {typeInfo.extension?.toUpperCase() || 'FILE'}
-                    </span>
-                    {typeof currentFile.size === 'number' && (
-                      <>
-                        <span>•</span>
-                        <span>{formatBytes(currentFile.size)}</span>
-                      </>
-                    )}
-                  </div>
-
-                  <p className="text-xs text-text-secondary mt-3 max-w-[300px] leading-relaxed font-normal">
-                    Preview is not available for this file type in the browser. You can download the file to open it with your local software.
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={handleDownload}
-                    className="mt-6 px-4 py-2 rounded-lg text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    Download file ({typeInfo.extension?.toUpperCase() || 'FILE'})
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+              )
+            })}
+          </div>
         </div>
+
+        {/* Softened Integrated Floating Zoom Controls Pill for Active Image Preview */}
+        {currentCategory === 'image' && activeBlobUrl && (
+          <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-card-bg/85 dark:bg-card-bg/75 hover:bg-card-bg/95 dark:hover:bg-card-bg/90 backdrop-blur-md border border-card-border/60 dark:border-white/10 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md text-text-secondary select-none transition-all duration-200 animate-in fade-in zoom-in-[0.98]">
+            <button
+              type="button"
+              onClick={() => setZoomLevel(z => Math.max(0.5, z - 0.25))}
+              disabled={zoomLevel <= 0.5}
+              className="w-7 h-7 rounded-full flex items-center justify-center hover:text-foreground hover:bg-input-bg/70 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary active:scale-95 transition-all cursor-pointer"
+              title="Zoom out"
+              aria-label="Zoom out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-xs font-mono font-medium text-foreground px-1 min-w-[38px] text-center select-none">
+              {Math.round(zoomLevel * 100)}%
+            </span>
+            <button
+              type="button"
+              onClick={() => setZoomLevel(z => Math.min(3, z + 0.25))}
+              disabled={zoomLevel >= 3}
+              className="w-7 h-7 rounded-full flex items-center justify-center hover:text-foreground hover:bg-input-bg/70 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary active:scale-95 transition-all cursor-pointer"
+              title="Zoom in"
+              aria-label="Zoom in"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <div className="w-[1px] h-3.5 bg-card-border/70 dark:bg-white/10 mx-0.5" />
+            <button
+              type="button"
+              onClick={() => setRotation(r => (r + 90) % 360)}
+              className="w-7 h-7 rounded-full flex items-center justify-center hover:text-foreground hover:bg-input-bg/70 active:scale-95 transition-all cursor-pointer"
+              title="Rotate 90°"
+              aria-label="Rotate"
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+            </button>
+            {(zoomLevel !== 1 || rotation !== 0) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setZoomLevel(1)
+                  setRotation(0)
+                }}
+                className="text-[11px] font-semibold text-[#6E60EE] dark:text-[#8E82F8] hover:bg-[#6E60EE]/10 active:scale-95 px-2 py-0.5 rounded-full transition-all cursor-pointer ml-0.5"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        )}
       </main>
     </div>
   )

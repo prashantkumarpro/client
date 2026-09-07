@@ -7,6 +7,7 @@ import { cn } from '../../lib/utils/cn'
 import { useAuth } from '@/features/auth/hooks/use-auth'
 import { useState } from 'react'
 import AccountDetails from '@/features/auth/components/account-details'
+import { NotificationsModal } from './notifications-modal'
 import { Tooltip } from '../ui/tooltip'
 import { PAGE_HORIZONTAL_PADDING } from '@/lib/constants/layout'
 
@@ -16,9 +17,10 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuToggle, className }: HeaderProps) {
-  const { currentSection, setCurrentSection } = useApp()
+  const { currentSection, setCurrentSection, setActiveModal } = useApp()
   const { user, logout } = useAuth()
   const [isAccountDetailsOpen, setIsAccountDetailsOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
 
   const profileDropdownItems: DropdownItemType[] = [
     {
@@ -27,7 +29,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
     },
     {
       label: 'Storage Settings',
-      onClick: () => alert('Storage plan details opened')
+      onClick: () => setActiveModal('storage-upgrade')
     },
     {
       label: 'Sign Out',
@@ -84,7 +86,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
             <Tooltip content="Notifications" side="bottom">
               <button
                 className='w-10 h-10 rounded-full bg-transparent text-text-secondary hover:text-foreground hover:bg-input-bg flex items-center justify-center cursor-pointer transition-all duration-200 relative'
-                onClick={() => alert('Viewing 3 mock notifications')}
+                onClick={() => setIsNotificationsOpen(true)}
                 aria-label='View notifications'
               >
                 <svg
@@ -165,6 +167,10 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
       <AccountDetails
         open={isAccountDetailsOpen}
         onClose={() => setIsAccountDetailsOpen(false)}
+      />
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
       />
     </>
   )

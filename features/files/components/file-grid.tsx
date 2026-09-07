@@ -11,6 +11,8 @@ export interface FileGridProps {
   onDownload?: (file: UnifiedFileItem) => void
   onShare?: (file: UnifiedFileItem) => void
   onRename?: (file: UnifiedFileItem) => void
+  onMove?: (file: UnifiedFileItem) => void
+  onDetails?: (file: UnifiedFileItem) => void
   onToggleStar?: (fileId: string) => void
   onDelete?: (file: UnifiedFileItem) => void
   onRestore?: (file: UnifiedFileItem) => void
@@ -25,6 +27,8 @@ export function FileGrid({
   onDownload,
   onShare,
   onRename,
+  onMove,
+  onDetails,
   onToggleStar,
   onDelete,
   onRestore,
@@ -52,6 +56,8 @@ export function FileGrid({
             onDownload={onDownload ? () => onDownload(file) : undefined}
             onShare={onShare ? () => onShare(file) : undefined}
             onRename={onRename ? () => onRename(file) : undefined}
+            onMove={onMove ? () => onMove(file) : undefined}
+            onDetails={onDetails ? () => onDetails(file) : undefined}
             onToggleStar={onToggleStar ? () => onToggleStar(fileId) : undefined}
             onDelete={onDelete ? () => onDelete(file) : undefined}
             onRestore={onRestore ? () => onRestore(file) : undefined}

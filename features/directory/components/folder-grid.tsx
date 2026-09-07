@@ -6,7 +6,10 @@ import { FolderCard } from './folder-card'
 import { useDirectory } from '../hooks/use-directory'
 import { RenameModal } from '@/features/files/components/rename-modal'
 import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
+import { MoveModal } from '@/features/files/components/move-modal'
+import { FileDetailsModal } from '@/features/files/components/file-details-modal'
 import type { DirectoryItem, RenameDirectoryData } from '../types'
+import type { UnifiedFileItem } from '@/features/files/components/file-list'
 
 interface FolderGridProps {
   folders?: DirectoryItem[]
@@ -27,13 +30,16 @@ export function FolderGrid ({
     searchQuery,
     setSelectedFileId,
     setActiveModal,
-    toggleStar
+    toggleStar,
+    moveFile
   } = useApp()
 
   const hookResult = useDirectory(activeFolderId ?? undefined)
 
   const [renameTarget, setRenameTarget] = useState<DirectoryItem | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<DirectoryItem | null>(null)
+  const [moveTarget, setMoveTarget] = useState<DirectoryItem | null>(null)
+  const [detailsTarget, setDetailsTarget] = useState<DirectoryItem | null>(null)
 
   const folders = useMemo(() => {
     const list = propFolders ?? hookResult.directory?.directories ?? []
@@ -63,6 +69,12 @@ export function FolderGrid ({
       await hookResult.remove(deleteTarget.id)
     }
     setDeleteTarget(null)
+  }
+
+  const handlePerformMove = async (targetFolderId: string | null) => {
+    if (!moveTarget) return
+    moveFile(moveTarget.id, targetFolderId)
+    setMoveTarget(null)
   }
 
   if (isLoading) {
@@ -106,11 +118,13 @@ export function FolderGrid ({
               itemsCountText='0 files'
               starred={false}
               onClick={() => setActiveFolderId(folder.id)}
+              onDetails={() => setDetailsTarget(folder)}
               onRename={() => setRenameTarget(folder)}
               onShare={() => {
                 setSelectedFileId(folder.id)
                 setActiveModal('share')
               }}
+              onMove={() => setMoveTarget(folder)}
               onToggleStar={() => toggleStar(folder.id)}
               onDelete={() => setDeleteTarget(folder)}
             />
@@ -134,6 +148,31 @@ export function FolderGrid ({
         itemName={deleteTarget?.name || ''}
         itemType="folder"
         onConfirm={handlePerformDelete}
+      />
+
+      {/* Custom Move Modal for Folders */}
+      <MoveModal
+        isOpen={Boolean(moveTarget)}
+        onClose={() => setMoveTarget(null)}
+        itemName={moveTarget?.name || ''}
+        itemId={moveTarget?.id}
+        itemType="folder"
+        currentFolderId={activeFolderId}
+        onMove={handlePerformMove}
+      />
+
+      {/* Custom Details Modal for Folders */}
+      <FileDetailsModal
+        isOpen={Boolean(detailsTarget)}
+        onClose={() => setDetailsTarget(null)}
+        file={detailsTarget ? {
+          id: detailsTarget.id,
+          name: detailsTarget.name,
+          type: 'folder',
+          createdAt: detailsTarget.createdAt,
+          updatedAt: detailsTarget.updatedAt,
+          parentFolderId: activeFolderId
+        } as UnifiedFileItem : null}
       />
     </div>
   )

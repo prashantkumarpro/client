@@ -9,12 +9,13 @@ import { CreateFolderModal } from '@/features/directory/components/create-folder
 import { ShareModal } from '@/features/sharing/components/share-modal'
 import { GetLinkModal } from '@/features/sharing/components/get-link-modal'
 import { SearchModal } from '@/features/search/components/search-modal'
+import { StorageUpgradeModal } from '@/features/storage/components/storage-upgrade-modal'
 import DashboardOverview from '@/features/dashboard/components/dashboard-overview'
 import MyFilesView from '@/features/files/components/my-files-view'
 import SettingsView from '@/features/settings/components/settings-view'
 
 export default function DashboardPage () {
-  const { currentSection } = useApp()
+  const { currentSection, activeModal, setActiveModal } = useApp()
 
   return (
     <>
@@ -45,6 +46,10 @@ export default function DashboardPage () {
       <ShareModal />
       <GetLinkModal />
       <SearchModal />
+      <StorageUpgradeModal
+        isOpen={activeModal === 'storage-upgrade'}
+        onClose={() => setActiveModal(null)}
+      />
     </>
   )
 }

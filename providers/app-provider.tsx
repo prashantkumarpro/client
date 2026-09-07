@@ -23,10 +23,11 @@ interface AppContextType {
   restoreFile: (id: string) => void;
   deletePermanently: (id: string) => void;
   shareFile: (id: string, emails: string[]) => void;
+  moveFile: (id: string, targetFolderId: string | null) => void;
 
   // Modal State Management
-  activeModal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | null;
-  setActiveModal: (modal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | null) => void;
+  activeModal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | 'storage-upgrade' | null;
+  setActiveModal: (modal: 'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | 'storage-upgrade' | null) => void;
   selectedFileId: string | null;
   setSelectedFileId: (id: string | null) => void;
 
@@ -67,7 +68,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Modal disclosures
-  const [activeModal, setActiveModal] = useState<'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | null>(null);
+  const [activeModal, setActiveModal] = useState<'upload-file' | 'upload-folder' | 'create-folder' | 'share' | 'get-link' | 'search' | 'storage-upgrade' | null>(null);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
   // Sync theme to DOM root
@@ -249,6 +250,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
   }, [addActivity]);
 
+  const moveFile = useCallback((id: string, targetFolderId: string | null) => {
+    setFiles(prev =>
+      prev.map(f => {
+        if (f.id === id) {
+          addActivity('upload', f.name, `Moved ${f.name} to new location`);
+          return {
+            ...f,
+            parentFolderId: targetFolderId,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return f;
+      })
+    );
+  }, [addActivity]);
+
   // Breadcrumbs calculation
   const currentFolderBreadcrumbs = useMemo(() => {
     const crumbs: { id: string | null; name: string }[] = [{ id: null, name: 'My Files' }];
@@ -289,6 +306,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     restoreFile,
     deletePermanently,
     shareFile,
+    moveFile,
     activeModal,
     setActiveModal,
     selectedFileId,
@@ -317,6 +335,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     restoreFile,
     deletePermanently,
     shareFile,
+    moveFile,
     activeModal,
     setActiveModal,
     selectedFileId,

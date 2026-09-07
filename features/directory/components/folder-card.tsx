@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Folder, Star, Eye, Edit3, Share2, FolderInput, Trash2 } from 'lucide-react'
+import { Folder, Star, Eye, Edit3, Share2, FolderInput, Trash2, Info } from 'lucide-react'
 import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { cn } from '@/lib/utils/cn'
 
@@ -15,6 +15,7 @@ export interface FolderCardProps {
   onShare?: () => void
   onToggleStar?: () => void
   onMove?: () => void
+  onDetails?: () => void
   onDelete?: () => void
   customActions?: ActionMenuItem[]
   className?: string
@@ -30,6 +31,7 @@ export function FolderCard({
   onShare,
   onToggleStar,
   onMove,
+  onDetails,
   onDelete,
   customActions,
   className,
@@ -39,6 +41,11 @@ export function FolderCard({
       label: 'Open',
       onClick,
       icon: <Eye className='w-4 h-4 text-text-secondary' />
+    }] : []),
+    ...(onDetails ? [{
+      label: 'Details',
+      onClick: onDetails,
+      icon: <Info className='w-4 h-4 text-text-secondary' />
     }] : []),
     ...(onRename ? [{
       label: 'Rename',

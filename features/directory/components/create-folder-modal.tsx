@@ -91,7 +91,7 @@ export function CreateFolderModal() {
             disabled={isSubmitDisabled}
             className="h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create
+            {isCreating ? 'Creating...' : 'Create'}
           </Button>
         </div>
       </form>

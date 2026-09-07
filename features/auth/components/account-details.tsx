@@ -1,7 +1,9 @@
 'use client'
 
 import { Modal } from '@/components/ui/modal'
+import { Button } from '@/components/ui/button'
 import { useAuth } from '@/features/auth/hooks/use-auth'
+import { User, Mail, ShieldCheck } from 'lucide-react'
 
 interface AccountDetailsProps {
   open: boolean
@@ -16,60 +18,61 @@ export default function AccountDetails ({ open, onClose }: AccountDetailsProps) 
       open={open}
       onClose={onClose}
       title='Account Details'
-      description='Your account information'
-      className='max-w-md'
+      description='Your profile and workspace identity'
+      maxWidth='max-w-[420px]'
     >
-      {/* User identity */}
-      <div className='flex items-center gap-4'>
-        <div className='flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-card-border bg-divider'>
-          <span className='text-lg font-bold uppercase text-foreground'>
-            {user?.name?.charAt(0) || 'U'}
-          </span>
+      <div className="flex flex-col gap-4">
+        {/* User identity card */}
+        <div className='flex items-center gap-3.5 p-3.5 bg-input-bg/60 border border-card-border rounded-xl'>
+          <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-card-border bg-[#6E60EE]/10 text-[#6E60EE]'>
+            <span className='text-base font-bold uppercase'>
+              {user?.name?.charAt(0) || 'P'}
+            </span>
+          </div>
+
+          <div className='min-w-0 flex-1'>
+            <h3 className='truncate text-sm font-semibold text-foreground'>
+              {user?.name || 'Prashant'}
+            </h3>
+            <p className='truncate text-xs text-text-secondary mt-0.5'>
+              {user?.email || 'prashant@cloudspacego.app'}
+            </p>
+          </div>
         </div>
 
-        <div className='min-w-0'>
-          <h3 className='truncate text-sm font-semibold text-foreground'>
-            {user?.name || 'User'}
-          </h3>
+        {/* Account properties list */}
+        <div className='flex flex-col divide-y divide-card-border/50 border border-card-border rounded-xl bg-card-bg text-xs'>
+          <div className='flex items-center justify-between p-3'>
+            <span className='text-text-secondary font-medium'>Display Name</span>
+            <span className='text-foreground font-semibold'>{user?.name || 'Prashant'}</span>
+          </div>
 
-          <p className='mt-1 truncate text-xs text-text-secondary'>
-            {user?.email || 'No email available'}
-          </p>
-        </div>
-      </div>
+          <div className='flex items-center justify-between p-3'>
+            <span className='text-text-secondary font-medium'>Email Address</span>
+            <span className='text-foreground font-semibold break-all'>{user?.email || 'prashant@cloudspacego.app'}</span>
+          </div>
 
-      {/* Account information */}
-      <div className='mt-6 flex flex-col gap-4'>
-        <div className='rounded-xl border border-card-border bg-background p-4'>
-          <p className='text-[10px] font-bold uppercase tracking-[1px] text-text-muted'>
-            Full Name
-          </p>
-
-          <p className='mt-1.5 text-sm text-foreground'>
-            {user?.name || 'User'}
-          </p>
+          <div className='flex items-center justify-between p-3'>
+            <span className='text-text-secondary font-medium'>Role</span>
+            <span className='text-foreground font-semibold flex items-center gap-1.5'>
+              <ShieldCheck className='w-3.5 h-3.5 text-[#6E60EE]' />
+              <span>Workspace Admin</span>
+            </span>
+          </div>
         </div>
 
-        <div className='rounded-xl border border-card-border bg-background p-4'>
-          <p className='text-[10px] font-bold uppercase tracking-[1px] text-text-muted'>
-            Email Address
-          </p>
-
-          <p className='mt-1.5 break-all text-sm text-foreground'>
-            {user?.email || 'No email available'}
-          </p>
+        {/* Footer */}
+        <div className='flex justify-end pt-2 border-t border-card-border/60'>
+          <Button
+            type='button'
+            variant='primary'
+            size='sm'
+            onClick={onClose}
+            className='h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs'
+          >
+            Close
+          </Button>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className='mt-6 flex justify-end'>
-        <button
-          type='button'
-          onClick={onClose}
-          className='h-10 rounded-lg bg-foreground px-5 text-xs font-bold uppercase tracking-[1px] text-background transition-opacity hover:opacity-90'
-        >
-          Close
-        </button>
       </div>
     </Modal>
   )

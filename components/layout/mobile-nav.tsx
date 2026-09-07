@@ -21,6 +21,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     setCurrentSection,
     theme,
     toggleTheme,
+    setActiveModal,
   } = useApp();
 
   const menuItems = getNavItems();
@@ -189,7 +190,10 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             </div>
 
             <button
-              onClick={() => alert('Storage upgrade options coming soon!')}
+              onClick={() => {
+                onClose();
+                setActiveModal('storage-upgrade');
+              }}
               className='w-full flex items-center justify-between text-[10px] font-bold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors pt-0.5 cursor-pointer group'
             >
               <span>Upgrade Storage</span>

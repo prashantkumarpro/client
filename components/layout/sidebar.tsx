@@ -21,6 +21,7 @@ export function Sidebar({ className }: SidebarProps) {
     toggleSidebar,
     theme,
     toggleTheme,
+    setActiveModal,
   } = useApp()
 
   const mainNavItems = getNavItems()
@@ -247,7 +248,7 @@ export function Sidebar({ className }: SidebarProps) {
               </div>
 
               <button
-                onClick={() => alert('Storage upgrade options coming soon!')}
+                onClick={() => setActiveModal('storage-upgrade')}
                 className="w-full flex items-center justify-between text-xs font-semibold text-[#6E60EE] hover:text-[#6E60EE]/80 transition-colors pt-0.5 cursor-pointer group"
               >
                 <span className="whitespace-nowrap">Upgrade Storage</span>

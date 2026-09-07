@@ -1,11 +1,12 @@
-'use client'
-
+import React, { useState } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { formatDate } from '@/lib/utils/format'
 import { cn } from '@/lib/utils/cn'
+import { ActivityLogModal } from './activity-log-modal'
 
 export default function RecentActivity () {
   const { activities } = useApp()
+  const [isLogOpen, setIsLogOpen] = useState(false)
 
   const getActivityIcon = (type: string) => {
     const baseClass =
@@ -202,12 +203,12 @@ export default function RecentActivity () {
 
         {/* View All Activity link button */}
         <button
-          onClick={() => alert('Viewing full activity log')}
-          className='w-full text-center text-xs font-semibold text-[#0056f7] hover:text-[#004bd6] transition-colors py-3 border-t border-divider mt-2 flex items-center justify-center gap-1 cursor-pointer focus:outline-none'
+          onClick={() => setIsLogOpen(true)}
+          className='w-full text-center text-xs font-semibold text-[#6E60EE] hover:text-[#6052E6] transition-colors py-3 border-t border-card-border mt-2 flex items-center justify-center gap-1 cursor-pointer focus:outline-none'
         >
           <span>View all activity</span>
           <svg
-            className='w-3 h-3 text-[#0056f7]'
+            className='w-3 h-3 text-[#6E60EE]'
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'
@@ -221,6 +222,11 @@ export default function RecentActivity () {
           </svg>
         </button>
       </div>
+
+      <ActivityLogModal
+        isOpen={isLogOpen}
+        onClose={() => setIsLogOpen(false)}
+      />
     </>
   )
 }

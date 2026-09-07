@@ -9,6 +9,8 @@ import { FileGrid } from './file-grid'
 import { FileTable } from './file-table'
 import { RenameModal } from './rename-modal'
 import { DeleteConfirmModal } from './delete-confirm-modal'
+import { MoveModal } from './move-modal'
+import { FileDetailsModal } from './file-details-modal'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { SectionAction } from '../../../components/ui/section-action'
 import { ViewToggle } from '../../../components/ui/view-toggle'
@@ -35,7 +37,8 @@ import {
   Users,
   Search,
   Inbox,
-  ArrowUp
+  ArrowUp,
+  Info
 } from 'lucide-react'
 
 export type UnifiedFileItem = {
@@ -112,6 +115,7 @@ export function FileList({
     searchQuery,
     setSelectedFileId,
     setActiveModal,
+    moveFile,
     viewMode: globalViewMode,
     setViewMode: setGlobalViewMode
   } = useApp()
@@ -120,6 +124,8 @@ export function FileList({
   const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
   const [renameTarget, setRenameTarget] = useState<UnifiedFileItem | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<UnifiedFileItem | null>(null)
+  const [moveTarget, setMoveTarget] = useState<UnifiedFileItem | null>(null)
+  const [detailsTarget, setDetailsTarget] = useState<UnifiedFileItem | null>(null)
 
   // Local view mode override if defaultViewMode is passed, otherwise global
   const [localViewMode, setLocalViewMode] = useState<'grid' | 'list' | null>(
@@ -244,8 +250,18 @@ export function FileList({
     }
   }
 
+  const handlePerformMove = async (targetFolderId: string | null) => {
+    if (!moveTarget) return
+    const fileId = moveTarget.id || moveTarget._id
+    if (fileId) {
+      moveFile(fileId, targetFolderId)
+      setMoveTarget(null)
+    }
+  }
+
   const getDropdownItems = (file: UnifiedFileItem): ActionMenuItem[] => {
     const fileId = file.id || file._id || ''
+    const isFolder = file.type === 'folder'
 
     return [
       {
@@ -253,10 +269,15 @@ export function FileList({
         onClick: () => handleOpenFile(file),
         icon: <Eye className='w-4 h-4 text-text-secondary' />
       },
-      {
+      ...(!isFolder ? [{
         label: 'Download',
         onClick: () => handleDownload(file),
         icon: <Download className='w-4 h-4 text-text-secondary' />
+      }] : []),
+      {
+        label: 'Details',
+        onClick: () => setDetailsTarget(file),
+        icon: <Info className='w-4 h-4 text-text-secondary' />
       },
       {
         label: 'Share',
@@ -273,7 +294,7 @@ export function FileList({
       },
       {
         label: 'Move',
-        onClick: () => console.log(`Move file "${file.name}"`),
+        onClick: () => setMoveTarget(file),
         icon: <FolderInput className='w-4 h-4 text-text-secondary' />
       },
       {
@@ -372,6 +393,8 @@ export function FileList({
             setActiveModal('share')
           }}
           onRename={file => setRenameTarget(file)}
+          onMove={file => setMoveTarget(file)}
+          onDetails={file => setDetailsTarget(file)}
           onToggleStar={fileId => toggleStar(fileId)}
           onDelete={file => setDeleteTarget(file)}
         />
@@ -413,6 +436,25 @@ export function FileList({
         itemName={deleteTarget?.name || ''}
         itemType={deleteTarget && deriveFileType(deleteTarget) === 'folder' ? 'folder' : 'file'}
         onConfirm={handlePerformDelete}
+      />
+
+      {/* Custom Move Modal */}
+      <MoveModal
+        isOpen={Boolean(moveTarget)}
+        onClose={() => setMoveTarget(null)}
+        itemName={moveTarget?.name || ''}
+        itemId={moveTarget?.id || moveTarget?._id}
+        itemType={moveTarget && deriveFileType(moveTarget) === 'folder' ? 'folder' : 'file'}
+        currentFolderId={moveTarget?.parentFolderId || moveTarget?.parentDirId || null}
+        onMove={handlePerformMove}
+      />
+
+      {/* Custom Details Modal */}
+      <FileDetailsModal
+        isOpen={Boolean(detailsTarget)}
+        onClose={() => setDetailsTarget(null)}
+        file={detailsTarget}
+        onDownload={handleDownload}
       />
     </div>
   )

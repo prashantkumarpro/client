@@ -1,89 +1,94 @@
-'use client';
+'use client'
 
-import React, { useState, useRef } from 'react';
-import { useApp } from '../../../providers/app-provider';
-import { useFiles } from '../hooks/use-files';
-import { useDirectory } from '../../directory/hooks/use-directory';
-import { Dialog } from '../../../components/ui/dialog';
-import { Input } from '../../../components/ui/input';
-import { Button } from '../../../components/ui/button';
-import { Upload, FileUp } from 'lucide-react';
-import { formatBytes } from '../../../lib/utils/format';
+import React, { useState, useRef } from 'react'
+import { useApp } from '../../../providers/app-provider'
+import { useFiles } from '../hooks/use-files'
+import { useDirectory } from '../../directory/hooks/use-directory'
+import { Dialog } from '../../../components/ui/dialog'
+import { Input } from '../../../components/ui/input'
+import { Button } from '../../../components/ui/button'
+import { Upload, FolderPlus } from 'lucide-react'
+import { formatBytes } from '../../../lib/utils/format'
 
 export function UploadModal() {
-  const { activeModal, setActiveModal, activeFolderId } = useApp();
-  const { upload, isUploading } = useFiles();
-  const { create: createDir, isCreating: isCreatingDir } = useDirectory(activeFolderId ?? undefined);
+  const { activeModal, setActiveModal, activeFolderId } = useApp()
+  const { upload, isUploading } = useFiles()
+  const { create: createDir, isCreating: isCreatingDir } = useDirectory(activeFolderId ?? undefined)
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [customFileName, setCustomFileName] = useState('');
-  const [folderName, setFolderName] = useState('');
-  const [error, setError] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [customFileName, setCustomFileName] = useState('')
+  const [folderName, setFolderName] = useState('')
+  const [error, setError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const isFileOpen = activeModal === 'upload-file';
-  const isFolderOpen = activeModal === 'upload-folder';
+  const isFileOpen = activeModal === 'upload-file'
+  const isFolderOpen = activeModal === 'upload-folder'
 
   const handleClose = () => {
-    setSelectedFile(null);
-    setCustomFileName('');
-    setFolderName('');
-    setError('');
-    setActiveModal(null);
-  };
+    setSelectedFile(null)
+    setCustomFileName('')
+    setFolderName('')
+    setError('')
+    setActiveModal(null)
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      setSelectedFile(file);
-      setCustomFileName(file.name);
-      setError('');
+      setSelectedFile(file)
+      setCustomFileName(file.name)
+      setError('')
     }
-  };
+  }
 
   const handleUploadFile = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!selectedFile && !customFileName.trim()) {
-      setError('Please choose a file or enter a file name');
-      return;
+      setError('Please choose a file or enter a file name')
+      return
     }
 
     try {
-      const fileToUpload = selectedFile || new Blob([' '], { type: 'text/plain' });
-      const filename = customFileName.trim() || (selectedFile ? selectedFile.name : 'untitled.txt');
+      const fileToUpload = selectedFile || new Blob([' '], { type: 'text/plain' })
+      const filename = customFileName.trim() || (selectedFile ? selectedFile.name : 'untitled.txt')
 
       await upload(
         { file: fileToUpload, filename },
         activeFolderId ?? undefined
-      );
+      )
 
-      handleClose();
+      handleClose()
     } catch (err) {
-      console.error('Failed to upload file:', err);
-      setError('Failed to upload file. Please try again.');
+      console.error('Failed to upload file:', err)
+      setError('Failed to upload file. Please try again.')
     }
-  };
+  }
 
   const handleUploadFolder = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!folderName.trim()) {
-      setError('Folder name is required');
-      return;
+      setError('Folder name is required')
+      return
     }
 
     try {
-      await createDir({ dirname: folderName.trim() }, activeFolderId ?? undefined);
-      handleClose();
+      await createDir({ dirname: folderName.trim() }, activeFolderId ?? undefined)
+      handleClose()
     } catch (err) {
-      console.error('Failed to create folder:', err);
-      setError('Failed to create folder. Please try again.');
+      console.error('Failed to create folder:', err)
+      setError('Failed to create folder. Please try again.')
     }
-  };
+  }
 
   if (isFileOpen) {
     return (
-      <Dialog isOpen={isFileOpen} onClose={handleClose} title="Upload New File">
-        <form onSubmit={handleUploadFile} className="flex flex-col gap-4 pt-2">
+      <Dialog
+        isOpen={isFileOpen}
+        onClose={handleClose}
+        title="Upload File"
+        maxWidth="max-w-[440px]"
+      >
+        <form onSubmit={handleUploadFile} className="flex flex-col gap-4">
           {/* Hidden native file input */}
           <input
             type="file"
@@ -125,20 +130,20 @@ export function UploadModal() {
             label="File Name"
             placeholder="e.g. document.pdf, photo.png"
             value={customFileName}
-            onChange={(e) => {
-              setCustomFileName(e.target.value);
-              if (error) setError('');
+            onChange={e => {
+              setCustomFileName(e.target.value)
+              if (error) setError('')
             }}
             error={error}
           />
 
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="flex items-center justify-end gap-2.5 pt-2">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleClose}
-              className="h-10 text-[10px]"
+              className="h-9 px-4 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
             >
               Cancel
             </Button>
@@ -147,39 +152,44 @@ export function UploadModal() {
               variant="primary"
               size="sm"
               disabled={isUploading}
-              className="h-10 text-[10px] bg-[#6E60EE] hover:bg-[#6052E6] text-white disabled:opacity-50"
+              className="h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isUploading ? 'Uploading...' : 'Upload File'}
+              {isUploading ? 'Uploading...' : 'Upload'}
             </Button>
           </div>
         </form>
       </Dialog>
-    );
+    )
   }
 
   if (isFolderOpen) {
     return (
-      <Dialog isOpen={isFolderOpen} onClose={handleClose} title="Create New Folder">
-        <form onSubmit={handleUploadFolder} className="flex flex-col gap-4 pt-2">
+      <Dialog
+        isOpen={isFolderOpen}
+        onClose={handleClose}
+        title="Create New Folder"
+        maxWidth="max-w-[420px]"
+      >
+        <form onSubmit={handleUploadFolder} className="flex flex-col gap-4">
           <Input
             label="Folder Name"
             placeholder="e.g. Marketing, Projects, Invoices"
             value={folderName}
-            onChange={(e) => {
-              setFolderName(e.target.value);
-              if (error) setError('');
+            onChange={e => {
+              setFolderName(e.target.value)
+              if (error) setError('')
             }}
             error={error}
             autoFocus
           />
 
-          <div className="flex justify-end gap-3 mt-2">
+          <div className="flex items-center justify-end gap-2.5 pt-2">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleClose}
-              className="h-10 text-[10px]"
+              className="h-9 px-4 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
             >
               Cancel
             </Button>
@@ -188,15 +198,15 @@ export function UploadModal() {
               variant="primary"
               size="sm"
               disabled={isCreatingDir}
-              className="h-10 text-[10px] bg-[#6E60EE] hover:bg-[#6052E6] text-white disabled:opacity-50"
+              className="h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isCreatingDir ? 'Creating...' : 'Create Folder'}
+              {isCreatingDir ? 'Creating...' : 'Create'}
             </Button>
           </div>
         </form>
       </Dialog>
-    );
+    )
   }
 
-  return null;
+  return null
 }

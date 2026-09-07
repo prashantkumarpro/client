@@ -4,7 +4,7 @@ import React from 'react'
 import { FileThumbnail } from './file-thumbnail'
 import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { formatBytes, formatDate } from '@/lib/utils/format'
-import { Eye, Download, Share2, Edit3, Star, Trash2, RotateCcw, Trash } from 'lucide-react'
+import { Eye, Download, Share2, Edit3, Star, Trash2, RotateCcw, Trash, FolderInput, Info } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import type { UnifiedFileItem } from './file-list'
 
@@ -14,6 +14,8 @@ export interface FileCardProps {
   onDownload?: () => void
   onShare?: () => void
   onRename?: () => void
+  onMove?: () => void
+  onDetails?: () => void
   onToggleStar?: () => void
   onDelete?: () => void
   onRestore?: () => void
@@ -50,6 +52,8 @@ export function FileCard({
   onDownload,
   onShare,
   onRename,
+  onMove,
+  onDetails,
   onToggleStar,
   onDelete,
   onRestore,
@@ -102,6 +106,15 @@ export function FileCard({
               }
             ]
           : []),
+        ...(onDetails
+          ? [
+              {
+                label: 'Details',
+                onClick: onDetails,
+                icon: <Info className='w-4 h-4 text-text-secondary' />
+              }
+            ]
+          : []),
         ...(onShare
           ? [
               {
@@ -117,6 +130,15 @@ export function FileCard({
                 label: 'Rename',
                 onClick: onRename,
                 icon: <Edit3 className='w-4 h-4 text-text-secondary' />
+              }
+            ]
+          : []),
+        ...(onMove
+          ? [
+              {
+                label: 'Move',
+                onClick: onMove,
+                icon: <FolderInput className='w-4 h-4 text-text-secondary' />
               }
             ]
           : []),

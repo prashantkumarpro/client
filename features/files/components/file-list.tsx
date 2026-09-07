@@ -7,6 +7,8 @@ import { FilePreview } from './file-preview'
 import { FilePreviewModal } from './file-preview-modal'
 import { FileGrid } from './file-grid'
 import { FileTable } from './file-table'
+import { RenameModal } from './rename-modal'
+import { DeleteConfirmModal } from './delete-confirm-modal'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { SectionAction } from '../../../components/ui/section-action'
 import { ViewToggle } from '../../../components/ui/view-toggle'
@@ -116,6 +118,8 @@ export function FileList({
 
   const { download, rename, remove } = useFiles()
   const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
+  const [renameTarget, setRenameTarget] = useState<UnifiedFileItem | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<UnifiedFileItem | null>(null)
 
   // Local view mode override if defaultViewMode is passed, otherwise global
   const [localViewMode, setLocalViewMode] = useState<'grid' | 'list' | null>(
@@ -222,26 +226,21 @@ export function FileList({
     }
   }
 
-  const handleRename = async (file: UnifiedFileItem) => {
-    const fileId = file.id || file._id
-    const newName = prompt('Enter new filename:', file.name)
-    if (fileId && newName && newName.trim() && newName.trim() !== file.name) {
-      try {
-        await rename(fileId, { newFilename: newName.trim() })
-      } catch (err) {
-        console.error('Rename error:', err)
-      }
+  const handlePerformRename = async (newName: string) => {
+    if (!renameTarget) return
+    const fileId = renameTarget.id || renameTarget._id
+    if (fileId) {
+      await rename(fileId, { newFilename: newName })
+      setRenameTarget(null)
     }
   }
 
-  const handleDelete = async (file: UnifiedFileItem) => {
-    const fileId = file.id || file._id
+  const handlePerformDelete = async () => {
+    if (!deleteTarget) return
+    const fileId = deleteTarget.id || deleteTarget._id
     if (fileId) {
-      try {
-        await remove(fileId)
-      } catch (err) {
-        console.error('Delete error:', err)
-      }
+      await remove(fileId)
+      setDeleteTarget(null)
     }
   }
 
@@ -269,12 +268,12 @@ export function FileList({
       },
       {
         label: 'Rename',
-        onClick: () => handleRename(file),
+        onClick: () => setRenameTarget(file),
         icon: <Edit3 className='w-4 h-4 text-text-secondary' />
       },
       {
         label: 'Move',
-        onClick: () => alert(`Move file "${file.name}"`),
+        onClick: () => console.log(`Move file "${file.name}"`),
         icon: <FolderInput className='w-4 h-4 text-text-secondary' />
       },
       {
@@ -284,7 +283,7 @@ export function FileList({
       },
       {
         label: 'Delete',
-        onClick: () => handleDelete(file),
+        onClick: () => setDeleteTarget(file),
         icon: <Trash2 className='w-4 h-4 text-rose-500' />,
         danger: true
       }
@@ -372,9 +371,9 @@ export function FileList({
             setSelectedFileId(fId)
             setActiveModal('share')
           }}
-          onRename={handleRename}
+          onRename={file => setRenameTarget(file)}
           onToggleStar={fileId => toggleStar(fileId)}
-          onDelete={handleDelete}
+          onDelete={file => setDeleteTarget(file)}
         />
       ) : (
         /* REFINED LIST / TABLE VIEW (Clean, unboxed workspace table using reusable FileTable) */
@@ -396,6 +395,24 @@ export function FileList({
         file={previewFile}
         files={displayList.filter(f => deriveFileType(f) !== 'folder')}
         onNavigate={file => setPreviewFile(file as UnifiedFileItem)}
+      />
+
+      {/* Custom Rename Modal */}
+      <RenameModal
+        isOpen={Boolean(renameTarget)}
+        onClose={() => setRenameTarget(null)}
+        initialName={renameTarget?.name || ''}
+        itemType={renameTarget && deriveFileType(renameTarget) === 'folder' ? 'folder' : 'file'}
+        onRename={handlePerformRename}
+      />
+
+      {/* Custom Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        itemName={deleteTarget?.name || ''}
+        itemType={deleteTarget && deriveFileType(deleteTarget) === 'folder' ? 'folder' : 'file'}
+        onConfirm={handlePerformDelete}
       />
     </div>
   )

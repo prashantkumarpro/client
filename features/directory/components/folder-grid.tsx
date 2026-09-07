@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { FolderCard } from './folder-card'
 import { useDirectory } from '../hooks/use-directory'
+import { RenameModal } from '@/features/files/components/rename-modal'
+import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
 import type { DirectoryItem, RenameDirectoryData } from '../types'
 
 interface FolderGridProps {
@@ -24,10 +26,14 @@ export function FolderGrid ({
     setActiveFolderId,
     searchQuery,
     setSelectedFileId,
-    setActiveModal
+    setActiveModal,
+    toggleStar
   } = useApp()
 
   const hookResult = useDirectory(activeFolderId ?? undefined)
+
+  const [renameTarget, setRenameTarget] = useState<DirectoryItem | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<DirectoryItem | null>(null)
 
   const folders = useMemo(() => {
     const list = propFolders ?? hookResult.directory?.directories ?? []
@@ -39,23 +45,24 @@ export function FolderGrid ({
 
   const isLoading = propIsLoading ?? hookResult.isLoading
 
-  const handleRename = async (folderId: string, currentTitle: string) => {
-    const newName = prompt('Enter new folder name:', currentTitle)
-    if (newName && newName.trim() && newName.trim() !== currentTitle) {
-      if (propOnRename) {
-        await propOnRename(folderId, { newDirName: newName.trim() })
-      } else {
-        await hookResult.rename(folderId, { newDirName: newName.trim() })
-      }
+  const handlePerformRename = async (newName: string) => {
+    if (!renameTarget) return
+    if (propOnRename) {
+      await propOnRename(renameTarget.id, { newDirName: newName })
+    } else {
+      await hookResult.rename(renameTarget.id, { newDirName: newName })
     }
+    setRenameTarget(null)
   }
 
-  const handleDelete = async (folderId: string) => {
+  const handlePerformDelete = async () => {
+    if (!deleteTarget) return
     if (propOnDelete) {
-      await propOnDelete(folderId)
+      await propOnDelete(deleteTarget.id)
     } else {
-      await hookResult.remove(folderId)
+      await hookResult.remove(deleteTarget.id)
     }
+    setDeleteTarget(null)
   }
 
   if (isLoading) {
@@ -99,19 +106,35 @@ export function FolderGrid ({
               itemsCountText='0 files'
               starred={false}
               onClick={() => setActiveFolderId(folder.id)}
-              onRename={() => handleRename(folder.id, folder.name)}
+              onRename={() => setRenameTarget(folder)}
               onShare={() => {
                 setSelectedFileId(folder.id)
                 setActiveModal('share')
               }}
-              onToggleStar={() =>
-                alert(`Starring folder "${folder.name}" coming soon`)
-              }
-              onDelete={() => handleDelete(folder.id)}
+              onToggleStar={() => toggleStar(folder.id)}
+              onDelete={() => setDeleteTarget(folder)}
             />
           )
         })}
       </div>
+
+      {/* Custom Rename Modal for Folders */}
+      <RenameModal
+        isOpen={Boolean(renameTarget)}
+        onClose={() => setRenameTarget(null)}
+        initialName={renameTarget?.name || ''}
+        itemType="folder"
+        onRename={handlePerformRename}
+      />
+
+      {/* Custom Delete Confirmation Modal for Folders */}
+      <DeleteConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        itemName={deleteTarget?.name || ''}
+        itemType="folder"
+        onConfirm={handlePerformDelete}
+      />
     </div>
   )
 }

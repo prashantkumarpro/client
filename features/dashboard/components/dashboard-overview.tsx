@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
+import { RenameModal } from '@/features/files/components/rename-modal'
+import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
 import { SectionAction } from '@/components/ui/section-action'
 import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2 } from 'lucide-react'
 import { useDirectory } from '@/features/directory/hooks/use-directory'
@@ -43,6 +45,9 @@ export default function DashboardOverview () {
     refresh
   } = useDirectory()
 
+  const [renameFolderTarget, setRenameFolderTarget] = useState<DirectoryItem | null>(null)
+  const [deleteFolderTarget, setDeleteFolderTarget] = useState<DirectoryItem | null>(null)
+
   const folders: DirectoryItem[] = useMemo(() => {
     return directory?.directories ?? []
   }, [directory])
@@ -52,22 +57,25 @@ export default function DashboardOverview () {
     return folders.slice(0, 4)
   }, [folders])
 
-  const handleRenameFolder = async (folderId: string, currentTitle: string) => {
-    const newName = prompt('Enter new folder name:', currentTitle)
-    if (newName && newName.trim() && newName.trim() !== currentTitle) {
-      try {
-        await renameDir(folderId, { newDirName: newName.trim() })
-      } catch (err) {
-        console.error('Failed to rename directory:', err)
-      }
+  const handlePerformRenameFolder = async (newName: string) => {
+    if (!renameFolderTarget) return
+    try {
+      await renameDir(renameFolderTarget.id, { newDirName: newName })
+      setRenameFolderTarget(null)
+    } catch (err) {
+      console.error('Failed to rename directory:', err)
+      throw err
     }
   }
 
-  const handleDeleteFolder = async (folderId: string) => {
+  const handlePerformDeleteFolder = async () => {
+    if (!deleteFolderTarget) return
     try {
-      await removeDir(folderId)
+      await removeDir(deleteFolderTarget.id)
+      setDeleteFolderTarget(null)
     } catch (err) {
       console.error('Failed to delete directory:', err)
+      throw err
     }
   }
 
@@ -126,7 +134,7 @@ export default function DashboardOverview () {
     },
     {
       label: 'Rename',
-      onClick: () => handleRenameFolder(folder.id, folder.name),
+      onClick: () => setRenameFolderTarget(folder),
       icon: <Edit3 className='w-4 h-4 text-text-secondary' />
     },
     {
@@ -139,7 +147,7 @@ export default function DashboardOverview () {
     },
     {
       label: 'Delete',
-      onClick: () => handleDeleteFolder(folder.id),
+      onClick: () => setDeleteFolderTarget(folder),
       icon: <Trash2 className='w-4 h-4 text-rose-500' />,
       danger: true
     }
@@ -278,6 +286,24 @@ export default function DashboardOverview () {
           emptySubtitle='Upload your first file to get started.'
         />
       </div>
+
+      {/* Custom Rename Modal for Folders */}
+      <RenameModal
+        isOpen={Boolean(renameFolderTarget)}
+        onClose={() => setRenameFolderTarget(null)}
+        initialName={renameFolderTarget?.name || ''}
+        itemType="folder"
+        onRename={handlePerformRenameFolder}
+      />
+
+      {/* Custom Delete Confirmation Modal for Folders */}
+      <DeleteConfirmModal
+        isOpen={Boolean(deleteFolderTarget)}
+        onClose={() => setDeleteFolderTarget(null)}
+        itemName={deleteFolderTarget?.name || ''}
+        itemType="folder"
+        onConfirm={handlePerformDeleteFolder}
+      />
     </div>
   )
 }

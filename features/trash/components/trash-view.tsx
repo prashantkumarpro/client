@@ -6,6 +6,7 @@ import { FileGrid } from '@/features/files/components/file-grid'
 import { FileTable } from '@/features/files/components/file-table'
 import { FilePreview } from '@/features/files/components/file-preview'
 import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
+import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
 import { ViewToggle } from '@/components/ui/view-toggle'
 import { ActionMenuItem } from '@/components/ui/action-menu'
 import { formatBytes, formatDate } from '../../../lib/utils/format'
@@ -16,6 +17,7 @@ export function TrashView() {
   const { files, restoreFile, deletePermanently, searchQuery } = useApp()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
+  const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<UnifiedFileItem | null>(null)
 
   const deletedFiles = React.useMemo(() => {
     return (files as UnifiedFileItem[]).filter(
@@ -29,14 +31,12 @@ export function TrashView() {
     restoreFile(fileId)
   }
 
-  const handleDeletePermanently = (file: UnifiedFileItem) => {
-    const fileId = file.id || file._id || ''
-    if (
-      confirm(
-        `Are you sure you want to permanently delete "${file.name}"? This action cannot be undone.`
-      )
-    ) {
+  const handlePerformPermanentDelete = () => {
+    if (!permanentDeleteTarget) return
+    const fileId = permanentDeleteTarget.id || permanentDeleteTarget._id || ''
+    if (fileId) {
       deletePermanently(fileId)
+      setPermanentDeleteTarget(null)
     }
   }
 
@@ -50,7 +50,7 @@ export function TrashView() {
       },
       {
         label: 'Delete Forever',
-        onClick: () => handleDeletePermanently(file),
+        onClick: () => setPermanentDeleteTarget(file),
         icon: <Trash className='w-4 h-4 text-rose-500' />,
         danger: true
       }
@@ -114,7 +114,7 @@ export function TrashView() {
           isTrash
           onFileClick={file => setPreviewFile(file)}
           onRestore={file => handleRestore(file.id || file._id || '')}
-          onDeletePermanently={handleDeletePermanently}
+          onDeletePermanently={file => setPermanentDeleteTarget(file)}
         />
       ) : (
         /* REFINED TRASH LIST / TABLE VIEW (Clean, unboxed workspace table using reusable FileTable) */
@@ -137,6 +137,16 @@ export function TrashView() {
         file={previewFile}
         files={deletedFiles}
         onNavigate={file => setPreviewFile(file as UnifiedFileItem)}
+      />
+
+      {/* Custom Permanent Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={Boolean(permanentDeleteTarget)}
+        onClose={() => setPermanentDeleteTarget(null)}
+        itemName={permanentDeleteTarget?.name || ''}
+        itemType="file"
+        isPermanent={true}
+        onConfirm={handlePerformPermanentDelete}
       />
     </div>
   )

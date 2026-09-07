@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react'
 import { useApp } from '@/providers/app-provider'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
+import { FilePreview } from '@/features/files/components/file-preview'
 import { FilePreviewModal } from '@/features/files/components/file-preview-modal'
 import { ActionMenu, ActionMenuItem } from '@/components/ui/action-menu'
 import { SectionAction } from '@/components/ui/section-action'
@@ -115,22 +116,6 @@ export default function DashboardOverview () {
     if (hour < 12) return 'Good morning, Prashant 👋'
     if (hour < 17) return 'Good afternoon, Prashant 👋'
     return 'Good evening, Prashant 👋'
-  }
-
-  // Helper to map file types to larger grid icons in mid gray color (grayscale)
-  const getFileIconGrid = (type: string) => {
-    switch (type) {
-      case 'pdf':
-        return <FileText className='w-8 h-8 text-text-secondary shrink-0' />
-      case 'image':
-        return <ImageIcon className='w-8 h-8 text-text-secondary shrink-0' />
-      case 'video':
-        return <Video className='w-8 h-8 text-text-secondary shrink-0' />
-      case 'document':
-        return <FileText className='w-8 h-8 text-text-secondary shrink-0' />
-      default:
-        return <FileIcon className='w-8 h-8 text-text-secondary shrink-0' />
-    }
   }
 
   // Use real directory files if available, sorted by most recently updated/opened, otherwise mock files
@@ -470,9 +455,7 @@ export default function DashboardOverview () {
                   onClick={() => setPreviewFile(file)}
                   className='bg-card-bg rounded-xl border border-card-border hover:bg-input-bg/40 shadow-xs p-3 sm:p-3.5 flex flex-col gap-2.5 group relative select-none cursor-pointer transition-all duration-200 min-w-0'
                 >
-                  <div className='w-full h-20 sm:h-24 bg-input-bg rounded-lg flex items-center justify-center border border-card-border relative overflow-hidden shrink-0 group-hover:bg-input-bg/80 transition-all duration-200'>
-                    {getFileIconGrid(file.type)}
-                  </div>
+                  <FilePreview file={file} variant='grid' />
                   <div className='flex items-center justify-between gap-1.5 w-full min-w-0'>
                     <div className='flex flex-col min-w-0 flex-1 text-left'>
                       <span

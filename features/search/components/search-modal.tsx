@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/providers/app-provider';
 import { FileItem } from '@/types';
-import { Search, X, Folder, FileText, FileImage, Video, File } from 'lucide-react';
+import { FilePreview } from '@/features/files/components/file-preview';
+import { Search, X, Folder } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 export function SearchModal() {
@@ -70,24 +71,6 @@ export function SearchModal() {
     setActiveModal(null);
   };
 
-  const getFileIcon = (type: string) => {
-    const baseClass = "w-5 h-5 shrink-0";
-    switch (type) {
-      case 'folder':
-        return <Folder className={cn(baseClass, "text-[#6E60EE]")} />;
-      case 'pdf':
-        return <FileText className={cn(baseClass, "text-red-500")} />;
-      case 'document':
-        return <FileText className={cn(baseClass, "text-blue-500")} />;
-      case 'image':
-        return <FileImage className={cn(baseClass, "text-emerald-500")} />;
-      case 'video':
-        return <Video className={cn(baseClass, "text-violet-500")} />;
-      default:
-        return <File className={cn(baseClass, "text-gray-500")} />;
-    }
-  };
-
   return (
     <div 
       className="fixed inset-0 z-50 bg-black/60 dark:bg-black/85 backdrop-blur-xs flex flex-col items-center pt-[15vh] px-4 transition-opacity duration-300"
@@ -132,7 +115,13 @@ export function SearchModal() {
                   className="flex items-center justify-between px-3.5 py-3 hover:bg-divider/50 dark:hover:bg-[#15151F] transition-all duration-150 rounded-xl cursor-pointer group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                    {getFileIcon(file.type)}
+                    {file.type === 'folder' ? (
+                      <div className="w-8 h-8 rounded-lg bg-[#6E60EE]/10 flex items-center justify-center text-[#6E60EE] shrink-0">
+                        <Folder className="w-4.5 h-4.5" />
+                      </div>
+                    ) : (
+                      <FilePreview file={file} variant="compact" />
+                    )}
                     <div className="flex flex-col min-w-0">
                       <span className="text-xs font-bold text-foreground truncate group-hover:text-[#6E60EE] transition-colors leading-snug">
                         {file.name}

@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useApp } from '../../../providers/app-provider'
 import { useFiles } from '../hooks/use-files'
+import { FilePreview } from './file-preview'
 import { FilePreviewModal } from './file-preview-modal'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
 import { SectionAction } from '../../../components/ui/section-action'
@@ -387,11 +388,15 @@ export function FileList({
                   onClick={() => handleOpenFile(file)}
                   className='flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-input-bg/70 active:bg-input-bg transition-colors duration-150 group cursor-pointer select-none min-w-0 rounded-lg sm:rounded-none'
                 >
-                  {/* Name Column: Icon + Filename + Shared icon */}
+                  {/* Name Column: Icon/Thumbnail + Filename + Shared icon */}
                   <div className='flex items-center gap-3 min-w-0 flex-1 pr-3'>
-                    <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-text-secondary group-hover:bg-[#6E60EE]/10 group-hover:text-[#6E60EE] group-hover:border-[#6E60EE]/30 transition-all duration-200'>
-                      {getFileIcon(fileType)}
-                    </div>
+                    {fileType === 'folder' ? (
+                      <div className='w-9 h-9 rounded-lg bg-input-bg border border-card-border flex items-center justify-center shrink-0 text-[#6E60EE] group-hover:bg-[#6E60EE]/10 group-hover:border-[#6E60EE]/30 transition-all duration-200'>
+                        <Folder className='w-4 h-4 text-[#6E60EE]' />
+                      </div>
+                    ) : (
+                      <FilePreview file={file} variant='list' />
+                    )}
                     <div className='flex flex-col min-w-0 flex-1'>
                       <div className='flex items-center gap-1.5 min-w-0'>
                         <span

@@ -75,6 +75,7 @@ export function FilePreviewModal({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isCopied, setIsCopied] = useState<boolean>(false)
+  const [isImageLoaded, setIsImageLoaded] = useState<boolean>(false)
 
   // Image viewer transform controls
   const [zoomLevel, setZoomLevel] = useState<number>(1)
@@ -85,6 +86,7 @@ export function FilePreviewModal({
     setActiveFile(file)
     setZoomLevel(1)
     setRotation(0)
+    setIsImageLoaded(false)
   }, [file])
 
   const currentFile = activeFile || file
@@ -111,6 +113,7 @@ export function FilePreviewModal({
     const prevIdx = currentIndex > 0 ? currentIndex - 1 : fileCollection.length - 1
     const nextFile = fileCollection[prevIdx]
     if (nextFile) {
+      setIsImageLoaded(false)
       setActiveFile(nextFile)
       setZoomLevel(1)
       setRotation(0)
@@ -123,6 +126,7 @@ export function FilePreviewModal({
     const nextIdx = currentIndex < fileCollection.length - 1 ? currentIndex + 1 : 0
     const nextFile = fileCollection[nextIdx]
     if (nextFile) {
+      setIsImageLoaded(false)
       setActiveFile(nextFile)
       setZoomLevel(1)
       setRotation(0)
@@ -179,6 +183,7 @@ export function FilePreviewModal({
       setTextContent(null)
       setError(null)
       setIsLoading(false)
+      setIsImageLoaded(false)
       return
     }
 
@@ -186,6 +191,9 @@ export function FilePreviewModal({
     let createdUrl: string | null = null
 
     const typeInfo = getFileTypeInfo(currentFile.name, currentFile.extension, currentFile.mimeType)
+
+    // Reset image loaded flag on file change
+    setIsImageLoaded(false)
 
     // If file already has a direct URL or thumbnailUrl
     const explicitUrl = currentFile.url || currentFile.thumbnailUrl
@@ -364,7 +372,7 @@ export function FilePreviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-black/50 dark:bg-black/80 backdrop-blur-[2px] transition-opacity duration-200 select-none overflow-hidden animate-in fade-in"
+      className="fixed inset-0 z-50 flex flex-col bg-black/50 dark:bg-black/80 backdrop-blur-[2px] transition-opacity duration-250 ease-out select-none overflow-hidden animate-in fade-in"
       role="dialog"
       aria-modal="true"
       aria-label={`File preview for ${currentFile.name}`}
@@ -373,9 +381,11 @@ export function FilePreviewModal({
       <header className="h-16 px-4 sm:px-6 w-full bg-card-bg border-b border-card-border flex items-center justify-between text-foreground shrink-0 select-none z-30 shadow-none gap-2 sm:gap-4 transition-colors">
         {/* Left: File Icon + Name + Indicator (e.g. 3 of 8) */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          {renderHeaderIcon()}
+          <div className="transition-transform duration-200 ease-out">
+            {renderHeaderIcon()}
+          </div>
 
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 transition-opacity duration-200">
             <h2
               className="text-sm sm:text-base font-semibold text-foreground tracking-tight truncate max-w-[160px] xs:max-w-[220px] sm:max-w-md md:max-w-lg lg:max-w-xl"
               title={currentFile.name}
@@ -384,7 +394,7 @@ export function FilePreviewModal({
             </h2>
 
             {hasMultipleFiles && currentIndex !== -1 && (
-              <span className="text-xs font-semibold text-text-muted bg-input-bg border border-card-border px-2.5 py-0.5 rounded-full shrink-0 tracking-wide">
+              <span className="text-xs font-semibold text-text-muted bg-input-bg border border-card-border px-2.5 py-0.5 rounded-full shrink-0 tracking-wide transition-all duration-200">
                 {currentIndex + 1} of {fileCollection.length}
               </span>
             )}
@@ -483,14 +493,14 @@ export function FilePreviewModal({
           onClick={e => e.stopPropagation()}
         >
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center gap-3 p-8 text-white/80 dark:text-white/80">
+            <div className="flex flex-col items-center justify-center gap-3 p-8 text-white/80 dark:text-white/80 animate-in fade-in duration-200">
               <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 animate-spin text-[#6E60EE]" />
               <span className="text-xs sm:text-sm font-semibold tracking-wide text-white drop-shadow-sm">
                 Loading preview...
               </span>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center gap-4 p-8 text-center max-w-md bg-card-bg border border-card-border rounded-2xl shadow-xl">
+            <div className="flex flex-col items-center justify-center gap-4 p-8 text-center max-w-md bg-card-bg border border-card-border rounded-2xl shadow-xl animate-in fade-in zoom-in-[0.98] duration-250 ease-out">
               <div className="w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center">
                 <AlertCircle className="w-6 h-6" />
               </div>
@@ -509,24 +519,37 @@ export function FilePreviewModal({
             </div>
           ) : (
             <>
-              {/* 1. IMAGE PREVIEW */}
+              {/* 1. IMAGE PREVIEW WITH SMOOTH FADE + SCALE TRANSITIONS */}
               {category === 'image' && blobUrl && (
-                <div className="w-full h-full flex flex-col items-center justify-center relative select-none">
+                <div
+                  key={`img-container-${fileId || currentFile.name}`}
+                  className="w-full h-full flex flex-col items-center justify-center relative select-none"
+                >
                   <div className="relative max-h-[78vh] sm:max-h-[82vh] max-w-[88vw] flex items-center justify-center">
+                    {/* Placeholder Spinner while Image Loads */}
+                    {!isImageLoaded && (
+                      <div className="absolute inset-0 flex items-center justify-center text-[#6E60EE]">
+                        <Loader2 className="w-8 h-8 animate-spin" />
+                      </div>
+                    )}
+
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
+                      key={`img-${fileId || currentFile.name}`}
                       src={blobUrl}
                       alt={currentFile.name}
+                      onLoad={() => setIsImageLoaded(true)}
                       style={{
-                        transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
-                        transition: 'transform 200ms cubic-bezier(0.2, 0, 0, 1)'
+                        transform: `scale(${zoomLevel * (isImageLoaded ? 1 : 0.98)}) rotate(${rotation}deg)`,
+                        opacity: isImageLoaded ? 1 : 0,
+                        transition: 'opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1)'
                       }}
-                      className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] object-contain rounded-lg shadow-xl select-none"
+                      className="max-h-[76vh] sm:max-h-[80vh] max-w-[86vw] object-contain rounded-lg shadow-xl select-none will-change-transform"
                     />
                   </div>
 
                   {/* Compact Integrated Floating Zoom Controls Pill */}
-                  <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-card-bg/95 backdrop-blur-md border border-card-border px-3 py-1.5 rounded-full shadow-lg text-text-secondary select-none transition-colors">
+                  <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-card-bg/95 backdrop-blur-md border border-card-border px-3 py-1.5 rounded-full shadow-lg text-text-secondary select-none transition-all duration-200 animate-in fade-in zoom-in-[0.98]">
                     <button
                       type="button"
                       onClick={() => setZoomLevel(z => Math.max(0.5, z - 0.25))}
@@ -576,9 +599,12 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 2. PDF PREVIEW */}
+              {/* 2. PDF PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'pdf' && blobUrl && (
-                <div className="w-full h-full max-w-5xl flex items-center justify-center">
+                <div
+                  key={`pdf-${fileId || currentFile.name}`}
+                  className="w-full h-full max-w-5xl flex items-center justify-center animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                >
                   <iframe
                     src={blobUrl}
                     title={currentFile.name}
@@ -587,9 +613,12 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 3. VIDEO PREVIEW */}
+              {/* 3. VIDEO PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'video' && blobUrl && (
-                <div className="w-full h-full flex items-center justify-center p-2">
+                <div
+                  key={`video-${fileId || currentFile.name}`}
+                  className="w-full h-full flex items-center justify-center p-2 animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                >
                   <video
                     src={blobUrl}
                     controls
@@ -602,9 +631,12 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 4. AUDIO PREVIEW */}
+              {/* 4. AUDIO PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'audio' && (
-                <div className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors">
+                <div
+                  key={`audio-${fileId || currentFile.name}`}
+                  className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                >
                   {/* Glowing Animated Waveform Circle */}
                   <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#6E60EE]/10 border-2 border-[#6E60EE]/30 flex items-center justify-center text-[#6E60EE] shadow-[0_0_30px_rgba(110,96,238,0.2)] mb-4 relative group">
                     <Music className="w-9 h-9 sm:w-10 sm:h-10" />
@@ -644,9 +676,12 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 5. CODE / TEXT / JSON PREVIEW */}
+              {/* 5. CODE / TEXT / JSON PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'code' && (
-                <div className="w-full max-w-4xl max-h-[76vh] sm:max-h-[80vh] bg-card-bg border border-card-border rounded-xl shadow-xl flex flex-col overflow-hidden text-left transition-colors">
+                <div
+                  key={`code-${fileId || currentFile.name}`}
+                  className="w-full max-w-4xl max-h-[76vh] sm:max-h-[80vh] bg-card-bg border border-card-border rounded-xl shadow-xl flex flex-col overflow-hidden text-left transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                >
                   {/* Code Editor Header */}
                   <div className="h-10 px-4 bg-input-bg border-b border-card-border flex items-center justify-between shrink-0 select-none">
                     <div className="flex items-center gap-2">
@@ -688,9 +723,12 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 6. DOCUMENT PREVIEW (Word, Excel, PPT, etc.) */}
+              {/* 6. DOCUMENT PREVIEW WITH SMOOTH TRANSITION */}
               {category === 'document' && (
-                <div className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors">
+                <div
+                  key={`doc-${fileId || currentFile.name}`}
+                  className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                >
                   <div className={cn('w-20 h-20 rounded-2xl flex items-center justify-center shadow-xs mb-4', typeInfo.bgClass, typeInfo.colorClass)}>
                     {typeInfo.docType === 'sheet' ? (
                       <FileSpreadsheet className="w-10 h-10" />
@@ -743,9 +781,12 @@ export function FilePreviewModal({
                 </div>
               )}
 
-              {/* 7. ARCHIVE & UNSUPPORTED BINARY FORMATS */}
+              {/* 7. ARCHIVE & UNSUPPORTED BINARY FORMATS WITH SMOOTH TRANSITION */}
               {(category === 'archive' || category === 'other') && (
-                <div className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors">
+                <div
+                  key={`other-${fileId || currentFile.name}`}
+                  className="w-full max-w-md bg-card-bg border border-card-border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xl text-foreground transition-colors animate-in fade-in zoom-in-[0.98] duration-250 ease-out"
+                >
                   <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-input-bg border border-card-border flex items-center justify-center text-text-secondary shadow-xs mb-4">
                     {category === 'archive' ? (
                       <Archive className="w-9 h-9 text-amber-500" />

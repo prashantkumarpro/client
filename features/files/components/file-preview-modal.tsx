@@ -377,8 +377,8 @@ export function FilePreviewModal({
       aria-modal="true"
       aria-label={`File preview for ${currentFile.name}`}
     >
-      {/* Top Preview Bar - Matches CloudSpaceGo App Header Visual Language */}
-      <header className="h-16 px-4 sm:px-6 w-full bg-card-bg border-b border-card-border flex items-center justify-between text-foreground shrink-0 select-none z-30 shadow-none gap-2 sm:gap-4 transition-colors">
+      {/* Top Preview Bar - Translucent Frosted Glass Header matching CloudSpaceGo visual system */}
+      <header className="h-16 px-4 sm:px-6 w-full bg-card-bg/75 dark:bg-card-bg/70 backdrop-blur-md border-b border-card-border/60 flex items-center justify-between text-foreground shrink-0 select-none z-30 shadow-none gap-2 sm:gap-4 transition-colors">
         {/* Left: File Icon + Name + Indicator (e.g. 3 of 8) */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="transition-transform duration-200 ease-out">
@@ -394,13 +394,13 @@ export function FilePreviewModal({
             </h2>
 
             {hasMultipleFiles && currentIndex !== -1 && (
-              <span className="text-xs font-semibold text-text-muted bg-input-bg border border-card-border px-2.5 py-0.5 rounded-full shrink-0 tracking-wide transition-all duration-200">
+              <span className="text-xs font-semibold text-text-muted bg-input-bg/80 border border-card-border/60 px-2.5 py-0.5 rounded-full shrink-0 tracking-wide transition-all duration-200">
                 {currentIndex + 1} of {fileCollection.length}
               </span>
             )}
 
             {typeof currentFile.size === 'number' && currentFile.size > 0 && (
-              <span className="hidden md:inline-flex text-[11px] text-text-muted bg-input-bg border border-card-border px-2 py-0.5 rounded-full font-medium shrink-0">
+              <span className="hidden md:inline-flex text-[11px] text-text-muted bg-input-bg/80 border border-card-border/60 px-2 py-0.5 rounded-full font-medium shrink-0">
                 {formatBytes(currentFile.size)}
               </span>
             )}
@@ -413,7 +413,7 @@ export function FilePreviewModal({
             <button
               type="button"
               onClick={handleOpenInNewTab}
-              className="h-9 px-3 sm:px-3.5 rounded-lg text-xs font-semibold bg-input-bg hover:bg-card-border/60 text-foreground border border-card-border flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50"
+              className="h-9 px-3 sm:px-3.5 rounded-lg text-xs font-semibold bg-input-bg/80 hover:bg-input-bg text-foreground border border-card-border/60 flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50"
               title="Open in new tab"
               aria-label="Open in new tab"
             >
@@ -436,7 +436,7 @@ export function FilePreviewModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:text-foreground hover:bg-input-bg active:scale-95 transition-colors cursor-pointer border border-transparent hover:border-card-border ml-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50"
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:text-foreground hover:bg-input-bg/80 active:scale-95 transition-colors cursor-pointer border border-transparent hover:border-card-border/60 ml-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6E60EE]/50"
             title="Close preview (Esc)"
             aria-label="Close preview"
           >

@@ -16,6 +16,8 @@ export interface FileTypeInfo {
   bgClass: string
   badgeClass: string
   canHaveVisualThumbnail: boolean
+  isDocument?: boolean
+  docType?: 'word' | 'sheet' | 'slide' | 'generic'
 }
 
 export const IMAGE_EXTENSIONS = new Set([
@@ -186,6 +188,7 @@ export function getFileTypeInfo(
   if (DOCUMENT_EXTENSIONS.has(extension)) {
     const isSpreadsheet = ['xls', 'xlsx', 'ods', 'csv'].includes(extension)
     const isPresentation = ['ppt', 'pptx', 'odp'].includes(extension)
+    const docType = isSpreadsheet ? 'sheet' : isPresentation ? 'slide' : 'word'
 
     return {
       category: 'document',
@@ -206,7 +209,9 @@ export function getFileTypeInfo(
         : isPresentation
         ? 'bg-orange-500 text-white'
         : 'bg-[#6E60EE] text-white',
-      canHaveVisualThumbnail: false
+      canHaveVisualThumbnail: false,
+      isDocument: true,
+      docType
     }
   }
 
@@ -246,4 +251,15 @@ export function getFileTypeInfo(
     badgeClass: 'bg-text-secondary text-white',
     canHaveVisualThumbnail: false
   }
+}
+
+/**
+ * Quick helper returning category directly
+ */
+export function getFileCategory(
+  filename: string,
+  explicitExt?: string,
+  mimeType?: string
+): FileCategory {
+  return getFileTypeInfo(filename, explicitExt, mimeType).category
 }

@@ -510,6 +510,8 @@ export default function DashboardOverview () {
         isOpen={Boolean(previewFile)}
         onClose={() => setPreviewFile(null)}
         file={previewFile}
+        files={displayedFiles}
+        onNavigate={file => setPreviewFile(file)}
       />
     </div>
   )

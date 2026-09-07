@@ -492,6 +492,8 @@ export function FileList({
         isOpen={Boolean(previewFile)}
         onClose={() => setPreviewFile(null)}
         file={previewFile}
+        files={displayList.filter(f => deriveFileType(f) !== 'folder')}
+        onNavigate={file => setPreviewFile(file as UnifiedFileItem)}
       />
     </div>
   )

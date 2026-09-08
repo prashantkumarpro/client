@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { useApp } from '@/providers/app-provider'
+import { formatBytes } from '@/lib/utils/format'
 import { HardDrive, Check, Sparkles, Zap, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
@@ -12,8 +14,16 @@ export interface StorageUpgradeModalProps {
 }
 
 export function StorageUpgradeModal({ isOpen, onClose }: StorageUpgradeModalProps) {
+  const { storageStats } = useApp()
   const [selectedTier, setSelectedTier] = useState<'pro' | 'business'>('pro')
   const [isUpgraded, setIsUpgraded] = useState(false)
+
+  const percentageUsed = storageStats.totalCapacity > 0
+    ? Math.min(100, Math.round((storageStats.totalUsed / storageStats.totalCapacity) * 100))
+    : 0
+  const freeSpaceFormatted = formatBytes(Math.max(0, storageStats.totalCapacity - storageStats.totalUsed))
+  const usedSpaceFormatted = formatBytes(storageStats.totalUsed)
+  const totalCapacityFormatted = formatBytes(storageStats.totalCapacity)
 
   const handleUpgrade = () => {
     setIsUpgraded(true)
@@ -39,13 +49,13 @@ export function StorageUpgradeModal({ isOpen, onClose }: StorageUpgradeModalProp
               <HardDrive className="w-4 h-4 text-[#6E60EE]" />
               <span className="text-xs font-semibold text-foreground">Current Usage</span>
             </div>
-            <span className="text-xs font-bold text-[#6E60EE]">72% used</span>
+            <span className="text-xs font-bold text-[#6E60EE]">{percentageUsed}% used</span>
           </div>
           <div className="w-full h-2 bg-input-bg rounded-full overflow-hidden border border-card-border/60">
-            <div className="h-full bg-[#6E60EE] rounded-full" style={{ width: '72%' }} />
+            <div className="h-full bg-[#6E60EE] rounded-full" style={{ width: `${Math.max(percentageUsed, percentageUsed > 0 ? 3 : 0)}%` }} />
           </div>
           <span className="text-[11px] text-text-secondary">
-            10.8 GB of 15 GB total storage used &bull; 4.2 GB remaining
+            {usedSpaceFormatted} of {totalCapacityFormatted} total storage used &bull; {freeSpaceFormatted} remaining
           </span>
         </div>
 

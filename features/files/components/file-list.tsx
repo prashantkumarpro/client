@@ -145,10 +145,10 @@ export function FileList({
     }
   }
 
-  // Filter files if customFiles is not explicitly passed
+  // Filter files if customFiles is explicitly passed
   const displayList = React.useMemo(() => {
-    if (customFiles) {
-      const list = customFiles as UnifiedFileItem[]
+    if (customFiles !== undefined) {
+      const list = (customFiles as UnifiedFileItem[]) || []
       return limit ? list.slice(0, limit) : list
     }
 
@@ -191,14 +191,6 @@ export function FileList({
   const getLocationName = (file: UnifiedFileItem) => {
     const parentId = file.parentFolderId || file.parentDirId
     if (parentId) {
-      if (
-        parentId === 'folder-1' ||
-        parentId === 'folder-design-assets'
-      )
-        return 'Design Assets'
-      if (parentId === 'folder-projects') return 'Projects'
-      if (parentId === 'folder-documents') return 'Documents'
-      if (parentId === 'folder-brand-photos') return 'Brand Photos'
       const parent = (globalFiles as UnifiedFileItem[]).find(
         f => (f.id || f._id) === parentId
       )

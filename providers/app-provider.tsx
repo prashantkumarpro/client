@@ -120,20 +120,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Add baseline values from INITIAL_STORAGE to make it look realistic (72 GB total)
-    const docsTotal = docs + 28 * 1024 * 1024 * 1024; // baseline 28 GB
-    const imgsTotal = imgs + 22 * 1024 * 1024 * 1024; // baseline 22 GB
-    const vidsTotal = vids + 12 * 1024 * 1024 * 1024; // baseline 12 GB
-    const otherTotal = other + 10 * 1024 * 1024 * 1024; // baseline 10 GB
-    const totalUsed = docsTotal + imgsTotal + vidsTotal + otherTotal;
+    const totalUsed = docs + imgs + vids + other;
 
     return {
-      documents: docsTotal,
-      images: imgsTotal,
-      videos: vidsTotal,
-      other: otherTotal,
+      documents: docs,
+      images: imgs,
+      videos: vids,
+      other,
       totalUsed,
-      totalCapacity: INITIAL_STORAGE.totalCapacity,
+      totalCapacity: INITIAL_STORAGE.totalCapacity || 15 * 1024 * 1024 * 1024,
     };
   }, [files]);
 

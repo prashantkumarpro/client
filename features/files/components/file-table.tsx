@@ -61,11 +61,6 @@ export function FileTable({
   const getLocationName = (file: UnifiedFileItem) => {
     const parentId = file.parentFolderId || file.parentDirId
     if (parentId) {
-      if (parentId === 'folder-1' || parentId === 'folder-design-assets')
-        return 'Design Assets'
-      if (parentId === 'folder-projects') return 'Projects'
-      if (parentId === 'folder-documents') return 'Documents'
-      if (parentId === 'folder-brand-photos') return 'Brand Photos'
       const parent = allFiles.find(f => (f.id || f._id) === parentId)
       if (parent) return parent.name
     }

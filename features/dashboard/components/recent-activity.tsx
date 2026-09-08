@@ -177,28 +177,35 @@ export default function RecentActivity () {
         </div>
 
         <div className='flex-1 overflow-y-auto pr-1 flex flex-col gap-4'>
-          {activities.slice(0, 7).map(act => (
-            <div key={act.id} className='flex gap-4 items-start select-none'>
-              <div className='shrink-0'>{getActivityIcon(act.type)}</div>
-              <div className='flex flex-col min-w-0 flex-1'>
-                <span className='text-xs font-bold text-foreground'>
-                  {act.user === 'Prashant' ? 'You' : act.user}{' '}
-                  {act.type === 'upload' && 'uploaded'}
-                  {act.type === 'create_folder' && 'created folder'}
-                  {act.type === 'share' && 'shared'}
-                  {act.type === 'star' && 'starred'}
-                  {act.type === 'delete' && 'deleted'}
-                  {act.type === 'restore' && 'restored'}
-                </span>
-                <span className='text-[11px] font-light text-text-secondary truncate mt-0.5'>
-                  {act.assetName}
-                </span>
-                <span className='text-[9px] font-bold text-text-muted mt-1'>
-                  {formatDate(act.timestamp)}
-                </span>
-              </div>
+          {activities.length === 0 ? (
+            <div className='py-12 flex flex-col items-center justify-center text-center text-text-muted select-none'>
+              <span className='text-xs font-semibold text-foreground'>No recent activity</span>
+              <span className='text-[11px] text-text-secondary mt-1'>Workspace events will appear here.</span>
             </div>
-          ))}
+          ) : (
+            activities.slice(0, 7).map(act => (
+              <div key={act.id} className='flex gap-4 items-start select-none'>
+                <div className='shrink-0'>{getActivityIcon(act.type)}</div>
+                <div className='flex flex-col min-w-0 flex-1'>
+                  <span className='text-xs font-bold text-foreground'>
+                    {act.user === 'Prashant' ? 'You' : act.user}{' '}
+                    {act.type === 'upload' && 'uploaded'}
+                    {act.type === 'create_folder' && 'created folder'}
+                    {act.type === 'share' && 'shared'}
+                    {act.type === 'star' && 'starred'}
+                    {act.type === 'delete' && 'deleted'}
+                    {act.type === 'restore' && 'restored'}
+                  </span>
+                  <span className='text-[11px] font-light text-text-secondary truncate mt-0.5'>
+                    {act.assetName}
+                  </span>
+                  <span className='text-[9px] font-bold text-text-muted mt-1'>
+                    {formatDate(act.timestamp)}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* View All Activity link button */}

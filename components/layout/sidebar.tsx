@@ -6,6 +6,7 @@ import { SidebarSection } from '../../types'
 import { cn } from '../../lib/utils/cn'
 import { Tooltip } from '../ui/tooltip'
 import Image from 'next/image'
+import { formatBytes } from '../../lib/utils/format'
 import { getNavItems } from './nav-config'
 import { Sun, Moon } from 'lucide-react'
 
@@ -22,7 +23,14 @@ export function Sidebar({ className }: SidebarProps) {
     theme,
     toggleTheme,
     setActiveModal,
+    storageStats,
   } = useApp()
+
+  const percentageUsed = storageStats.totalCapacity > 0
+    ? Math.min(100, Math.round((storageStats.totalUsed / storageStats.totalCapacity) * 100))
+    : 0
+  const freeSpaceFormatted = formatBytes(Math.max(0, storageStats.totalCapacity - storageStats.totalUsed), 1)
+  const usedSpaceFormatted = formatBytes(storageStats.totalUsed, 1)
 
   const mainNavItems = getNavItems()
   const isLight = theme === 'light'
@@ -199,9 +207,9 @@ export function Sidebar({ className }: SidebarProps) {
                     d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
                   />
                 </svg>
-                <span className="text-[10px] font-bold text-foreground">72%</span>
+                <span className="text-[10px] font-bold text-foreground">{percentageUsed}%</span>
                 <div className="w-8 h-1.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border">
-                  <div className="h-full bg-[#6E60EE] rounded-full" style={{ width: '72%' }} />
+                  <div className="h-full bg-[#6E60EE] rounded-full" style={{ width: `${Math.max(percentageUsed, percentageUsed > 0 ? 3 : 0)}%` }} />
                 </div>
               </div>
             </Tooltip>
@@ -231,18 +239,18 @@ export function Sidebar({ className }: SidebarProps) {
                   </span>
                 </div>
                 <span className="text-[10px] font-bold text-white bg-[#6E60EE] px-2 py-0.5 rounded-full whitespace-nowrap">
-                  72%
+                  {percentageUsed}%
                 </span>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <span className="text-[11px] font-normal text-text-secondary whitespace-nowrap">
-                  72% used &bull; 2.8 GB free
+                  {usedSpaceFormatted} used &bull; {freeSpaceFormatted} free
                 </span>
                 <div className="w-full h-1.5 overflow-hidden relative border rounded-full bg-input-bg border-card-border">
                   <div
                     className="h-full bg-[#6E60EE] rounded-full"
-                    style={{ width: '72%' }}
+                    style={{ width: `${Math.max(percentageUsed, percentageUsed > 0 ? 3 : 0)}%` }}
                   />
                 </div>
               </div>

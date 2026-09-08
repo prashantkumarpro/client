@@ -57,8 +57,6 @@ const isValidObjectId = (id?: string | null): boolean => {
   return Boolean(id && typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id))
 }
 
-const MOCK_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1600&q=85'
-
 interface PreviewSlideProps {
   file: PreviewableFile
   isActive: boolean
@@ -127,13 +125,8 @@ function PreviewSlide({
     }
 
     if (!fileId || !isValidObjectId(fileId)) {
-      if (resolvedTypeInfo.category === 'image') {
-        setBlobUrl(MOCK_IMAGE_FALLBACK)
-      } else if (resolvedTypeInfo.category === 'code' || resolvedTypeInfo.category === 'document') {
-        setTextContent(`// Sample Preview for ${file.name}\n// Size: ${formatBytes(file.size || 1024)}\n\nfunction samplePreview() {\n  console.log("Viewing ${file.name}");\n}\n\nexport default samplePreview;`)
-      }
       setIsLoading(false)
-      setError(null)
+      setError('Unable to load file content for preview.')
       return
     }
 

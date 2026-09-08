@@ -31,7 +31,6 @@ function deriveFileType(filename: string, ext?: string): string {
 
 export default function DashboardOverview() {
   const {
-    files: mockFiles,
     setCurrentSection,
     setActiveModal,
     setSelectedFileId,
@@ -93,7 +92,7 @@ export default function DashboardOverview() {
     return `Good evening, ${name}`
   }
 
-  // Use real directory files if available, sorted by most recently updated/opened, otherwise mock files
+  // Use real directory files from backend, sorted by most recently updated/opened
   const allRecentFiles = useMemo(() => {
     if (directory?.files && directory.files.length > 0) {
       const list = [...directory.files]
@@ -115,12 +114,8 @@ export default function DashboardOverview() {
         }))
     }
 
-    const allMock = mockFiles.filter(f => f.type !== 'folder' && !f.deleted)
-    return allMock.sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    )
-  }, [directory?.files, mockFiles])
+    return []
+  }, [directory?.files])
 
   // Show a maximum of 8 recent files on the Home page
   const displayedFiles = useMemo(() => {
@@ -249,12 +244,12 @@ export default function DashboardOverview() {
             </button>
           </div>
         ) : folders.length === 0 ? (
-          <div className='w-full py-7 sm:py-8 flex flex-col items-center justify-center text-center bg-card-bg border border-dashed border-card-border rounded-xl p-5 sm:p-6 select-none'>
-            <div className='w-9 h-9 rounded-xl bg-input-bg border border-card-border/60 flex items-center justify-center text-text-muted mb-2.5'>
-              <Folder className='w-4.5 h-4.5 text-text-muted' />
+          <div className='w-full py-5 sm:py-6 px-4 sm:px-5 flex flex-col items-center justify-center text-center bg-card-bg border border-dashed border-card-border rounded-xl select-none'>
+            <div className='w-8 h-8 rounded-lg bg-input-bg border border-card-border/60 flex items-center justify-center text-text-muted mb-2'>
+              <Folder className='w-4 h-4 text-text-muted' />
             </div>
-            <h4 className='text-xs sm:text-sm font-bold text-foreground'>No folders yet</h4>
-            <p className='text-[11px] sm:text-xs text-text-secondary mt-1 max-w-[260px] leading-normal font-normal'>
+            <h4 className='text-xs sm:text-sm font-bold text-foreground leading-tight'>No folders yet</h4>
+            <p className='text-[11px] sm:text-xs text-text-secondary mt-0.5 max-w-[260px] leading-normal font-normal'>
               Create a folder to organize your files.
             </p>
             <Button
@@ -262,7 +257,7 @@ export default function DashboardOverview() {
               variant='primary'
               size='sm'
               onClick={() => setActiveModal('create-folder')}
-              className='mt-3.5 h-8.5 px-3.5 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs flex items-center gap-1.5'
+              className='mt-2.5 h-8 px-3.5 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs flex items-center gap-1.5'
             >
               <FolderPlus className='w-3.5 h-3.5' />
               <span>Create folder</span>

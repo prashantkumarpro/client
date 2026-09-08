@@ -8,7 +8,8 @@ import { FileList } from '@/features/files/components/file-list'
 import { RenameModal } from '@/features/files/components/rename-modal'
 import { SectionAction } from '@/components/ui/section-action'
 import { useAuth } from '@/features/auth/hooks/use-auth'
-import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2, FolderPlus } from 'lucide-react'
 import { useDirectory } from '@/features/directory/hooks/use-directory'
 import type { DirectoryItem } from '@/features/directory/types'
 import { ActionMenuItem } from '@/components/ui/action-menu'
@@ -248,12 +249,24 @@ export default function DashboardOverview() {
             </button>
           </div>
         ) : folders.length === 0 ? (
-          <div className='w-full py-8 flex flex-col items-center justify-center text-center bg-card-bg border border-dashed border-card-border rounded-xl p-6'>
-            <Folder className='w-8 h-8 text-text-muted mb-2' />
-            <h4 className='text-xs font-bold text-foreground'>No folders found</h4>
-            <p className='text-[11px] text-text-secondary mt-1 max-w-[220px] leading-normal font-normal'>
-              Create your first folder to organize your files.
+          <div className='w-full py-7 sm:py-8 flex flex-col items-center justify-center text-center bg-card-bg border border-dashed border-card-border rounded-xl p-5 sm:p-6 select-none'>
+            <div className='w-9 h-9 rounded-xl bg-input-bg border border-card-border/60 flex items-center justify-center text-text-muted mb-2.5'>
+              <Folder className='w-4.5 h-4.5 text-text-muted' />
+            </div>
+            <h4 className='text-xs sm:text-sm font-bold text-foreground'>No folders yet</h4>
+            <p className='text-[11px] sm:text-xs text-text-secondary mt-1 max-w-[260px] leading-normal font-normal'>
+              Create a folder to organize your files.
             </p>
+            <Button
+              type='button'
+              variant='primary'
+              size='sm'
+              onClick={() => setActiveModal('create-folder')}
+              className='mt-3.5 h-8.5 px-3.5 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs flex items-center gap-1.5'
+            >
+              <FolderPlus className='w-3.5 h-3.5' />
+              <span>Create folder</span>
+            </Button>
           </div>
         ) : (
           <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>

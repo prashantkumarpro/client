@@ -11,7 +11,8 @@ import { useAuth } from '@/features/auth/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2, FolderPlus } from 'lucide-react'
 import { useDirectory } from '@/features/directory/hooks/use-directory'
-import type { DirectoryItem } from '@/features/directory/types'
+import { getDirectory } from '@/features/directory/api'
+import type { DirectoryItem, FileItem } from '@/features/directory/types'
 import { ActionMenuItem } from '@/components/ui/action-menu'
 
 function deriveFileType(filename: string, ext?: string): string {
@@ -49,10 +50,49 @@ export default function DashboardOverview() {
   } = useDirectory()
 
   const [renameFolderTarget, setRenameFolderTarget] = useState<DirectoryItem | null>(null)
+  const [folderContents, setFolderContents] = useState<Record<string, { filesCount: number; files: FileItem[] }>>({})
 
   const folders: DirectoryItem[] = useMemo(() => {
     return directory?.directories ?? []
   }, [directory])
+
+  // Fetch file counts and contents for top-level folders using existing getDirectory API
+  React.useEffect(() => {
+    let isMounted = true
+    if (folders.length > 0) {
+      Promise.all(
+        folders.map(async folder => {
+          try {
+            const subDir = await getDirectory(folder.id)
+            return {
+              id: folder.id,
+              filesCount: subDir.files ? subDir.files.length : 0,
+              files: subDir.files || []
+            }
+          } catch {
+            return { id: folder.id, filesCount: 0, files: [] }
+          }
+        })
+      ).then(results => {
+        if (!isMounted) return
+        const map: Record<string, { filesCount: number; files: FileItem[] }> = {}
+        results.forEach(r => {
+          map[r.id] = { filesCount: r.filesCount, files: r.files }
+        })
+        setFolderContents(map)
+      })
+    } else {
+      setFolderContents({})
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [folders])
+
+  const getFolderItemsCountText = (folderId: string) => {
+    const count = folderContents[folderId]?.filesCount ?? 0
+    return `${count} ${count === 1 ? 'file' : 'files'}`
+  }
 
   // Show a maximum of 4 folder cards on the Home page
   const displayedFolders = useMemo(() => {
@@ -92,30 +132,43 @@ export default function DashboardOverview() {
     return `Good evening, ${name}`
   }
 
-  // Use real directory files from backend, sorted by most recently updated/opened
+  // Use real directory files from root and subfolders, sorted by most recently updated/created
   const allRecentFiles = useMemo(() => {
-    if (directory?.files && directory.files.length > 0) {
-      const list = [...directory.files]
-      return list
-        .sort((a, b) => {
-          const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime()
-          const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime()
-          return timeB - timeA
-        })
-        .map(f => ({
-          id: f.id || f._id || '',
-          name: f.name,
-          type: deriveFileType(f.name, f.extension) as any,
-          extension: f.extension,
-          size: typeof f.size === 'number' ? f.size : 0,
-          starred: false,
-          updatedAt: f.updatedAt || f.createdAt || new Date().toISOString(),
-          raw: f
-        }))
-    }
+    const rootFiles = directory?.files || []
+    const nestedFiles = Object.values(folderContents).flatMap(fc => fc.files)
+    const combined = [...rootFiles, ...nestedFiles]
 
-    return []
-  }, [directory?.files])
+    if (combined.length === 0) return []
+
+    // Deduplicate by file ID
+    const uniqueMap = new Map<string, FileItem>()
+    combined.forEach(f => {
+      const key = f.id || f._id
+      if (key && !uniqueMap.has(key)) {
+        uniqueMap.set(key, f)
+      }
+    })
+
+    const list = Array.from(uniqueMap.values())
+    return list
+      .sort((a, b) => {
+        const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime()
+        const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime()
+        return timeB - timeA
+      })
+      .map(f => ({
+        id: f.id || f._id || '',
+        _id: f._id || f.id,
+        name: f.name,
+        type: deriveFileType(f.name, f.extension) as any,
+        extension: f.extension,
+        size: typeof f.size === 'number' ? f.size : 0,
+        parentDirId: f.parentDirId,
+        starred: false,
+        updatedAt: f.updatedAt || f.createdAt || new Date().toISOString(),
+        raw: f
+      }))
+  }, [directory?.files, folderContents])
 
   // Show a maximum of 8 recent files on the Home page
   const displayedFiles = useMemo(() => {
@@ -273,7 +326,7 @@ export default function DashboardOverview() {
                   key={folder.id}
                   id={folder.id}
                   name={folder.name}
-                  itemsCountText='0 files'
+                  itemsCountText={getFolderItemsCountText(folder.id)}
                   starred={false}
                   onClick={() => {
                     setCurrentSection('My Files')

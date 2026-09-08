@@ -5,6 +5,7 @@ import { useApp } from '@/providers/app-provider'
 import { useToast } from '@/providers/toast-provider'
 import { FolderCard } from './folder-card'
 import { useDirectory } from '../hooks/use-directory'
+import { getDirectory } from '../api'
 import { RenameModal } from '@/features/files/components/rename-modal'
 import { MoveModal } from '@/features/files/components/move-modal'
 import { FileDetailsModal } from '@/features/files/components/file-details-modal'
@@ -40,6 +41,7 @@ export function FolderGrid ({
   const [renameTarget, setRenameTarget] = useState<DirectoryItem | null>(null)
   const [moveTarget, setMoveTarget] = useState<DirectoryItem | null>(null)
   const [detailsTarget, setDetailsTarget] = useState<DirectoryItem | null>(null)
+  const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
 
   const folders = useMemo(() => {
     const list = propFolders ?? hookResult.directory?.directories ?? []
@@ -48,6 +50,35 @@ export function FolderGrid ({
       f.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }, [propFolders, hookResult.directory?.directories, searchQuery])
+
+  // Fetch real file counts for folders using existing getDirectory API
+  React.useEffect(() => {
+    let isMounted = true
+    if (folders.length > 0) {
+      Promise.all(
+        folders.map(async f => {
+          try {
+            const subDir = await getDirectory(f.id)
+            return { id: f.id, count: subDir.files ? subDir.files.length : 0 }
+          } catch {
+            return { id: f.id, count: 0 }
+          }
+        })
+      ).then(results => {
+        if (!isMounted) return
+        const map: Record<string, number> = {}
+        results.forEach(r => {
+          map[r.id] = r.count
+        })
+        setFolderCounts(map)
+      })
+    } else {
+      setFolderCounts({})
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [folders])
 
   const isLoading = propIsLoading ?? hookResult.isLoading
 
@@ -118,12 +149,15 @@ export function FolderGrid ({
       </h4>
       <div className='grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] xl:grid-cols-4 gap-3 sm:gap-4'>
         {folders.map(folder => {
+          const count = folderCounts[folder.id] ?? 0
+          const itemsCountText = `${count} ${count === 1 ? 'file' : 'files'}`
+
           return (
             <FolderCard
               key={folder.id}
               id={folder.id}
               name={folder.name}
-              itemsCountText='0 files'
+              itemsCountText={itemsCountText}
               starred={false}
               onClick={() => setActiveFolderId(folder.id)}
               onDetails={() => setDetailsTarget(folder)}

@@ -2,10 +2,10 @@
 
 import React, { useMemo, useState } from 'react'
 import { useApp } from '@/providers/app-provider'
+import { useToast } from '@/providers/toast-provider'
 import { FolderCard } from './folder-card'
 import { useDirectory } from '../hooks/use-directory'
 import { RenameModal } from '@/features/files/components/rename-modal'
-import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
 import { MoveModal } from '@/features/files/components/move-modal'
 import { FileDetailsModal } from '@/features/files/components/file-details-modal'
 import type { DirectoryItem, RenameDirectoryData } from '../types'
@@ -34,10 +34,10 @@ export function FolderGrid ({
     moveFile
   } = useApp()
 
+  const toast = useToast()
   const hookResult = useDirectory(activeFolderId ?? undefined)
 
   const [renameTarget, setRenameTarget] = useState<DirectoryItem | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<DirectoryItem | null>(null)
   const [moveTarget, setMoveTarget] = useState<DirectoryItem | null>(null)
   const [detailsTarget, setDetailsTarget] = useState<DirectoryItem | null>(null)
 
@@ -61,14 +61,22 @@ export function FolderGrid ({
     setRenameTarget(null)
   }
 
-  const handlePerformDelete = async () => {
-    if (!deleteTarget) return
-    if (propOnDelete) {
-      await propOnDelete(deleteTarget.id)
-    } else {
-      await hookResult.remove(deleteTarget.id)
+  const handleDeleteFolder = async (folder: DirectoryItem) => {
+    try {
+      if (propOnDelete) {
+        await propOnDelete(folder.id)
+      } else {
+        await hookResult.remove(folder.id)
+      }
+
+      toast.success(
+        'Moved to Trash',
+        `"${folder.name}" was moved to Trash.`
+      )
+    } catch (err) {
+      console.error('Failed to delete folder:', err)
+      toast.error('Failed to delete', `Could not delete "${folder.name}".`)
     }
-    setDeleteTarget(null)
   }
 
   const handlePerformMove = async (targetFolderId: string | null) => {
@@ -126,7 +134,7 @@ export function FolderGrid ({
               }}
               onMove={() => setMoveTarget(folder)}
               onToggleStar={() => toggleStar(folder.id)}
-              onDelete={() => setDeleteTarget(folder)}
+              onDelete={() => handleDeleteFolder(folder)}
             />
           )
         })}
@@ -139,15 +147,6 @@ export function FolderGrid ({
         initialName={renameTarget?.name || ''}
         itemType="folder"
         onRename={handlePerformRename}
-      />
-
-      {/* Custom Delete Confirmation Modal for Folders */}
-      <DeleteConfirmModal
-        isOpen={Boolean(deleteTarget)}
-        onClose={() => setDeleteTarget(null)}
-        itemName={deleteTarget?.name || ''}
-        itemType="folder"
-        onConfirm={handlePerformDelete}
       />
 
       {/* Custom Move Modal for Folders */}

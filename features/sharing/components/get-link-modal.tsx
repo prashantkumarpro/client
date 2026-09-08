@@ -46,7 +46,7 @@ export function GetLinkModal() {
       onClose={handleClose}
       title="Get Link"
       description="Share this link with anyone you want to give view access to"
-      maxWidth="max-w-[440px]"
+      size="md"
     >
       <div className="flex flex-col gap-4">
         {/* Selected Resource Summary */}

@@ -2,10 +2,10 @@
 
 import React, { useMemo, useState } from 'react'
 import { useApp } from '@/providers/app-provider'
+import { useToast } from '@/providers/toast-provider'
 import { FolderCard } from '@/features/directory/components/folder-card'
 import { FileList } from '@/features/files/components/file-list'
 import { RenameModal } from '@/features/files/components/rename-modal'
-import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
 import { SectionAction } from '@/components/ui/section-action'
 import { useAuth } from '@/features/auth/hooks/use-auth'
 import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2 } from 'lucide-react'
@@ -37,6 +37,7 @@ export default function DashboardOverview() {
     setActiveFolderId,
   } = useApp()
   const { user } = useAuth()
+  const toast = useToast()
 
   const {
     directory,
@@ -48,7 +49,6 @@ export default function DashboardOverview() {
   } = useDirectory()
 
   const [renameFolderTarget, setRenameFolderTarget] = useState<DirectoryItem | null>(null)
-  const [deleteFolderTarget, setDeleteFolderTarget] = useState<DirectoryItem | null>(null)
 
   const folders: DirectoryItem[] = useMemo(() => {
     return directory?.directories ?? []
@@ -70,14 +70,16 @@ export default function DashboardOverview() {
     }
   }
 
-  const handlePerformDeleteFolder = async () => {
-    if (!deleteFolderTarget) return
+  const handlePerformDeleteFolder = async (folder: DirectoryItem) => {
     try {
-      await removeDir(deleteFolderTarget.id)
-      setDeleteFolderTarget(null)
+      await removeDir(folder.id)
+      toast.success(
+        'Moved to Trash',
+        `"${folder.name}" was moved to Trash.`
+      )
     } catch (err) {
       console.error('Failed to delete directory:', err)
-      throw err
+      toast.error('Failed to delete', `Could not delete "${folder.name}".`)
     }
   }
 
@@ -150,7 +152,7 @@ export default function DashboardOverview() {
     },
     {
       label: 'Delete',
-      onClick: () => setDeleteFolderTarget(folder),
+      onClick: () => handlePerformDeleteFolder(folder),
       icon: <Trash2 className='w-4 h-4 text-rose-500' />,
       danger: true
     }
@@ -297,15 +299,6 @@ export default function DashboardOverview() {
         initialName={renameFolderTarget?.name || ''}
         itemType="folder"
         onRename={handlePerformRenameFolder}
-      />
-
-      {/* Custom Delete Confirmation Modal for Folders */}
-      <DeleteConfirmModal
-        isOpen={Boolean(deleteFolderTarget)}
-        onClose={() => setDeleteFolderTarget(null)}
-        itemName={deleteFolderTarget?.name || ''}
-        itemType="folder"
-        onConfirm={handlePerformDeleteFolder}
       />
     </div>
   )

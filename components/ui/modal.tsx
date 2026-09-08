@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Dialog, DialogProps } from './dialog'
+import { Dialog, DialogProps, DialogSize } from './dialog'
 
 export interface ModalProps {
   open?: boolean
@@ -12,6 +12,7 @@ export interface ModalProps {
   children: React.ReactNode
   className?: string
   showCloseButton?: boolean
+  size?: DialogSize
   maxWidth?: string
   headerDivider?: boolean
   icon?: React.ReactNode
@@ -26,7 +27,8 @@ export function Modal({
   children,
   className,
   showCloseButton = true,
-  maxWidth = 'max-w-[440px]',
+  size = 'md',
+  maxWidth,
   headerDivider = false,
   icon
 }: ModalProps) {
@@ -40,6 +42,7 @@ export function Modal({
       description={description}
       className={className}
       showCloseButton={showCloseButton}
+      size={size}
       maxWidth={maxWidth}
       headerDivider={headerDivider}
       icon={icon}

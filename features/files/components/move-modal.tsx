@@ -80,19 +80,19 @@ export function MoveModal({
       onClose={handleClose}
       title="Move to"
       description={`Select a destination for "${itemName}"`}
-      maxWidth="max-w-[440px]"
+      size="md"
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3.5">
         {/* Selected Item Summary */}
-        <div className="flex items-center gap-3 p-2.5 bg-input-bg/60 border border-card-border rounded-xl">
-          <div className="w-8 h-8 rounded-lg bg-[#6E60EE]/10 text-[#6E60EE] flex items-center justify-center shrink-0">
-            <FolderInput className="w-4 h-4" />
+        <div className="flex items-center gap-2.5 p-2 bg-input-bg/60 border border-card-border rounded-xl">
+          <div className="w-7 h-7 rounded-lg bg-[#6E60EE]/10 text-[#6E60EE] flex items-center justify-center shrink-0">
+            <FolderInput className="w-3.5 h-3.5" />
           </div>
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-xs font-semibold text-foreground truncate" title={itemName}>
               {itemName}
             </span>
-            <span className="text-[11px] text-text-secondary">
+            <span className="text-[10px] text-text-secondary">
               Moving {itemType}
             </span>
           </div>
@@ -104,12 +104,12 @@ export function MoveModal({
             Choose Destination
           </span>
 
-          <div className="flex flex-col gap-1 max-h-56 overflow-y-auto pr-1 border border-card-border rounded-xl p-1.5 bg-card-bg">
+          <div className="flex flex-col gap-1 max-h-52 overflow-y-auto pr-1 border border-card-border rounded-xl p-1 bg-card-bg">
             {/* Root: My Files */}
             <div
               onClick={() => setSelectedFolderId(null)}
               className={cn(
-                "flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-all duration-150 select-none",
+                "flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all duration-150 select-none",
                 selectedFolderId === null
                   ? "bg-[#6E60EE]/10 text-[#6E60EE] font-semibold border border-[#6E60EE]/30"
                   : "hover:bg-input-bg text-foreground border border-transparent"
@@ -122,7 +122,7 @@ export function MoveModal({
                 </span>
               </div>
               {selectedFolderId === null && (
-                <Check className="w-4 h-4 text-[#6E60EE] shrink-0" />
+                <Check className="w-3.5 h-3.5 text-[#6E60EE] shrink-0" />
               )}
             </div>
 
@@ -136,7 +136,7 @@ export function MoveModal({
                   key={fId}
                   onClick={() => setSelectedFolderId(fId)}
                   className={cn(
-                    "flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-all duration-150 select-none",
+                    "flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all duration-150 select-none",
                     isSelected
                       ? "bg-[#6E60EE]/10 text-[#6E60EE] font-semibold border border-[#6E60EE]/30"
                       : "hover:bg-input-bg text-foreground border border-transparent"
@@ -149,7 +149,7 @@ export function MoveModal({
                     </span>
                   </div>
                   {isSelected && (
-                    <Check className="w-4 h-4 text-[#6E60EE] shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-[#6E60EE] shrink-0" />
                   )}
                 </div>
               )
@@ -164,14 +164,14 @@ export function MoveModal({
         )}
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-card-border/60">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-card-border/60">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={handleClose}
             disabled={isMoving}
-            className="h-9 px-4 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
+            className="h-8.5 px-3.5 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
           >
             Cancel
           </Button>
@@ -181,7 +181,7 @@ export function MoveModal({
             size="sm"
             onClick={handleConfirmMove}
             disabled={isMoving || isCurrentLocation}
-            className="h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50"
+            className="h-8.5 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50"
           >
             {isMoving ? 'Moving...' : 'Move here'}
           </Button>

@@ -29,7 +29,7 @@ export function StorageUpgradeModal({ isOpen, onClose }: StorageUpgradeModalProp
       onClose={onClose}
       title="Storage & Plans"
       description="Upgrade your cloud storage for more space and premium features"
-      maxWidth="max-w-[480px]"
+      size="lg"
     >
       <div className="flex flex-col gap-4">
         {/* Current Storage Meter */}

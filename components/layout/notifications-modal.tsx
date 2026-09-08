@@ -103,7 +103,7 @@ export function NotificationsModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Notifications"
-      maxWidth="max-w-[440px]"
+      size="md"
     >
       <div className="flex flex-col gap-3">
         {/* Notification List Container with subtle warm off-white background */}

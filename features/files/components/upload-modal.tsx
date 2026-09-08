@@ -86,7 +86,7 @@ export function UploadModal() {
         isOpen={isFileOpen}
         onClose={handleClose}
         title="Upload File"
-        maxWidth="max-w-[440px]"
+        size="md"
       >
         <form onSubmit={handleUploadFile} className="flex flex-col gap-4">
           {/* Hidden native file input */}
@@ -168,7 +168,7 @@ export function UploadModal() {
         isOpen={isFolderOpen}
         onClose={handleClose}
         title="Create New Folder"
-        maxWidth="max-w-[420px]"
+        size="sm"
       >
         <form onSubmit={handleUploadFolder} className="flex flex-col gap-4">
           <Input

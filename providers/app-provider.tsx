@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { FileItem, ActivityItem, StorageStats, SidebarSection, FileType } from '../types';
 import { INITIAL_FILES, INITIAL_ACTIVITIES, INITIAL_STORAGE } from '../lib/constants/mock-data';
+import { ToastProvider } from './toast-provider';
 
 interface AppContextType {
   currentSection: SidebarSection;
@@ -349,7 +350,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     currentFolderBreadcrumbs,
   ]);
 
-  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={contextValue}>
+      <ToastProvider>
+        {children}
+      </ToastProvider>
+    </AppContext.Provider>
+  );
 }
 
 export function useApp() {

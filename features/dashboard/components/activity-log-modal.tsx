@@ -69,7 +69,7 @@ export function ActivityLogModal({ isOpen, onClose }: ActivityLogModalProps) {
       onClose={onClose}
       title="Activity Log"
       description="Recent workspace actions and events"
-      maxWidth="max-w-[500px]"
+      size="md"
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col divide-y divide-card-border/50 max-h-80 overflow-y-auto pr-1 border border-card-border rounded-xl p-1 bg-card-bg">

@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useApp } from '../../../providers/app-provider'
 import { useFiles } from '../hooks/use-files'
+import { useToast } from '@/providers/toast-provider'
 import { FilePreview } from './file-preview'
 import { FilePreviewModal } from './file-preview-modal'
 import { FileGrid } from './file-grid'
 import { FileTable } from './file-table'
 import { RenameModal } from './rename-modal'
-import { DeleteConfirmModal } from './delete-confirm-modal'
 import { MoveModal } from './move-modal'
 import { FileDetailsModal } from './file-details-modal'
 import { ActionMenu, ActionMenuItem } from '../../../components/ui/action-menu'
@@ -116,14 +116,16 @@ export function FileList({
     setSelectedFileId,
     setActiveModal,
     moveFile,
+    deleteFile,
+    restoreFile,
     viewMode: globalViewMode,
     setViewMode: setGlobalViewMode
   } = useApp()
 
+  const toast = useToast()
   const { download, rename, remove } = useFiles()
   const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
   const [renameTarget, setRenameTarget] = useState<UnifiedFileItem | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<UnifiedFileItem | null>(null)
   const [moveTarget, setMoveTarget] = useState<UnifiedFileItem | null>(null)
   const [detailsTarget, setDetailsTarget] = useState<UnifiedFileItem | null>(null)
 
@@ -241,12 +243,32 @@ export function FileList({
     }
   }
 
-  const handlePerformDelete = async () => {
-    if (!deleteTarget) return
-    const fileId = deleteTarget.id || deleteTarget._id
-    if (fileId) {
-      await remove(fileId)
-      setDeleteTarget(null)
+  const handleDeleteItem = async (file: UnifiedFileItem) => {
+    const fileId = file.id || file._id
+    if (!fileId) return
+
+    try {
+      if (typeof fileId === 'string' && fileId.startsWith('file-')) {
+        deleteFile(fileId)
+      } else {
+        await remove(fileId)
+      }
+
+      toast.success(
+        'Moved to Trash',
+        `"${file.name}" was moved to Trash.`,
+        {
+          label: 'Undo',
+          onClick: () => {
+            if (typeof fileId === 'string' && fileId.startsWith('file-')) {
+              restoreFile(fileId)
+            }
+          }
+        }
+      )
+    } catch (err) {
+      console.error('Failed to delete item:', err)
+      toast.error('Failed to delete', `Could not move "${file.name}" to Trash.`)
     }
   }
 
@@ -304,7 +326,7 @@ export function FileList({
       },
       {
         label: 'Delete',
-        onClick: () => setDeleteTarget(file),
+        onClick: () => handleDeleteItem(file),
         icon: <Trash2 className='w-4 h-4 text-rose-500' />,
         danger: true
       }
@@ -390,7 +412,7 @@ export function FileList({
           onMove={file => setMoveTarget(file)}
           onDetails={file => setDetailsTarget(file)}
           onToggleStar={fileId => toggleStar(fileId)}
-          onDelete={file => setDeleteTarget(file)}
+          onDelete={file => handleDeleteItem(file)}
         />
       ) : (
         /* REFINED LIST / TABLE VIEW (Clean, unboxed workspace table using reusable FileTable) */
@@ -430,15 +452,6 @@ export function FileList({
         initialName={renameTarget?.name || ''}
         itemType={renameTarget && deriveFileType(renameTarget) === 'folder' ? 'folder' : 'file'}
         onRename={handlePerformRename}
-      />
-
-      {/* Custom Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={Boolean(deleteTarget)}
-        onClose={() => setDeleteTarget(null)}
-        itemName={deleteTarget?.name || ''}
-        itemType={deleteTarget && deriveFileType(deleteTarget) === 'folder' ? 'folder' : 'file'}
-        onConfirm={handlePerformDelete}
       />
 
       {/* Custom Move Modal */}

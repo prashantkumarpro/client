@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useApp } from '../../../providers/app-provider'
+import { useToast } from '@/providers/toast-provider'
 import { FileGrid } from '@/features/files/components/file-grid'
 import { FileTable } from '@/features/files/components/file-table'
 import { FilePreview } from '@/features/files/components/file-preview'
@@ -15,6 +16,7 @@ import { RotateCcw, Trash, Trash2, Search } from 'lucide-react'
 
 export function TrashView() {
   const { files, restoreFile, deletePermanently, searchQuery } = useApp()
+  const toast = useToast()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [previewFile, setPreviewFile] = useState<UnifiedFileItem | null>(null)
   const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<UnifiedFileItem | null>(null)
@@ -27,16 +29,19 @@ export function TrashView() {
     )
   }, [files, searchQuery])
 
-  const handleRestore = (fileId: string) => {
+  const handleRestore = (fileId: string, fileName?: string) => {
     restoreFile(fileId)
+    toast.success('Restored', fileName ? `"${fileName}" was restored.` : 'Item restored from Trash.')
   }
 
   const handlePerformPermanentDelete = () => {
     if (!permanentDeleteTarget) return
     const fileId = permanentDeleteTarget.id || permanentDeleteTarget._id || ''
+    const fileName = permanentDeleteTarget.name
     if (fileId) {
       deletePermanently(fileId)
       setPermanentDeleteTarget(null)
+      toast.info('Permanently deleted', `"${fileName}" was permanently deleted.`)
     }
   }
 
@@ -45,7 +50,7 @@ export function TrashView() {
     return [
       {
         label: 'Restore',
-        onClick: () => handleRestore(fileId),
+        onClick: () => handleRestore(fileId, file.name),
         icon: <RotateCcw className='w-4 h-4 text-text-secondary' />
       },
       {

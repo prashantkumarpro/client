@@ -19,7 +19,7 @@ export default function AccountDetails ({ open, onClose }: AccountDetailsProps) 
       onClose={onClose}
       title='Account Details'
       description='Your profile and workspace identity'
-      maxWidth='max-w-[420px]'
+      size='md'
     >
       <div className="flex flex-col gap-4">
         {/* User identity card */}

@@ -61,7 +61,7 @@ export function FileDetailsModal({
       isOpen={isOpen}
       onClose={onClose}
       title={isFolder ? "Folder Details" : "File Details"}
-      maxWidth="max-w-[440px]"
+      size="md"
     >
       <div className="flex flex-col gap-4">
         {/* Header Preview & Name */}

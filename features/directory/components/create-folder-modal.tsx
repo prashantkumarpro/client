@@ -57,10 +57,10 @@ export function CreateFolderModal() {
     <Dialog
       isOpen={isOpen}
       onClose={handleClose}
-      title="Create New Folder"
-      maxWidth="max-w-[420px]"
+      title="New Folder"
+      size="sm"
     >
-      <form onSubmit={handleCreate} className="flex flex-col gap-4">
+      <form onSubmit={handleCreate} className="flex flex-col gap-3.5">
         <Input
           ref={inputRef}
           label="Folder Name"
@@ -74,13 +74,13 @@ export function CreateFolderModal() {
           autoComplete="off"
         />
 
-        <div className="flex items-center justify-end gap-2.5 pt-2">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-card-border/60">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={handleClose}
-            className="h-9 px-4 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
+            className="h-8.5 px-3.5 text-xs font-semibold text-text-secondary hover:text-foreground hover:bg-input-bg"
           >
             Cancel
           </Button>
@@ -89,7 +89,7 @@ export function CreateFolderModal() {
             variant="primary"
             size="sm"
             disabled={isSubmitDisabled}
-            className="h-9 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-8.5 px-4 text-xs font-semibold bg-[#6E60EE] hover:bg-[#6052E6] text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isCreating ? 'Creating...' : 'Create'}
           </Button>

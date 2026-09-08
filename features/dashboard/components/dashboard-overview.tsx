@@ -7,6 +7,7 @@ import { FileList } from '@/features/files/components/file-list'
 import { RenameModal } from '@/features/files/components/rename-modal'
 import { DeleteConfirmModal } from '@/features/files/components/delete-confirm-modal'
 import { SectionAction } from '@/components/ui/section-action'
+import { useAuth } from '@/features/auth/hooks/use-auth'
 import { Folder, ChevronRight, Eye, Edit3, Share2, Trash2 } from 'lucide-react'
 import { useDirectory } from '@/features/directory/hooks/use-directory'
 import type { DirectoryItem } from '@/features/directory/types'
@@ -27,7 +28,7 @@ function deriveFileType(filename: string, ext?: string): string {
   return 'other'
 }
 
-export default function DashboardOverview () {
+export default function DashboardOverview() {
   const {
     files: mockFiles,
     setCurrentSection,
@@ -35,6 +36,7 @@ export default function DashboardOverview () {
     setSelectedFileId,
     setActiveFolderId,
   } = useApp()
+  const { user } = useAuth()
 
   const {
     directory,
@@ -82,9 +84,10 @@ export default function DashboardOverview () {
   // Get active time-aware greeting
   const getGreeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning, Prashant 👋'
-    if (hour < 17) return 'Good afternoon, Prashant 👋'
-    return 'Good evening, Prashant 👋'
+    const name = user?.name || 'Prashant'
+    if (hour < 12) return `Good morning, ${name}`
+    if (hour < 17) return `Good afternoon, ${name}`
+    return `Good evening, ${name}`
   }
 
   // Use real directory files if available, sorted by most recently updated/opened, otherwise mock files

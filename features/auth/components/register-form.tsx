@@ -59,7 +59,7 @@ export default function RegisterForm() {
     clearErrors()
 
     if (!otpVerified) {
-      setOtpError('Please verify your email before creating your account')
+      setOtpError('Please verify your email')
       return
     }
 
@@ -321,10 +321,11 @@ export default function RegisterForm() {
                   )}
                 </button>
               </div>
-              {otpError && (
-                <span className="text-[11px] font-medium text-rose-500">{otpError}</span>
-              )}
             </div>
+          )}
+
+          {otpError && (
+            <span className="text-[11px] font-medium text-rose-500">{otpError}</span>
           )}
         </div>
 
